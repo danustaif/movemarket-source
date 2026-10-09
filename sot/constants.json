@@ -29,10 +29,10 @@
   "addresses": {
     "creMockKeystoneForwarder": "0xB9F79d863261869B234c481D1f9A7af84AeAd192",
     "creKeystoneForwarder": "0xF8344CFd5c43616a4366C34E3EEE75af79a74482",
-    "liveMarket": null,
-    "mockUsdc": null,
-    "resolver": null,
-    "deployBlock": null,
+    "liveMarket": "0xA40F0D8f2e70bfd8F52B4d08089bD083cBdDB9a9",
+    "mockUsdc": "0x3670C61f0179dAEF70574C5f6cdC20b7d9986561",
+    "resolver": "0x4ac3008a689D382DCF39F9ecce3de368cf948e33",
+    "deployBlock": 69649726,
     "_source": "Chainlink CRE Forwarder Directory (docs.chain.link/cre/guides/workflow/using-evm-client/forwarder-directory-ts), dicek 2026-10-05. Dikonfirmasi 2026-10-10 dengan `cre workflow supported-chains --output json` (CLI v1.33.0, org `My Org`): monad-testnet selector 2183018362218727504, mock 0xB9F79d863261869B234c481D1f9A7af84AeAd192, produksi 0xF8344CFd5c43616a4366C34E3EEE75af79a74482. Nilai null diisi oleh script deploy.",
     "_conflict": "Selesai 2026-10-10. chainlink-cre-skill v0.0.24 tidak punya baris Monad Testnet dan memakai 0xB9F79d... sebagai KeystoneForwarder produksi Mantle Sepolia. Alamat yang sama dipakai di chain berbeda; untuk monad-testnet, output supported-chains organisasi kita sama dengan Forwarder Directory."
   },
