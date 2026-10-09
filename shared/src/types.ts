@@ -140,8 +140,10 @@ export type TrackBody = { source: "broadcast"; roundId: string } | { source: "tv
 
 /**
  * Peta route resolver: "METHOD /path" -> body dan respons sukses.
- * Error: 400 alamat tidak valid, 401 token admin salah, 409 saldo gas masih di atas ambang,
- * 429 melewati kuota faucet. Route /admin/* wajib header `Authorization: Bearer <ADMIN_TOKEN>`.
+ * Error: 400 alamat atau body tidak valid, 401 token admin salah, 404 partai tidak dilacak
+ * (GET /games/:gameRef) atau route tidak ada, 409 saldo gas masih di atas ambang, 429 melewati kuota faucet,
+ * 500 faucet gagal (FAUCET_FAILED), 502 aksi admin gagal, 503 faucet tidak aktif (mode terbatas, FAUCET_FAILED).
+ * Route /admin/* wajib header `Authorization: Bearer <ADMIN_TOKEN>`.
  */
 export interface ResolverRoutes {
   "GET /health": { body: never; res: HealthResponse };
@@ -163,10 +165,11 @@ export type ResolverRoute = keyof ResolverRoutes;
 // ======================================================================= SSE (GET /stream[?gameRef=])
 
 export interface SseEvents {
+  /** Hanya ply terakhir per update feed. `at` dalam milidetik (Date.now()). */
   ply: { gameRef: string; ply: number; san: string; fen: string; isReplay: boolean; at: number };
   game_end: { gameRef: string; result: GameResult };
   market_created: { gameRef: string; markets: MarketDto[] };
-  /** Kunci ply (SOT D11): lockTime baru = waktu blok lockMarkets. */
+  /** Kunci ply (SOT D11): lockTime = perkiraan waktu chain resolver saat ply diproses (receipt tidak membawa waktu blok). Nilai pasti di event MarketLocked. */
   market_locked: { gameRef: string; marketIds: DecimalString[]; lockTime: UnixSec };
   pool: { gameRef: string; marketId: DecimalString; poolYes: DecimalString; poolNo: DecimalString };
   provisional: { gameRef: string; marketId: DecimalString; outcome: FinalOutcome };
