@@ -383,7 +383,7 @@ Sumber: monskills v0.7.2 (`concepts/references/*`, `gas/SKILL.md`).
 | Block state | Log dipublikasikan saat Proposed. Final sekitar 800 ms | Runner CRE dan SSE `finalized` menunggu blok finalized. Tombol Claim membaca tag `finalized` |
 | Gas | Ditagih dari gas limit. Akses dingin lebih mahal dari Ethereum. Urutan transaksi dalam blok berdasarkan total gas price menurun | Limit diukur di testnet + 10%. `lockMarkets` diberi priority fee lebih tinggi |
 | Kirim sinkron | `eth_sendRawTransactionSync` mengembalikan receipt dalam satu request | Frontend memakai `writeContractSync` (viem 2.57+) |
-| Event realtime | Polling dianggap tidak praktis | Watcher memakai WebSocket `eth_subscribe` logs |
+| Event realtime | Polling dianggap tidak praktis | Watcher memakai WebSocket `eth_subscribe` logs. Tanpa `MONAD_TESTNET_WS`: polling `getLogs` blok `latest` tiap `network.blockTimeMs` (400 ms) sejak blok terakhir yang dilihat, backoff ganda saat error sampai `resolver.WATCHER_POLL_MAX_BACKOFF_SEC` (8 detik). Log transaksi resolver sendiri (`MarketCreated`, `MarketLocked`) diambil langsung dari receipt |
 | Verifikasi | API `agents.devnads.com/v1/verify` untuk tiga explorer | Dipakai setelah deploy, juga prasyarat init indexer Envio |
 
 ## 14. Teks UI
@@ -446,6 +446,9 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | Sumber MON testnet dalam jumlah besar | Sebagian | 5 Okt | Faucet agen Monad `agents.devnads.com/v1/faucet` (dari monskills), batasnya belum diketahui |
 
 ## 17. Riwayat perubahan
+
+### v2.12.0 (10 Oktober 2026)
+- `constants.json` 2.12.0: `resolver.WATCHER_POLL_MAX_BACKOFF_SEC` = 8 (batas backoff polling event proposed tanpa WebSocket) dan `resolver.EVENT_SOURCE` diperbarui. Penyebab: tanpa `MONAD_TESTNET_WS`, SSE `market_created` baru terkirim 40 sampai 50 detik setelah `createMarkets`, lewat `BET_WINDOW_SEC` 15, sehingga semua stake revert `BettingClosed`. Resolver kini memakai receipt sendiri dan polling blok `latest` (bagian 13a).
 
 ### v2.11.0 (10 Oktober 2026)
 - `copy.en.json` 2.9.0: `ui.market.details` dan `ui.market.finalTx` (tautan tx report CRE di hasil Final), bagian baru `ui.detail` (dialog detail pasar: rentang ply, pool, timeline dibuat/terkunci/hasil sementara/final), `ui.me.gas` (saldo MON), `ui.me.claimAllTitle` dan `ui.me.claimAllNote` (konfirmasi Claim all).

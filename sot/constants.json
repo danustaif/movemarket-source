@@ -1,7 +1,7 @@
 {
   "_meta": {
     "name": "MoveMarket source of truth: constants",
-    "version": "2.10.0",
+    "version": "2.12.0",
     "updated": "2026-10-10",
     "rule": "Nilai di file ini menang atas dokumen mana pun. Ubah di sini dulu, jalankan `node sot/check.mjs`, lalu sesuaikan kode dan dokumen yang gagal dicek."
   },
@@ -259,7 +259,8 @@
     "REPLAY_FINISH_OPEN_MARKETS_WITHOUT_VIEWERS": true,
     "EXPORT_PRECHECK": true,
     "ACT_ON": "finalized",
-    "EVENT_SOURCE": "WebSocket eth_subscribe logs (MONAD_TESTNET_WS), fallback polling getLogs"
+    "EVENT_SOURCE": "WebSocket eth_subscribe logs (MONAD_TESTNET_WS). Tanpa WS: polling getLogs blok latest tiap network.blockTimeMs. Log transaksi resolver sendiri diambil dari receipt. Cadangan dan pemulihan: getLogs blok finalized",
+    "WATCHER_POLL_MAX_BACKOFF_SEC": 8
   },
   "faucet": {
     "usdcAmount": "50000000",
