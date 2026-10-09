@@ -1,6 +1,6 @@
 # Source of Truth: MoveMarket
 
-Versi 2.2.0 · 10 Oktober 2026 · Pemilik: Danu
+Versi 2.3.0 · 10 Oktober 2026 · Pemilik: Danu
 
 Dokumen ini adalah acuan tunggal untuk semua nilai yang dipakai lebih dari satu komponen. Kontrak, workflow CRE, resolver, indexer, dan frontend harus cocok dengan dokumen ini dan folder `sot/`.
 
@@ -345,7 +345,7 @@ Konsekuensi:
 2. Faucet onboarding mengirim **0,5 MON** (cukup sekitar 25 transaksi) dan 50 tUSDC. Isi ulang gas lewat `POST /faucet/gas`: 0,5 MON kalau saldo di bawah 0,05 MON, maksimal 3 kali per alamat per 24 jam.
 3. Replay otomatis hanya berjalan kalau ada penonton (`AUTO_REPLAY_REQUIRES_VIEWER`, D16).
 4. Pasar tanpa stake tidak pernah di-request ke CRE (D18). Di replay tanpa pengguna aktif, ini menghapus hampir semua biaya CRE.
-5. Fungsi batch (`createMarkets`, `lockMarkets`, `requestResolution`) memakai limit `base + perMarket × n`, bukan satu angka tetap.
+5. Fungsi batch (`createMarkets`, `lockMarkets`, `requestResolution`, `claimMany`) memakai limit `base + perMarket × n`, bukan satu angka tetap. `claimMany` naik sekitar 39.000 gas per pasar (anvil), jadi limit datar 1.500.000 yang lama berlebih untuk klaim kecil dan bisa kurang untuk klaim besar.
 
 Perkiraan biaya wallet resolver, diganti angka nyata setelah gas report:
 
@@ -436,6 +436,9 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | Sumber MON testnet dalam jumlah besar | Sebagian | 5 Okt | Faucet agen Monad `agents.devnads.com/v1/faucet` (dari monskills), batasnya belum diketahui |
 
 ## 17. Riwayat perubahan
+
+### v2.3.0 (10 Oktober 2026)
+- `gas.limits.claimMany` (datar 1.500.000) dipecah menjadi `claimManyBase` dan `claimManyPerMarket`, keduanya null sampai diukur di Monad Testnet setelah report CRE pertama (D22). Sampai itu tombol Claim all menolak kirim dengan error jelas.
 
 ### v2.2.0 (10 Oktober 2026)
 - Diselaraskan dengan implementasi `smart-contract/`: `supportsInterface` di `sot/abi.json` menjadi `pure` (selector `0x01ffc9a7` tidak berubah). `abi.json` versi 2.2.0.

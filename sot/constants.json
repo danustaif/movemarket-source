@@ -1,7 +1,7 @@
 {
   "_meta": {
     "name": "MoveMarket source of truth: constants",
-    "version": "2.2.0",
+    "version": "2.3.0",
     "updated": "2026-10-10",
     "rule": "Nilai di file ini menang atas dokumen mana pun. Ubah di sini dulu, jalankan `node sot/check.mjs`, lalu sesuaikan kode dan dokumen yang gagal dicek."
   },
@@ -277,7 +277,8 @@
       "approve": 80000,
       "bet": 200000,
       "claim": 150000,
-      "claimMany": 1500000,
+      "claimManyBase": null,
+      "claimManyPerMarket": null,
       "refund": 150000,
       "createMarketsBase": null,
       "createMarketsPerMarket": null,
@@ -290,7 +291,7 @@
       "adminVoid": null,
       "setForwarder": null
     },
-    "_rule": "Ukur dengan eth_estimateGas terhadap kontrak yang sudah di-deploy di Monad Testnet (bukan forge gas report, karena biaya akses dingin Monad lebih tinggi), lalu tambah buffer maksimal 10%. Fungsi batch memakai base + perMarket x n. Semua angka null diisi setelah deploy.",
+    "_rule": "Ukur dengan eth_estimateGas terhadap kontrak yang sudah di-deploy di Monad Testnet (bukan forge gas report, karena biaya akses dingin Monad lebih tinggi), lalu tambah buffer maksimal 10%. Fungsi batch (createMarkets, lockMarkets, requestResolution, claimMany) memakai base + perMarket x n. Semua angka null diisi setelah deploy.",
     "budget": {
       "estimateMonPerReplayGame": 1.5,
       "walletFloorMon": 10,
