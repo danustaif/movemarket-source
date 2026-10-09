@@ -32,7 +32,7 @@ Prinsip:
 - [ ] Bun workspaces sesuai struktur di `CLAUDE.md`
 - [ ] `source/shared`: port `sot/reference/resolve.mjs` ke TypeScript, impor `sot/*.json`, ekspor konstanta bertipe dan ABI dari `sot/abi.json`
 - [ ] `bun sot/check.mjs --impl shared/src/resolve.ts` lulus
-- [ ] `smart-contract/`: `MockUSDC.sol`, `LiveMarket.sol` termasuk `lockMarkets`, salin `IReceiver`, `IERC165`, `ReceiverTemplate` dari dokumentasi CRE
+- [ ] `smart-contract/`: `MockUSDC.sol`, `LiveMarket.sol` termasuk `lockMarkets`, salin `IReceiver` dan `IERC165` dari dokumentasi CRE (tanpa `ReceiverTemplate`, lihat CONTRACTS bagian 3.3)
 - [ ] Test Foundry sesuai `docs/CONTRACTS.md` bagian 7, termasuk `LockMarkets.t.sol` dan invarian
 - [ ] `forge test --gas-report` hanya untuk perbandingan (gas limit asli diukur di testnet pada hari 3)
 

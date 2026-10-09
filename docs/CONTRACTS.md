@@ -95,7 +95,7 @@ struct MarketView {
 Storage:
 
 ```solidity
-IERC20 public immutable token;          // tUSDC, 6 desimal
+address public immutable token;         // tUSDC, 6 desimal. Tipe address supaya getter token() sama dengan SOT
 address public forwarder;               // MockKeystoneForwarder atau KeystoneForwarder
 address public resolver;
 uint16  public feeBps = 200;            // 2%
@@ -104,10 +104,12 @@ uint128 public maxStakePerUser = 100e6; // 100 tUSDC per pengguna per pasar
 uint256 public nextMarketId = 1;
 uint256 public feesAccrued;
 
-mapping(uint256 => Market) public markets;
-mapping(uint256 => mapping(address => Position)) public positions;
+mapping(uint256 => Market) internal _markets;                          // baca lewat getMarket
+mapping(uint256 => mapping(address => Position)) internal _positions;  // baca lewat getPosition
 mapping(bytes32 => string) public gameRefOf;
 ```
+
+`_markets` dan `_positions` sengaja `internal`. Getter otomatis `markets(uint256)` dan `positions(uint256,address)` tidak ada di `sot/abi.json`, dan getter publik untuk `Market` (13 field) juga gagal compile dengan "Stack too deep" tanpa `via-ir`. Konstruktor menerima `IERC20 token_` lalu menyimpan `address(token_)`; transfer memakai `IERC20(token).safeTransfer...`.
 
 ## 3. Fungsi
 
@@ -179,7 +181,13 @@ Boleh kalau salah satu benar:
 - status `VOIDED`
 - status `OPEN` dan `block.timestamp > resolveDeadline`. Pada refund pertama, status diubah ke `VOIDED`, outcome `VOID`, emit `MarketVoided(id, VOID_EXPIRED)`.
 
-Lalu: `amount = pos.yes + pos.no`, harus `> 0`, `!pos.settled`, set `settled`, transfer, emit `Refunded`.
+Urutan cek di implementasi:
+1. Kalau pasar ada, status `OPEN`, dan `block.timestamp > resolveDeadline`: void dulu (`VOID_EXPIRED`).
+2. Status harus `VOIDED`, kalau tidak revert `NotRefundable(id)`.
+3. `!pos.settled`, kalau tidak revert `AlreadySettled(id)`.
+4. `amount = pos.yes + pos.no`, harus `> 0`, kalau tidak revert `NotRefundable(id)` (stake nol).
+
+Lalu set `settled`, transfer, emit `Refunded`.
 
 ### 3.3 CRE consumer
 
@@ -205,7 +213,7 @@ Jangan memakai `ReceiverTemplate`. Template itu membawa setter forwarder, error,
 
 | Fungsi | Keterangan |
 |---|---|
-| `adminVoid(uint256[] ids)` | Hanya untuk status `OPEN`. Set status `VOIDED`, outcome `VOID`, emit `MarketVoided(id, VOID_ADMIN)` |
+| `adminVoid(uint256[] ids)` | Hanya untuk status `OPEN`. Pasar yang tidak ada atau bukan `OPEN` me-revert `MarketNotOpen(id)` (seluruh batch batal). Set status `VOIDED`, outcome `VOID`, emit `MarketVoided(id, VOID_ADMIN)` |
 | `setForwarder(address)` | Emit `ForwarderUpdated`. Dipakai saat pindah dari Mock ke Keystone |
 | `setResolver(address)` | Emit `ResolverUpdated` |
 | `setFeeBps(uint16)` | Maksimal `MAX_FEE_BPS`. Hanya berlaku untuk resolusi berikutnya |
@@ -225,7 +233,7 @@ Jangan memakai `ReceiverTemplate`. Template itu membawa setter forwarder, error,
 | `claimable(uint256 id, address user)` | `uint256`, 0 kalau tidak bisa klaim |
 | `refundable(uint256 id, address user)` | `uint256`, 0 kalau tidak bisa refund |
 
-Getter otomatis dari variabel `public`: `token()`, `forwarder()`, `resolver()`, `feeBps()`, `minBet()`, `maxStakePerUser()`, `nextMarketId()`, `feesAccrued()`, `gameRefOf(bytes32)`. Ditambah `supportsInterface(bytes4)` dari `IReceiver`/`IERC165` untuk forwarder CRE.
+Getter otomatis dari variabel `public`: `token()`, `forwarder()`, `resolver()`, `feeBps()`, `minBet()`, `maxStakePerUser()`, `nextMarketId()`, `feesAccrued()`, `gameRefOf(bytes32)`. Ditambah `supportsInterface(bytes4)` dari `IReceiver`/`IERC165` untuk forwarder CRE, dideklarasikan `pure` karena hanya membandingkan konstanta.
 
 ## 4. Event
 
@@ -320,11 +328,38 @@ Resolver adalah minter untuk faucet.
 
 `script/Deploy.s.sol`:
 1. Deploy `MockUSDC`.
-2. Deploy `LiveMarket(token, forwarder, resolver)` dengan `forwarder` = `addresses.creMockKeystoneForwarder` dari `sot/constants.json`.
+2. Deploy `LiveMarket(token, forwarder, resolver)`.
 3. `MockUSDC.setMinter(resolver, true)`.
 4. Tulis alamat ke `smart-contract/deployments/monad-testnet.json`.
 5. Script `bun run sync:contracts` di root mengisi `addresses.liveMarket`, `addresses.mockUsdc`, `addresses.resolver`, dan `addresses.deployBlock` di `sot/constants.json`, lalu menjalankan `node sot/check.mjs`.
-6. Bandingkan ABI hasil `forge build` dengan `sot/abi.json`. Kalau beda, yang salah adalah kontraknya, kecuali perubahan ABI memang disengaja dan SOT sudah diperbarui lebih dulu.
+6. Bandingkan ABI hasil `forge build` dengan `sot/abi.json` lewat `node script/check-abi.mjs`. Kalau beda, yang salah adalah kontraknya, kecuali perubahan ABI memang disengaja dan SOT sudah diperbarui lebih dulu.
+
+Env:
+
+| Nama | Wajib | Isi |
+|---|---|---|
+| `RESOLVER_ADDRESS` | ya | Wallet resolver: role resolver `LiveMarket` dan minter tUSDC |
+| `FORWARDER_ADDRESS` | tidak | Default `addresses.creMockKeystoneForwarder` dari `sot/constants.json`. Pindah ke `KeystoneForwarder` nanti lewat `setForwarder` |
+
+Kunci deployer hanya lewat CLI (`--account <keystore>` atau `--private-key`). Script menolak chain selain `network.chainId` SOT (10143) dan anvil (31337).
+
+`deployments/monad-testnet.json` hanya ditulis saat `--broadcast` di chain 10143:
+
+```json
+{
+  "chainId": 10143,
+  "liveMarket": "0x...",
+  "mockUsdc": "0x...",
+  "forwarder": "0x...",
+  "owner": "0x...",
+  "deployBlock": 0,
+  "resolver": "0x..."
+}
+```
+
+`deployBlock` adalah `block.number` saat script berjalan, yaitu blok sebelum deploy. Nilainya batas bawah, aman sebagai start block indexer.
+
+`script/check-abi.mjs` membandingkan selector fungsi, error, dan topic0 event hasil `forge inspect` dengan bagian `computed` di `sot/abi.json`. `ILiveMarket` harus identik dengan SOT. `LiveMarket` harus memuat semua item SOT; item tambahan hanya boleh turunan OpenZeppelin (`Ownable`, `Pausable`, `ReentrancyGuard`, `SafeERC20`) yang ada di allowlist script.
 
 Verifikasi kontrak agar juri bisa membaca source, dan karena indexer Envio membutuhkan kontrak terverifikasi:
 1. Utama: `POST https://agents.devnads.com/v1/verify` dengan `foundryMetadata` dari `out/<Contract>.sol/<Contract>.json` dan `constructorArgs` (ABI-encoded, tanpa `0x`). Sekali panggil untuk MonadVision, Socialscan, dan Monadscan.
