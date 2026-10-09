@@ -2,7 +2,7 @@
 
 > Nilai kanonik (enum, konstanta, ABI, alamat, format data, teks UI) ada di `docs/SOT.md` dan folder `sot/`. Kalau dokumen ini berbeda dengan SOT, SOT yang benar.
 
-Lokasi: `backend/indexer/`. Tool: Envio HyperIndex, di-deploy ke Envio Cloud. Jaringan: Monad Testnet (`10143`), HyperSync di `https://10143.hypersync.xyz` (belum dikonfirmasi monskills, cek saat init).
+Lokasi: `backend/indexer/`. Tool: Envio HyperIndex, di-deploy ke Envio Cloud. Jaringan: Monad Testnet (`10143`), HyperSync di `https://10143.hypersync.xyz`.
 
 Panduan sumber: skill `indexer` di monskills. Prasyarat: `LiveMarket` sudah terverifikasi. Inisialisasi dengan versi yang dipin persis:
 
@@ -19,37 +19,36 @@ Indexer menyediakan data riwayat untuk frontend: pasar, taruhan, posisi, dan sta
 
 ## 1. `config.yaml`
 
+Envio 3 (`envio@3.0.0-alpha.21`) memakai `chains`, dengan `handler` dan `events` di blok `contracts` tingkat atas. Versi kanonik ada di `backend/indexer/config.yaml`.
+
 ```yaml
 name: movemarket-indexer
-networks:
-  - id: 10143
-    start_block: <DEPLOY_BLOCK>
-    contracts:
-      - name: LiveMarket
-        address: <LIVE_MARKET_ADDRESS>
-        handler: src/EventHandlers.ts
-        events:
-          - event: MarketCreated(uint256 indexed id, bytes32 indexed gameKey, string gameRef, uint8 marketType, uint8 side, uint16 fromPly, uint16 toPly, uint64 lockTime, uint64 resolveDeadline)
-          - event: MarketLocked(uint256 indexed id, uint64 lockTime)
-          - event: BetPlaced(uint256 indexed id, address indexed user, bool yes, uint128 amount, uint128 poolYes, uint128 poolNo)
-          - event: ResolutionRequested(bytes32 indexed gameKey, string gameRef, uint256[] ids)
-          - event: MarketResolved(uint256 indexed id, uint8 outcome)
-          - event: MarketVoided(uint256 indexed id, uint8 reason)
-          - event: Claimed(uint256 indexed id, address indexed user, uint256 payout)
-          - event: Refunded(uint256 indexed id, address indexed user, uint256 amount)
-```
-
-Tambahkan juga di tingkat atas `config.yaml`:
-
-```yaml
 field_selection:
   transaction_fields:
     - hash
+contracts:
+  - name: LiveMarket
+    handler: src/EventHandlers.ts
+    events:
+      - event: MarketCreated(uint256 indexed id, bytes32 indexed gameKey, string gameRef, uint8 marketType, uint8 side, uint16 fromPly, uint16 toPly, uint64 lockTime, uint64 resolveDeadline)
+      - event: MarketLocked(uint256 indexed id, uint64 lockTime)
+      - event: BetPlaced(uint256 indexed id, address indexed user, bool yes, uint128 amount, uint128 poolYes, uint128 poolNo)
+      - event: ResolutionRequested(bytes32 indexed gameKey, string gameRef, uint256[] ids)
+      - event: MarketResolved(uint256 indexed id, uint8 outcome)
+      - event: MarketVoided(uint256 indexed id, uint8 reason)
+      - event: Claimed(uint256 indexed id, address indexed user, uint256 payout)
+      - event: Refunded(uint256 indexed id, address indexed user, uint256 amount)
+chains:
+  - id: 10143
+    start_block: <addresses.deployBlock>
+    contracts:
+      - name: LiveMarket
+        address: <addresses.liveMarket>
 ```
 
-Tanpa ini `event.transaction.*` bertipe `never`, padahal skema memakai `createdTx`, `resolvedTx`, dan `txHash`.
+`field_selection.transaction_fields: [hash]` wajib. Tanpa ini `event.transaction.*` bertipe `never`, padahal skema memakai `createdTx`, `resolvedTx`, dan `txHash`.
 
-Signature event harus sama persis dengan `sot/abi.json` (dicek oleh `node sot/check.mjs`). Setelah ABI berubah, jalankan `bun run codegen`.
+Signature event harus sama persis dengan `sot/abi.json` (dicek oleh `node sot/check.mjs`). Setelah ABI berubah, jalankan `pnpm codegen`.
 
 ## 2. `schema.graphql`
 
@@ -174,10 +173,10 @@ query Leaderboard {
 }
 ```
 
-Sintaks filter mengikuti GraphQL bawaan Envio (Hasura). Cek di playground lokal setelah `bun run dev`.
+Sintaks filter mengikuti GraphQL bawaan Envio (Hasura). Cek di playground lokal (`http://localhost:8080/v1/graphql`) setelah `pnpm dev`.
 
 ## 5. Deploy
 
-- Lokal: `bun run dev` (butuh Docker).
+- Lokal: `pnpm dev` (butuh Docker). HyperSync menolak query tanpa `ENVIO_API_TOKEN` di luar Envio Cloud; tanpa token, pakai sumber RPC (`rpc: for: sync`) di config lokal yang tidak di-commit. Detail di `backend/indexer/README.md`.
 - Cloud: Envio Cloud lewat CLI `envio-cloud`, deploy dari repo GitHub. Setelah build pertama, push commit kosong, cek `_meta` (`isReady`, `progressBlock`) sebelum memakai URL, lalu `deployment promote`. Simpan URL GraphQL di `VITE_ENVIO_URL`.
 - Envio adalah sponsor bounty "Best Use of Envio". Tampilkan di README bagaimana indexer dipakai (riwayat, posisi, leaderboard, statistik partai).

@@ -95,7 +95,7 @@ RESOLVER_ADDRESS=0x... forge script script/Deploy.s.sol \
 
 # backend/
 cd resolver && bun run dev
-cd indexer && bun run codegen && bun run dev
+cd indexer && pnpm codegen && pnpm test && pnpm dev   # dev lokal butuh Docker
 # CRE: target staging-settings, production-settings, local-simulation (sot/constants.json cre.targets)
 cd cre/resolver-workflow && bun test && bun run typecheck && bun run build
 # dari backend/cre/: local-simulation dulu (tanpa receiver), lalu staging-settings

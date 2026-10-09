@@ -1,6 +1,6 @@
 # Source of Truth: MoveMarket
 
-Versi 2.9.0 · 10 Oktober 2026 · Pemilik: Danu
+Versi 2.10.0 · 10 Oktober 2026 · Pemilik: Danu
 
 Dokumen ini adalah acuan tunggal untuk semua nilai yang dipakai lebih dari satu komponen. Kontrak, workflow CRE, resolver, indexer, dan frontend harus cocok dengan dokumen ini dan folder `sot/`.
 
@@ -438,7 +438,7 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | Rancangan CRE dicocokkan dengan `chainlink-cre-skill` v0.0.24 | Terverifikasi | 5 Okt | Review terhadap SKILL.md dan semua `references/` |
 | Rancangan dicocokkan dengan monskills v0.7.2 | Terverifikasi | 5 Okt | Review terhadap `concepts`, `gas`, `scaffold`, `indexer`, `wallet` |
 | Monad Testnet di daftar `chainlink-cre-skill` | Tidak ada di skill | 5 Okt | Pakai halaman dokumentasi CRE |
-| URL HyperSync Monad Testnet | Belum | | Saat `envio init` |
+| URL HyperSync Monad Testnet | Terverifikasi: `https://10143.hypersync.xyz`, dipilih otomatis oleh codegen `envio@3.0.0-alpha.21`; `/height` terbuka, `/query` wajib token kecuali di Envio Cloud | 10 Okt | `generated/internal.config.json`, indexing lokal sampai head (31 event cocok on-chain) |
 | PRF passkey di Chrome dan Safari | Belum | | Uji manual |
 | Status Early Access CRE | Belum aktif (Deploy Access "Not enabled"); pengajuan menunggu user | 10 Okt | `cre whoami` |
 | `simulate --broadcast` diterima untuk bounty | Belum | | Tanya mentor Chainlink |
@@ -446,6 +446,9 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | Sumber MON testnet dalam jumlah besar | Sebagian | 5 Okt | Faucet agen Monad `agents.devnads.com/v1/faucet` (dari monskills), batasnya belum diketahui |
 
 ## 17. Riwayat perubahan
+
+### v2.10.0 (10 Oktober 2026)
+- Indexer Envio dibuat (`backend/indexer/`, envio 3.0.0-alpha.21) dan diuji lokal terhadap Monad Testnet. `constants.json` `indexer`: `version`, perintah `pnpm`, catatan token HyperSync. URL HyperSync terverifikasi.
 
 ### v2.9.0 (10 Oktober 2026)
 - `gas.limits.claim`, `claimManyBase`, `claimManyPerMarket` diukur di Monad Testnet setelah report CRE pertama (worst case, +10%). Semua `gas.limits` kini terisi; Claim all aktif.

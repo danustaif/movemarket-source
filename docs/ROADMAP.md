@@ -86,7 +86,8 @@ Prinsip:
 
 ## Hari 7 (Min 11 Okt): Indexer dan uji ujung ke ujung
 
-- [ ] Envio: `envio init contract-import` (versi dipin), `field_selection` hash, schema dan handler sesuai `docs/INDEXER.md`, deploy ke Envio Cloud
+- [x] Envio: `envio init contract-import` (versi dipin), `field_selection` hash, schema dan handler sesuai `docs/INDEXER.md`, 9 test, indexing lokal ke Monad Testnet cocok on-chain (10 Okt)
+- [ ] Deploy indexer ke Envio Cloud (`npx envio-cloud login`, butuh akun user; perintah di `backend/indexer/README.md`), simpan URL di `VITE_ENVIO_URL`
 - [ ] `/me` membaca posisi dari Envio
 - [ ] Uji dengan broadcast live (pilih turnamen `standard` yang sedang berjalan di `/api/broadcast/top`)
 - [ ] Uji di Safari iOS dan Chrome Android
