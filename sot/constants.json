@@ -1,7 +1,7 @@
 {
   "_meta": {
     "name": "MoveMarket source of truth: constants",
-    "version": "2.4.0",
+    "version": "2.5.0",
     "updated": "2026-10-10",
     "rule": "Nilai di file ini menang atas dokumen mana pun. Ubah di sini dulu, jalankan `node sot/check.mjs`, lalu sesuaikan kode dan dokumen yang gagal dicek."
   },
@@ -185,6 +185,13 @@
     "rateLimit": "Satu koneksi stream per sumber, jangan polling endpoint stream. HTTP 429: tunggu 60 detik."
   },
   "speed": {
+    "known": [
+      "classical",
+      "rapid",
+      "blitz",
+      "bullet"
+    ],
+    "_knownRule": "Nilai field speed Lichess yang dikenali resolver. Nilai lain (ultraBullet, correspondence) menjadi unknown.",
     "supported": [
       "classical",
       "rapid"
@@ -265,8 +272,9 @@
     "gasTopUpThresholdWei": "50000000000000000",
     "onboardingQuotaCountsOnlyIfMonSent": true,
     "separateWallet": true,
-    "resolverHardFloorWei": "10000000000000000000",
+    "monadReserveWei": "10000000000000000000",
     "faucetWalletMinWei": "10500000000000000000",
+    "_reserveRule": "monadReserveWei: reserve balance Monad (10 MON) yang berlaku untuk semua wallet (SOT 13a). faucetWalletMinWei = monadReserveWei + monAmountWei, dicek sot/check.mjs.",
     "faucetWalletRule": "Kirim MON hanya kalau saldo wallet faucet >= 10 MON + jumlah kirim. Di bawah itu transfer akan revert karena reserve balance.",
     "monadAgentFaucet": "POST https://agents.devnads.com/v1/faucet {\"chainId\":10143,\"address\":\"0x...\"} untuk mengisi wallet operasional"
   },
@@ -305,7 +313,11 @@
       "assumption": "125 MON konsumsi 14 hari penjurian + 3 wallet x 10 MON floor"
     },
     "bufferPct": 10,
-    "priorityFeeForLockMarkets": "lockMarkets dikirim dengan priority fee lebih tinggi supaya diurutkan sebelum bet di blok yang sama (Monad mengurutkan berdasarkan total gas price menurun)"
+    "lockMarketsPriorityFee": {
+      "estimateMultiplier": 2,
+      "extraTipWei": "1000000000",
+      "rule": "lockMarkets dikirim dengan priority fee lebih tinggi supaya diurutkan sebelum bet di blok yang sama (Monad mengurutkan berdasarkan total gas price menurun). maxPriorityFeePerGas = estimasi x estimateMultiplier + extraTipWei, maxFeePerGas = estimasi maxFee + tip itu."
+    }
   },
   "cre": {
     "cliMin": "1.30.0",

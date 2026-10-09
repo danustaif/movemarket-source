@@ -1,6 +1,6 @@
 # Source of Truth: MoveMarket
 
-Versi 2.4.0 · 10 Oktober 2026 · Pemilik: Danu
+Versi 2.5.0 · 10 Oktober 2026 · Pemilik: Danu
 
 Dokumen ini adalah acuan tunggal untuk semua nilai yang dipakai lebih dari satu komponen. Kontrak, workflow CRE, resolver, indexer, dan frontend harus cocok dengan dokumen ini dan folder `sot/`.
 
@@ -226,6 +226,8 @@ Planner hanya membuat pasar untuk `classical` dan `rapid`. Urutan penentuan:
 3. Rumus `baseSec + 40 × incSec`: ≥ 1500 classical, ≥ 480 rapid, ≥ 180 blitz, sisanya bullet.
 4. Selain itu `unknown`, tidak didukung.
 
+Nilai `speed` yang dikenali dari Lichess ada di `speed.known` (`classical`, `rapid`, `blitz`, `bullet`). Nilai lain, misalnya `ultraBullet` atau `correspondence`, menjadi `unknown`.
+
 Data 5 Oktober: dari 41 broadcast aktif, 36 bertanda `standard`.
 
 ## 8. Aturan resolusi
@@ -347,6 +349,14 @@ Konsekuensi:
 4. Pasar tanpa stake tidak pernah di-request ke CRE (D18). Di replay tanpa pengguna aktif, ini menghapus hampir semua biaya CRE.
 5. Fungsi batch (`createMarkets`, `lockMarkets`, `requestResolution`, `claimMany`) memakai limit `base + perMarket × n`, bukan satu angka tetap. `claimMany` naik sekitar 39.000 gas per pasar (anvil), jadi limit datar 1.500.000 yang lama berlebih untuk klaim kecil dan bisa kurang untuk klaim besar.
 
+Nilai terkait di `sot/constants.json`:
+
+| Field | Nilai | Arti |
+|---|---|---|
+| `faucet.monadReserveWei` | 10 MON | Reserve balance Monad (bagian 13a), berlaku untuk semua wallet |
+| `faucet.faucetWalletMinWei` | 10,5 MON | Saldo minimal wallet faucet untuk kirim MON onboarding = `monadReserveWei + monAmountWei` (dicek `check.mjs`) |
+| `gas.lockMarketsPriorityFee` | `estimateMultiplier` 2, `extraTipWei` 1 gwei | Priority fee `lockMarkets` = estimasi × 2 + 1 gwei, `maxFeePerGas` = estimasi `maxFee` + tip itu |
+
 Perkiraan biaya wallet resolver, diganti angka nyata setelah gas report:
 
 | Aksi per batch | Perkiraan gas limit |
@@ -436,6 +446,13 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | Sumber MON testnet dalam jumlah besar | Sebagian | 5 Okt | Faucet agen Monad `agents.devnads.com/v1/faucet` (dari monskills), batasnya belum diketahui |
 
 ## 17. Riwayat perubahan
+
+### v2.5.0 (10 Oktober 2026)
+- `faucet.resolverHardFloorWei` diganti nama menjadi `faucet.monadReserveWei` (nilai tetap 10 MON), karena dipakai sebagai reserve balance semua wallet, bukan khusus resolver. `check.mjs` memeriksa `faucetWalletMinWei = monadReserveWei + monAmountWei`.
+- `gas.priorityFeeForLockMarkets` (teks) diganti `gas.lockMarketsPriorityFee` yang terstruktur: `estimateMultiplier` 2 dan `extraTipWei` 1 gwei, dibaca `backend/resolver/src/chain/clients.ts`.
+- `speed.known`: nilai field `speed` Lichess yang dikenali resolver.
+- `copy.en.json` bagian `ui.player`: teks cadangan nama pemain (`?`, `Anonymous`, `Stockfish level {level}`).
+- `constants.json` dan `copy.en.json` versi 2.5.0.
 
 ### v2.4.0 (10 Oktober 2026)
 - `sot/abi.json` bagian `mockUsdc` mendapat `errors` berisi `error NotMinter()` (selector `0xf8d2906c`), error yang sudah ada di `MockUSDC.sol` tetapi belum tercatat. `smart-contract/script/check-abi.mjs` kini juga memeriksa MockUSDC. `abi.json` versi 2.4.0.

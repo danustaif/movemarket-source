@@ -176,6 +176,12 @@ const envRows = {
 };
 for (const [k, v] of Object.entries(envRows)) has("ARCHITECTURE.md", `| \`${k}\` | \`${v}\` |`, `env ${k}=${v}`);
 
+// lantai wallet faucet = reserve balance Monad + jumlah kirim onboarding
+ok(
+  BigInt(C.faucet.faucetWalletMinWei) === BigInt(C.faucet.monadReserveWei) + BigInt(C.faucet.monAmountWei),
+  "faucet.faucetWalletMinWei harus = monadReserveWei + monAmountWei",
+);
+
 // ---------------------------------------------------------------- hasil
 console.log(`\n${pass} lulus, ${fails.length} gagal`);
 if (fails.length) {

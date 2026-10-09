@@ -1,7 +1,7 @@
 {
   "_meta": {
     "name": "MoveMarket source of truth: UI copy (English)",
-    "version": "2.1.0",
+    "version": "2.5.0",
     "updated": "2026-10-10",
     "rule": "UI memakai bahasa Inggris karena juri global. Semua teks yang tampil ke pengguna diambil dari file ini lewat key. Hindari kata gamble dan bet di UI; pakai predict, stake, pool."
   },
@@ -96,6 +96,11 @@
       "watch": "Watch and predict",
       "openMarkets": "{n} open",
       "finished": "Finished · {result}"
+    },
+    "player": {
+      "unknown": "?",
+      "anonymous": "Anonymous",
+      "engine": "Stockfish level {level}"
     },
     "game": {
       "versus": "{white} vs {black}",
