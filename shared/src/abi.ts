@@ -1,7 +1,7 @@
 // ABI bertipe dan encoding yang dipakai lebih dari satu komponen.
 // Memakai viem (aman untuk QuickJS menurut chainlink-cre-skill), tanpa API Node.
 import { decodeAbiParameters, encodeAbiParameters, erc20Abi, keccak256, parseAbi, parseAbiParameters, stringToBytes, type Hex } from "viem";
-import { LIVE_MARKET_ABI_HR, MOCK_USDC_ABI_HR } from "./sot.generated.ts";
+import { LIVE_MARKET_ABI_HR, MOCK_USDC_ABI_HR, OUTCOME_CODE } from "./sot.generated.ts";
 import type { ReportOutcomeCode } from "./constants.ts";
 
 export const liveMarketAbi = parseAbi(LIVE_MARKET_ABI_HR);
@@ -24,4 +24,19 @@ export const encodeReport = (r: ResolutionReport): Hex => encodeAbiParameters(RE
 export function decodeReport(data: Hex): ResolutionReport {
   const [gameKey, ids, outcomes] = decodeAbiParameters(REPORT_PARAMS, data);
   return { gameKey, ids, outcomes: outcomes as readonly ReportOutcomeCode[] };
+}
+
+const REPORT_CODES = new Set<number>(Object.values(OUTCOME_CODE));
+
+/** Kebalikan encodeConsensusPayload: "3:2,10:3" -> { ids, outcomes } untuk encodeReport. Throw kalau pasangan rusak. */
+export function parseConsensusPayload(payload: string): { ids: bigint[]; outcomes: ReportOutcomeCode[] } {
+  const ids: bigint[] = [];
+  const outcomes: ReportOutcomeCode[] = [];
+  for (const pair of payload ? payload.split(",") : []) {
+    const m = /^(\d+):(\d+)$/.exec(pair);
+    if (!m || !REPORT_CODES.has(Number(m[2]))) throw new Error(`bad consensus pair: ${pair}`);
+    ids.push(BigInt(m[1]!));
+    outcomes.push(Number(m[2]) as ReportOutcomeCode);
+  }
+  return { ids, outcomes };
 }
