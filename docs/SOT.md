@@ -1,6 +1,6 @@
 # Source of Truth: MoveMarket
 
-Versi 2.11.0 · 10 Oktober 2026 · Pemilik: Danu
+Versi 2.13.0 · 10 Oktober 2026 · Pemilik: Danu
 
 Dokumen ini adalah acuan tunggal untuk semua nilai yang dipakai lebih dari satu komponen. Kontrak, workflow CRE, resolver, indexer, dan frontend harus cocok dengan dokumen ini dan folder `sot/`.
 
@@ -300,6 +300,7 @@ Isi batch: `CHECK ANY`, `CAPTURE ANY`, `CASTLE WHITE` dan `CASTLE BLACK` (rentan
 | Target | `staging-settings` dan `production-settings` dari `cre init` (CLI 1.33.0), plus `local-simulation` tanpa receiver. Config `config.staging.json`, `config.production.json`, `config.local-simulation.json` |
 | Key untuk `--broadcast` | `CRE_ETH_PRIVATE_KEY` di `.env` proyek CRE |
 | Lifecycle | init, simulate, deploy (paused), activate |
+| Mode resolver tanpa CLI (`CRE_MODE=mock`, D23) | Langkah handler yang sama dijalankan di resolver, lalu `report(LiveMarket, rawReport, 0x, [])` ke MockKeystoneForwarder dengan gas `gasLimit` di atas. `rawReport` = metadata 109 byte (versi `01`, execution id, timestamp, DON id, versi config DON, workflow CID, nama workflow 10 byte, owner 20 byte, report id `0001`) + encoding report. Mock forwarder tidak memeriksa tanda tangan, `reportContext`, pengirim, maupun execution id ganda, dan tidak revert kalau `onReport` revert (`ReportProcessed.result = false`) |
 
 ## 11. API resolver dan SSE
 
@@ -416,6 +417,7 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | D20 | Aksi tidak bisa dibatalkan menunggu blok finalized | Log Monad dipublikasikan saat Proposed. CRE membaca blok finalized, jadi runner yang terlalu cepat membaca state sebelum request | Bertindak di log pertama |
 | D21 | Approve saat onboarding, Stake aktif 3 blok setelah faucet, jeda 1,2 detik antar transaksi pengguna | Async execution dan batas transaksi akun di bawah 10 MON | Approve tepat sebelum bet pertama |
 | D22 | Gas limit diukur dengan `eth_estimateGas` di testnet + maksimal 10% | Biaya akses dingin Monad berbeda dari Ethereum, dan gas ditagih dari limit | `forge test --gas-report` + 20% |
+| D23 | `CRE_MODE=mock`: sambil menunggu Early Access, resolver menjalankan langkah handler workflow (logika bersama di `source/shared`) dan memanggil `report()` MockKeystoneForwarder langsung dengan wallet resolver. Hanya testnet | CLI `cre` di container butuh login atau `CRE_API_KEY` yang belum tersedia, padahal pasar ber-stake harus selesai selama penjurian. Batasan: tanpa konsensus multi-node, hasil dipercaya seperti resolver (dan MockKeystoneForwarder memang permissionless). Bukti bounty CRE tetap dari `simulate --broadcast` | Menunggu Early Access tanpa resolusi, `adminResolve` (melanggar D10) |
 
 ## 16. Status verifikasi
 
@@ -442,10 +444,15 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | PRF passkey di Chrome dan Safari | Belum | | Uji manual |
 | Status Early Access CRE | Belum aktif (Deploy Access "Not enabled"); pengajuan menunggu user | 10 Okt | `cre whoami` |
 | `simulate --broadcast` diterima untuk bounty | Belum | | Tanya mentor Chainlink |
+| Perilaku MockKeystoneForwarder `0xB9F79d...` (D23) | Terverifikasi: `report()` permissionless, `reportContext` dan `signatures` diabaikan, execution id ganda diterima, `rawReport` < 109 byte revert `InvalidReport()` (`0xb55ac754`), revert di `onReport` tidak membatalkan transaksi (hanya `ReportProcessed.result = false`). `typeAndVersion` on-chain `MockKeystoneForwarder 1.0.0`, tanpa cek ERC165 di trace | 10 Okt | Source `chainlink-evm` `contracts/cre/src/dev/MockKeystoneForwarder.sol`, `eth_call` dan `debug_traceCall` di Monad Testnet |
 | Interface `IReceiver` dan ID interface yang dicek forwarder | Terverifikasi: `IReceiver is IERC165`, interfaceId = selector `onReport` (`0x805f2132`) | 9 Okt | Halaman "Building Consumer Contracts" dokumentasi CRE, disalin ke `smart-contract/src/interfaces/` |
 | Sumber MON testnet dalam jumlah besar | Sebagian | 5 Okt | Faucet agen Monad `agents.devnads.com/v1/faucet` (dari monskills), batasnya belum diketahui |
 
 ## 17. Riwayat perubahan
+
+### v2.13.0 (10 Oktober 2026)
+- Keputusan D23 dan `CreMode` `"mock"`: resolver bisa menyelesaikan pasar tanpa CLI `cre` dengan memanggil MockKeystoneForwarder langsung (bagian 10). `constants.json` 2.13.0: `cre.mockMode`. Perilaku MockKeystoneForwarder dicek dari source `smartcontractkit/chainlink-evm` (`contracts/cre/src/dev/MockKeystoneForwarder.sol`) dan `eth_call`/`debug_traceCall` ke `0xB9F79d...` di Monad Testnet.
+- `batchProblem`, `openViews`, `consensusPayload`, tipe `MarketView` dan `ResolutionRequest` pindah dari workflow ke `source/shared/src/abi.ts` karena dipakai workflow dan mode mock.
 
 ### v2.12.0 (10 Oktober 2026)
 - `constants.json` 2.12.0: `resolver.WATCHER_POLL_MAX_BACKOFF_SEC` = 8 (batas backoff polling event proposed tanpa WebSocket) dan `resolver.EVENT_SOURCE` diperbarui. Penyebab: tanpa `MONAD_TESTNET_WS`, SSE `market_created` baru terkirim 40 sampai 50 detik setelah `createMarkets`, lewat `BET_WINDOW_SEC` 15, sehingga semua stake revert `BettingClosed`. Resolver kini memakai receipt sendiri dan polling blok `latest` (bagian 13a).

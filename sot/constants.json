@@ -1,7 +1,7 @@
 {
   "_meta": {
     "name": "MoveMarket source of truth: constants",
-    "version": "2.12.0",
+    "version": "2.13.0",
     "updated": "2026-10-10",
     "rule": "Nilai di file ini menang atas dokumen mana pun. Ubah di sini dulu, jalankan `node sot/check.mjs`, lalu sesuaikan kode dan dokumen yang gagal dicek."
   },
@@ -377,7 +377,8 @@
       "cre account link-key --target <t> dengan wallet yang punya dana (maks 2 key per organisasi)",
       "simulasi lulus"
     ],
-    "simulationCaveat": "Simulasi memakai simulator lokal, bukan konsensus multi-node. Risiko agregasi identik (D17) tidak teruji di simulate."
+    "simulationCaveat": "Simulasi memakai simulator lokal, bukan konsensus multi-node. Risiko agregasi identik (D17) tidak teruji di simulate.",
+    "mockMode": "CRE_MODE=mock (D23): resolver menjalankan langkah handler yang sama (getMarkets finalized, export Lichess, resolve, payload) lalu memanggil report(LiveMarket, metadata 109 byte + report, 0x, []) di addresses.creMockKeystoneForwarder dengan gas cre.gasLimit lewat antrian wallet resolver. Hanya testnet, tanpa CLI cre, tanpa konsensus multi-node. Bukti bounty tetap dari simulate --broadcast."
   },
   "account": {
     "library": "@category-labs/mera@0.2.0",

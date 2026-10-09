@@ -189,7 +189,8 @@ void sseKeysMatchSot;
 
 // ======================================================================= workflow CRE
 
-export type CreMode = "simulate" | "don" | "off";
+/** mock: resolver memanggil MockKeystoneForwarder langsung tanpa CLI cre (SOT D23), hanya testnet. */
+export type CreMode = "simulate" | "don" | "mock" | "off";
 
 /** config.<target>.json workflow resolver-workflow (docs/CRE_WORKFLOW.md bagian 6). */
 export interface CreWorkflowConfig {

@@ -16,7 +16,7 @@ Konteks proyek untuk Claude Code. Baca file ini dulu, lalu `docs/SOT.md`, lalu d
 
 | Dokumen | Isi | Baca saat |
 |---|---|---|
-| `docs/SOT.md` | Nilai kanonik, keputusan desain D1 sampai D22, status verifikasi | Selalu, sebelum task apa pun |
+| `docs/SOT.md` | Nilai kanonik, keputusan desain D1 sampai D23, status verifikasi | Selalu, sebelum task apa pun |
 | `docs/PRD.md` | Masalah, scope MVP, fitur, acceptance criteria | Memulai fitur apa pun |
 | `docs/USER_FLOW.md` | Alur pengguna, layar, state error | Mengerjakan frontend |
 | `docs/ARCHITECTURE.md` | Komponen, trust boundary, env vars, keputusan desain | Menyentuh lebih dari satu paket |
