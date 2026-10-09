@@ -1,7 +1,7 @@
 {
   "_meta": {
     "name": "MoveMarket source of truth: constants",
-    "version": "2.3.0",
+    "version": "2.4.0",
     "updated": "2026-10-10",
     "rule": "Nilai di file ini menang atas dokumen mana pun. Ubah di sini dulu, jalankan `node sot/check.mjs`, lalu sesuaikan kode dan dokumen yang gagal dicek."
   },
@@ -467,6 +467,8 @@
     "firstDeploy": "deploy dari GitHub, push commit kosong setelah build pertama, cek _meta isReady dan progressBlock, lalu deployment promote"
   },
   "verification": {
+    "apiUrl": "https://agents.devnads.com/v1/verify",
+    "sourcifyUrl": "https://sourcify-api-monad.blockvision.org/",
     "primary": "POST https://agents.devnads.com/v1/verify (MonadVision, Socialscan, Monadscan sekaligus) dengan foundryMetadata dari out/<Contract>.sol/<Contract>.json",
     "fallback": "forge verify-contract <ADDR> <CONTRACT> --chain 10143 --verifier sourcify --verifier-url https://sourcify-api-monad.blockvision.org/"
   },

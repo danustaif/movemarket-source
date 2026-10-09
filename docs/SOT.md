@@ -439,6 +439,7 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 
 ### v2.4.0 (10 Oktober 2026)
 - `sot/abi.json` bagian `mockUsdc` mendapat `errors` berisi `error NotMinter()` (selector `0xf8d2906c`), error yang sudah ada di `MockUSDC.sol` tetapi belum tercatat. `smart-contract/script/check-abi.mjs` kini juga memeriksa MockUSDC. `abi.json` versi 2.4.0.
+- `verification.apiUrl` dan `verification.sourcifyUrl` di `constants.json`: URL API verifikasi agen dan Sourcify BlockVision sebagai field terstruktur, dibaca `smart-contract/script/verify.mjs` (teks `primary` dan `fallback` tetap sebagai penjelasan). `constants.json` versi 2.4.0.
 
 ### v2.3.0 (10 Oktober 2026)
 - `gas.limits.claimMany` (datar 1.500.000) dipecah menjadi `claimManyBase` dan `claimManyPerMarket`, keduanya null sampai diukur di Monad Testnet setelah report CRE pertama (D22). Sampai itu tombol Claim all menolak kirim dengan error jelas.
