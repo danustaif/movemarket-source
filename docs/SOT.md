@@ -434,7 +434,7 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | `resolve.ts` berjalan di QuickJS | Sebagian: WASM ter-build (bundle `@movemarket/shared`) dan berjalan di simulator sampai validasi trigger; `resolve` belum dieksekusi atas data nyata | 10 Okt | `cre workflow build`, `simulate --target local-simulation` |
 | Log trigger CRE di Monad Testnet | Belum | | Simulasi dengan tx nyata |
 | Latensi request sampai final | Belum | | Ukur di simulasi `--broadcast` |
-| Gas nyata semua fungsi | Belum | | `eth_estimateGas` di Monad Testnet setelah deploy |
+| Gas nyata semua fungsi | Sebagian: semua kecuali `claim`, `claimManyBase`, `claimManyPerMarket` (butuh pasar RESOLVED lewat report CRE) | 10 Okt | `measure-gas.mjs --write` di Monad Testnet, nonce 3-14 wallet `0x4ac3...8e33` |
 | Rancangan CRE dicocokkan dengan `chainlink-cre-skill` v0.0.24 | Terverifikasi | 5 Okt | Review terhadap SKILL.md dan semua `references/` |
 | Rancangan dicocokkan dengan monskills v0.7.2 | Terverifikasi | 5 Okt | Review terhadap `concepts`, `gas`, `scaffold`, `indexer`, `wallet` |
 | Monad Testnet di daftar `chainlink-cre-skill` | Tidak ada di skill | 5 Okt | Pakai halaman dokumentasi CRE |
