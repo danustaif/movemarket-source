@@ -315,6 +315,8 @@ Base URL dari `VITE_RESOLVER_URL`, port default `8787`. Id dan nominal uang diki
 | `replay_starting` | `{ gameRef }` |
 | `ping` | `{}` setiap 15 detik |
 
+Field `at` di `ply` dalam milidetik. Kalau satu update feed membawa beberapa ply, hanya ply terakhir yang dikirim. `lockTime` di `market_locked` adalah perkiraan waktu chain resolver; nilai pasti ada di event `MarketLocked`.
+
 Endpoint lengkap ada di `docs/RESOLVER_SERVICE.md` bagian 3, termasuk `GET /positions/:address` (cadangan indexer) dan `POST /faucet/gas` (isi ulang gas, kuota terpisah dari onboarding).
 
 ## 12. Akun
@@ -437,6 +439,7 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 
 ### v2.2.0 (10 Oktober 2026)
 - Diselaraskan dengan implementasi `smart-contract/`: `supportsInterface` di `sot/abi.json` menjadi `pure` (selector `0x01ffc9a7` tidak berubah). `abi.json` versi 2.2.0.
+- Bagian 11 diselaraskan dengan `backend/resolver/`: `at` di SSE `ply` dalam milidetik dan hanya ply terakhir per update, `lockTime` di `market_locked` adalah perkiraan resolver.
 
 ### v2.1.0 (5 Oktober 2026)
 - Dicocokkan dengan `chainlink-cre-skill` v0.0.24: `cre init --non-interactive` dengan ID registry asli, target dibaca dari `workflow.yaml`, target `local-simulation`, confidence finalized, bentuk API (`logTrigger`, `callContract`, `HTTPClient.sendRequest`, `consensusIdenticalAggregation`, `.result()`), handler mengembalikan string, `CRE_ETH_PRIVATE_KEY`, lifecycle deploy lalu activate, catatan alamat forwarder.

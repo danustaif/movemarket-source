@@ -169,6 +169,9 @@ Keputusan yang paling berpengaruh ke arsitektur:
 | `BET_WINDOW_SEC` | `15` | |
 | `RESOLVE_DEADLINE_SEC` | `21600` | 6 jam setelah `lockTime` |
 | `CORS_ORIGIN` | `https://<domain-demo>` | |
+| `TRUST_PROXY` | `false` | Default `false`: IP klien untuk kuota faucet dari alamat socket. `true` hanya di belakang proxy tepercaya: IP dari entri pertama `X-Forwarded-For` |
+
+Baris `PLY_GAP_*`, `WINDOW_PLIES`, `LOCK_LEAD_PLIES`, `SPAWN_EVERY_PLIES`, `BET_WINDOW_SEC`, dan `RESOLVE_DEADLINE_SEC` mencatat nilai SOT bagian `planner`. Implementasi saat ini (`markets/planner.ts`) membacanya langsung dari `SOT.planner`; `config.ts` tidak membaca env tersebut.
 
 ### `fe/.env`
 

@@ -97,12 +97,14 @@ interface GameState {
 
 Implementasi `planMarkets` mengikuti `docs/RESOLUTION_SPEC.md` bagian 9. Output dikirim lewat `txQueue` sebagai satu panggilan `createMarkets`.
 
+**Risiko terbuka (anggaran gas):** `POST /admin/track` dengan `source: "broadcast"` melacak semua partai di round itu, dan planner membuat pasar untuk setiap partai yang sedang berjalan. Pada uji nyata, satu round besar berisi 64 partai, jadi `createMarkets` dan `lockMarkets` dikirim untuk 64 partai sekaligus dan menghabiskan gas wallet resolver jauh lebih cepat dari perkiraan di SOT bagian 13. Perilaku ini belum diubah. Operator sebaiknya melacak round kecil atau hanya partai terpilih, dan memakai `POST /admin/untrack` untuk partai yang tidak perlu dibuatkan pasar.
+
 ### 2.3a Locker (kunci ply)
 
 Setiap ply baru, untuk setiap pasar terbuka di partai itu:
 - Kalau `currentPly >= fromPly - LOCK_LEAD_PLIES` dan `nowChain < lockTime`, masukkan id ke batch kunci.
 - Kirim `lockMarkets(ids)` lewat `txQueue` dengan prioritas tertinggi (didahulukan dari `createMarkets` dan `requestResolution`).
-- Setelah receipt, kirim SSE `market_locked`.
+- Setelah receipt, kirim SSE `market_locked`. Field `lockTime` di event itu adalah perkiraan waktu chain milik resolver (`nowSec`: jam lokal dikoreksi selisih dengan timestamp blok terbaru) saat ply diproses, karena receipt tidak membawa waktu blok. Nilai pasti ada di event `MarketLocked`, dan kontrak tetap penentu apakah taruhan diterima.
 
 Kalau transaksi kunci gagal, kontrak tetap menolak taruhan setelah `lockTime`. Catat `lock_failed` di log sebagai insiden integritas.
 
@@ -111,7 +113,7 @@ Kalau transaksi kunci gagal, kontrak tetap menolak taruhan setelah `lockTime`. C
 Setiap ply baru, untuk setiap pasar partai itu yang sudah lewat `lockTime` dan belum di-request:
 - `outcome = resolve(snapshot, spec)`
 - Kalau bukan `PENDING`: simpan `provisional[marketId]`, kirim SSE `provisional`.
-- Masukkan ke antrian request **hanya kalau pasar punya stake** (`poolYes + poolNo > 0`, SOT D18). Pasar tanpa stake tidak pernah di-request: tidak ada dana yang perlu dibayar, dan ini menghemat gas CRE. UI menampilkannya sebagai "No stakes".
+- Masukkan id ke antrian requester. Pasar tanpa stake (`poolYes + poolNo == 0`, SOT D18) **disaring requester saat flush** (log `skip_no_stakes`), bukan saat masuk antrian, supaya `BetPlaced` yang terlambat terlihat tetap terhitung. Pasar tanpa stake tidak pernah di-request: tidak ada dana yang perlu dibayar, dan ini menghemat gas CRE. UI menampilkannya sebagai "No stakes".
 
 #### Koreksi langkah broadcast
 
@@ -125,10 +127,12 @@ Stream broadcast bisa mengirim ulang PGN dengan langkah yang dikoreksi (misalnya
 
 - Mengelompokkan pasar per `gameRef`, maksimal `REQUEST_MAX_BATCH` (8) per panggilan supaya `gasLimit` report CRE tetap kecil (SOT D14).
 - Flush setiap `REQUEST_FLUSH_SEC` (3 detik) atau saat antrian partai mencapai 8.
-- **Prasyarat export (SOT D17):** sebelum mengirim, resolver mengambil `sourceRequest(gameRef)` sekali (sumber yang sama dengan CRE) dan menghitung `resolve` dari export itu. Id hanya dikirim kalau hasil dari export sudah bukan `PENDING` dan sama dengan hasil sementara. Kalau masih `PENDING`, tunggu `REQUEST_FLUSH_SEC` lalu cek lagi. Kalau beda, log `mismatch_pre` dan tahan id itu. Karena export Lichess hanya bertambah, semua node CRE yang mengambil data setelah titik ini melihat outcome yang sama, jadi agregasi identik tetap aman.
+- **Prasyarat export (SOT D17):** sebelum mengirim, resolver mengambil `sourceRequest(gameRef)` sekali (sumber yang sama dengan CRE) dan menghitung `resolve` dari export itu. Id hanya dikirim kalau hasil dari export sudah bukan `PENDING` dan sama dengan hasil sementara. Kalau masih `PENDING`, tunggu `REQUEST_FLUSH_SEC` lalu cek lagi. Kalau beda, log `mismatch_pre` (sekali per id) dan tahan id itu. Id tetap di antrian dan dicek ulang di setiap flush, sampai export cocok, hasil sementara berubah (misalnya setelah koreksi), atau pasar final. Karena export Lichess hanya bertambah, semua node CRE yang mengambil data setelah titik ini melihat outcome yang sama, jadi agregasi identik tetap aman.
 - Memanggil `requestResolution(gameRef, ids)` lewat `txQueue`.
 - Id dianggap selesai saat muncul `MarketResolved` **atau** `MarketVoided`.
-- Kalau dalam 120 detik masih ada id yang belum selesai: baca `getMarkets(ids)`, lalu request ulang **hanya id yang masih `OPEN`**, dengan backoff 30, 60, 120 detik. Kontrak juga melewati id non-OPEN, jadi retry setelah hasil parsial tidak revert. Setelah 3 kali gagal: log `cre_failed`, tandai untuk keputusan operator (`adminVoid`).
+- Pasar tanpa stake disaring tepat sebelum dikirim (lihat 2.4).
+- Retry: id yang belum selesai dicek lagi pada `lastSent + FINAL_WAIT_SEC + RETRY_BACKOFF_SEC[k-1]` untuk retry ke-k (`FINAL_WAIT_SEC` 120, `RETRY_BACKOFF_SEC` 30, 60, 120), dengan `lastSent` waktu kirim terakhir id itu. Saat jatuh tempo, baca `getMarkets(ids)` lalu request ulang **hanya id yang masih `OPEN`**. Kontrak juga melewati id non-OPEN, jadi retry setelah hasil parsial tidak revert. Kalau setelah retry ke-3 (`MAX_RETRIES`) id masih `OPEN` selama `FINAL_WAIT_SEC`: log `cre_failed`, tandai untuk keputusan operator (`adminVoid`).
+- Kiriman pertama yang gagal dikembalikan ke antrian. Retry yang gagal tetap menunggu jadwal berikutnya.
 
 ### 2.6 Watcher
 
@@ -169,11 +173,11 @@ for await (const ev of resolutionRequestedQueue) {   // konkurensi 1
 
 ### 2.8 Transaksi
 
-- Wallet resolver (`RESOLVER_PRIVATE_KEY`): role resolver di `LiveMarket` dan minter di `MockUSDC`. Mengirim `lockMarkets`, `createMarkets`, `requestResolution`, dan mint tUSDC faucet.
+- Wallet resolver (`RESOLVER_PRIVATE_KEY`): role resolver di `LiveMarket` dan minter di `MockUSDC`. Mengirim `lockMarkets`, `createMarkets`, `requestResolution`, mint tUSDC faucet, dan `adminVoid` (`POST /admin/void`, hanya berhasil kalau wallet resolver juga owner `LiveMarket`; kalau bukan, kontrak revert).
 - Wallet faucet terpisah (`FAUCET_PRIVATE_KEY`): hanya mengirim MON ke pengguna. Dipisah supaya nonce dan reserve balance-nya tidak mengganggu antrian resolver (SOT D19).
 - **Reserve balance Monad:** akun di bawah 10 MON hanya bisa mengirim 1 transaksi per 3 blok, dan transfer yang membuat saldo turun di bawah `min(saldo awal, 10 MON)` akan revert. Jaga wallet resolver di atas 20 MON (alert) dan jangan pernah di bawah 10 MON, karena throttle bisa menunda `lockMarkets`.
-- `lockMarkets` dikirim dengan priority fee lebih tinggi dari biasanya, supaya diurutkan sebelum `bet` yang masuk ke blok yang sama (Monad mengurutkan transaksi berdasarkan total gas price menurun).
-- Semua transaksi lewat `txQueue` tunggal dengan `nonceManager` viem. Urutan prioritas: `lockMarkets`, lalu `createMarkets`, lalu `requestResolution`, lalu faucet.
+- `lockMarkets` dikirim dengan priority fee lebih tinggi dari biasanya, supaya diurutkan sebelum `bet` yang masuk ke blok yang sama (Monad mengurutkan transaksi berdasarkan total gas price menurun). Implementasi (`chain/clients.ts`): `maxPriorityFeePerGas = 2 × estimasi + 1 gwei`, `maxFeePerGas = estimasi maxFee + tip`. Angka ini belum ada di SOT.
+- Semua transaksi lewat `txQueue` tunggal dengan `nonceManager` viem, satu transaksi berjalan pada satu waktu. Urutan prioritas: `lockMarkets`, lalu `adminVoid`, lalu `createMarkets`, lalu `requestResolution`, lalu mint faucet. FIFO di dalam jenis yang sama.
 - Setiap transaksi memakai `gas` eksplisit dari `sot/constants.json` (`gas.limits`). Monad menagih gas limit, jadi jangan memakai estimasi berlebih.
 - Retry sekali untuk error nonce atau underpriced.
 
@@ -181,14 +185,19 @@ for await (const ev of resolutionRequestedQueue) {   // konkurensi 1
 
 - `POST /faucet { address }` (onboarding)
   - Mint `FAUCET_USDC_AMOUNT` tUSDC dan kirim `FAUCET_MON_AMOUNT` MON.
-  - Batas: 1 kali per alamat per 24 jam, 5 kali per IP per 24 jam. Simpan di memori (cukup untuk hackathon).
+  - Batas, semua di memori (cukup untuk hackathon) dan berjendela 24 jam:
+    - MON: 1 kali per alamat (`perAddressPer24h`), hanya terhitung kalau MON benar terkirim.
+    - tUSDC: 1 mint per alamat, kuota terpisah dari MON. Request ulang dalam 24 jam (misalnya untuk mencoba MON lagi) tidak me-mint ulang dan mengembalikan `usdcTx` lama.
+    - IP: 5 mint tUSDC baru per IP (`perIpPer24h`).
+  - Kuota direservasi secara sinkron sebelum `await` pertama dan dilepas lagi kalau langkahnya gagal, supaya request paralel tidak bisa melewati batas. Request kedua untuk alamat yang sedang diproses langsung `429`.
   - MON dikirim dari wallet faucet hanya kalau saldonya minimal 10 MON + jumlah kirim (`faucetWalletMinWei`, 10,5 MON). Di bawah itu transfer akan revert karena reserve balance. Dalam kondisi itu: log alert, kirim tUSDC saja, dan **jangan** menghitung kuota alamat (supaya pengguna bisa mencoba lagi untuk MON).
   - Respons dikirim setelah receipt. Akun yang baru didanai baru bisa mengirim transaksi setelah dana berumur 3 blok (sekitar 1,2 detik); frontend yang menunggu, bukan resolver.
   - Isi ulang wallet operasional di testnet: `POST https://agents.devnads.com/v1/faucet` dengan `{"chainId":10143,"address":"0x..."}`.
 - `POST /faucet/gas { address }` (isi ulang gas)
   - Hanya kalau saldo MON alamat itu di bawah `gasTopUpThresholdWei` (0,05 MON).
-  - Kirim `gasTopUpWei` (0,5 MON). Batas `gasTopUpPerAddressPer24h` (3) per alamat, kuota terpisah dari onboarding.
-  - Kalau melewati batas: `429`, UI menampilkan `errors.GAS_TOPUP_LIMIT`.
+  - Kirim `gasTopUpWei` (0,5 MON). Batas `gasTopUpPerAddressPer24h` (3) per alamat dan `perIpPer24h` (5) per IP, kuota terpisah dari onboarding. Reservasi kuota sama seperti onboarding.
+  - Kalau melewati batas: `429`, UI menampilkan `errors.GAS_TOPUP_LIMIT`. Kalau saldo wallet faucet di bawah batas reserve: `429` dengan kode `FAUCET_FAILED`.
+- IP klien diambil dari alamat socket. Hanya kalau `TRUST_PROXY=true`, IP diambil dari entri pertama `X-Forwarded-For` (pakai hanya di belakang proxy tepercaya, karena header itu bisa dipalsukan).
 
 ### 2.10 Replay
 
@@ -243,7 +252,7 @@ Tipe request, respons, error (`ApiError`), dan payload SSE untuk semua route di 
 ```
 
 #### `GET /games/:gameRef`
-`gameRef` di-encode dengan `encodeURIComponent`.
+`gameRef` di-encode dengan `encodeURIComponent`. `404` kalau partai tidak dilacak.
 ```json
 {
   "game": { "...": "seperti di atas", "sans": ["e4", "e5"] },
@@ -284,6 +293,8 @@ Query opsional `?gameRef=...` untuk memfilter satu partai.
 
 Outcome dikirim sebagai string `"YES" | "NO" | "VOID"`.
 
+Field `at` di `ply` adalah waktu kirim dalam **milidetik** (`Date.now()`). Satu update feed bisa membawa beberapa ply sekaligus (misalnya replay yang memuat 20 ply di awal, atau broadcast yang tertinggal); yang dikirim hanya satu event untuk ply terakhir, karena `fen` hanya diketahui untuk posisi terakhir.
+
 #### `GET /positions/:address`
 Posisi alamat itu, disusun dari event `BetPlaced`, `Claimed`, `Refunded`, dan status pasar yang dipantau watcher. Dipakai `/me` sebelum indexer siap, dan sebagai cadangan kalau indexer bermasalah.
 ```json
@@ -299,12 +310,12 @@ Posisi alamat itu, disusun dari event `BetPlaced`, `Claimed`, `Refunded`, dan st
 #### `POST /faucet`
 Request: `{ "address": "0x..." }`
 Response: `{ "usdcTx": "0x...", "monTx": "0x..." | null }`
-Error: `429` kalau melewati limit, `400` kalau alamat tidak valid.
+Error: `429` kalau melewati limit, `400` kalau alamat tidak valid, `503` (kode `FAUCET_FAILED`) kalau faucet tidak aktif (mode terbatas: alamat kontrak atau key wallet belum diisi), `500` (kode `FAUCET_FAILED`) kalau transaksi gagal.
 
 #### `POST /faucet/gas`
 Request: `{ "address": "0x..." }`
 Response: `{ "monTx": "0x..." }`
-Error: `409` kalau saldo MON alamat masih di atas ambang, `429` kalau melewati `gasTopUpPerAddressPer24h`, `400` kalau alamat tidak valid.
+Error: `409` kalau saldo MON alamat masih di atas ambang, `429` kalau melewati kuota alamat atau IP, `400` kalau alamat tidak valid, `503` kalau faucet tidak aktif, `500` kalau transaksi gagal.
 
 ### 3.2 Admin
 
@@ -333,6 +344,7 @@ Daftar env lengkap ada di `docs/ARCHITECTURE.md` bagian 8. Tambahan khusus resol
 | `AUTO_REPLAY_REQUIRES_VIEWER` | `true` | SOT D16 |
 | `VIEWER_GRACE_SEC` | `120` | |
 | `REQUEST_MAX_BATCH` | `8` | SOT D14 |
+| `TRUST_PROXY` | `false` | `false`: IP klien untuk kuota faucet dari alamat socket. `true`: dari entri pertama `X-Forwarded-For`, hanya di belakang proxy tepercaya |
 
 Nilai default di tabel ini dan di `docs/ARCHITECTURE.md` bagian 8 berasal dari `sot/constants.json`. `config.ts` membaca default dari file itu, env hanya untuk override.
 

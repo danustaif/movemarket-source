@@ -216,13 +216,15 @@ Hasil: `sans = ["e4","e5","Nf3","Nc6","Bb5","a6"]`, `ended = true`.
 
 ## 9. Perencana pasar
 
-Fungsi `planMarkets(state, config): MarketParams[]` di `backend/resolver` (bukan di `source/shared`, karena memakai waktu).
+Fungsi `planMarkets(state, markets, nowSec): MarketParams[]` di `backend/resolver/src/markets/planner.ts` (tipe `PlanMarkets` di `backend/resolver/src/contracts.ts`). Letaknya di resolver, bukan di `source/shared`, karena memakai waktu. Fungsinya murni: waktu masuk lewat `nowSec`, `markets` adalah pasar yang sudah diketahui resolver, dan semua parameter dibaca dari `SOT.planner` (`sot/constants.json`), bukan dari env.
 
 Dipanggil setiap ply baru. Membuat batch kalau semua syarat terpenuhi:
+- `currentPly > 0` (tidak pernah spawn di ply 0)
 - `currentPly % SPAWN_EVERY_PLIES === 0`
 - partai belum selesai
 - kontrol waktu didukung: `classical` atau `rapid` (blitz dan bullet tidak didukung di MVP). Cara menentukan kecepatan ada di `docs/SOT.md` bagian 7.4 dan fungsi `classifySpeed`
 - jumlah pasar terbuka untuk partai ini kurang dari `MAX_OPEN_MARKETS_PER_GAME` (12). "Terbuka" berarti `lockTime` masih di masa depan. Pasar yang sudah terkunci tapi belum final (termasuk pasar tanpa stake yang tidak pernah di-request) tidak dihitung
+- belum ada pasar partai ini dengan `fromPly` yang sama (mencegah batch ganda kalau ply yang sama diproses ulang)
 
 Setiap ply baru juga memicu **kunci ply** (SOT D11): untuk setiap pasar partai itu yang masih terbuka, kalau `currentPly >= fromPly - LOCK_LEAD_PLIES` dan `lockTime` belum lewat, masukkan ke panggilan `lockMarkets(ids)`. Panggilan ini didahulukan di antrian transaksi resolver, sebelum `createMarkets`.
 
@@ -236,8 +238,10 @@ Parameter:
 Isi batch:
 - `CHECK ANY`
 - `CAPTURE ANY`
-- `CASTLE WHITE` dengan rentang `2 × WINDOW_PLIES`, hanya kalau Putih belum rokade dan `currentPly < 40`
+- `CASTLE WHITE` dengan rentang `CASTLE_WINDOW_PLIES` (8, yaitu `2 × WINDOW_PLIES`), hanya kalau Putih belum rokade dan `currentPly < CASTLE_MAX_CURRENT_PLY` (40)
 - `CASTLE BLACK` dengan aturan yang sama untuk Hitam
+
+Batch dipotong ke sisa kuota (`MAX_OPEN_MARKETS_PER_GAME` dikurangi jumlah pasar terbuka partai ini) dengan urutan di atas. Kalau sisa kuota 2, hanya `CHECK` dan `CAPTURE` yang dibuat.
 
 ## 10. Teks pertanyaan
 
