@@ -143,8 +143,10 @@ Karena `bet` mensyaratkan `block.timestamp < lockTime`, taruhan yang diurutkan s
 #### `requestResolution(string calldata gameRef, uint256[] calldata ids) external onlyResolver`
 
 - `ids.length` 1 sampai `MAX_RESOLVE_BATCH`, kalau tidak revert `BadBatch()`
-- Setiap pasar wajib ada, `gameKey == keccak256(bytes(gameRef))`, dan `block.timestamp >= lockTime`. Kalau tidak, revert `InvalidMarket(id)`.
-- Pasar yang statusnya sudah bukan `OPEN` (sudah final atau void) **dilewati**, tidak me-revert. Ini supaya retry setelah hasil parsial tetap bisa jalan.
+- Per pasar, cek dijalankan dengan urutan ini:
+  1. Pasar tidak ada, atau `gameKey != keccak256(bytes(gameRef))`: revert `InvalidMarket(id)`.
+  2. Status sudah bukan `OPEN` (sudah final atau void): pasar **dilewati**, tidak me-revert. Ini supaya retry setelah hasil parsial tetap bisa jalan, termasuk pasar yang di-`adminVoid` sebelum `lockTime`.
+  3. Status `OPEN` dan `block.timestamp < lockTime`: revert `InvalidMarket(id)`.
 - Kalau setelah disaring tidak ada pasar `OPEN` tersisa, revert `BadBatch()`.
 - Set `resolutionRequested = true` untuk pasar yang tersisa. Boleh dipanggil ulang untuk retry.
 - Emit `ResolutionRequested(gameKey, gameRef, idsTersisa)`. Workflow CRE hanya memproses id di event.
@@ -298,7 +300,7 @@ Signature persis, selector, dan topic0 ada di `sot/abi.json` dan `docs/SOT.md` b
 | `Bet.t.sol` | Sukses, setelah lockTime ditolak, di bawah minBet, melewati cap, saat pause, dua sisi |
 | `OnReport.t.sol` | Bukan forwarder ditolak, decode benar, skip tiap alasan 1 sampai 5, VOID, pool pemenang kosong, batch 40 di bawah 5 juta gas |
 | `Claim.t.sol` | Perhitungan payout beberapa pengguna, rounding, klaim dua kali, klaim sisi kalah, claimMany melewati yang tidak valid |
-| `RequestResolution.t.sol` | Pasar non-OPEN dilewati, semua non-OPEN revert `BadBatch`, gameKey beda revert, belum lewat lockTime revert, event hanya berisi id tersisa |
+| `RequestResolution.t.sol` | Pasar non-OPEN dilewati (termasuk yang di-void sebelum lockTime), semua non-OPEN revert `BadBatch`, gameKey beda revert, pasar OPEN belum lewat lockTime revert, event hanya berisi id tersisa |
 | `Refund.t.sol` | VOIDED, expired, admin void, refund dua kali, refund setelah claim |
 | `Admin.t.sol` | Owner tidak bisa set outcome, setForwarder, setFeeBps di atas batas, withdrawFees |
 | `Invariant.t.sol` | Handler acak untuk bet, lock, report, claim, refund. Cek invarian 3 sampai 8 |
