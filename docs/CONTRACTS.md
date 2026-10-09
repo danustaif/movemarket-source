@@ -331,7 +331,7 @@ Resolver adalah minter untuk faucet.
 2. Deploy `LiveMarket(token, forwarder, resolver)`.
 3. `MockUSDC.setMinter(resolver, true)`.
 4. Tulis alamat ke `smart-contract/deployments/monad-testnet.json`.
-5. Script `bun run sync:contracts` di root mengisi `addresses.liveMarket`, `addresses.mockUsdc`, `addresses.resolver`, dan `addresses.deployBlock` di `sot/constants.json`, lalu menjalankan `node sot/check.mjs`.
+5. `node script/sync-sot.mjs` (di `smart-contract/`, opsi `--dry-run`) mengisi `addresses.liveMarket`, `addresses.mockUsdc`, `addresses.resolver`, dan `addresses.deployBlock` di `sot/constants.json` serta `liveMarketAddress` di ketiga config CRE (`backend/cre/resolver-workflow/config.*.json`), lalu menjalankan `node sot/check.mjs`.
 6. Bandingkan ABI hasil `forge build` dengan `sot/abi.json` lewat `node script/check-abi.mjs`. Kalau beda, yang salah adalah kontraknya, kecuali perubahan ABI memang disengaja dan SOT sudah diperbarui lebih dulu.
 
 Env:

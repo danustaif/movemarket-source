@@ -43,7 +43,7 @@ Prinsip:
 
 - [ ] Deploy ke Monad Testnet dengan forwarder `MockKeystoneForwarder`, verifikasi lewat API `agents.devnads.com/v1/verify`
 - [ ] Ukur gas semua fungsi dengan `eth_estimateGas` di testnet + 10%, isi `gas.limits` di `sot/constants.json`
-- [ ] `bun run sync:contracts` mengisi alamat di `sot/constants.json`
+- [ ] `node script/sync-sot.mjs` (smart-contract) mengisi alamat di `sot/constants.json` dan config CRE (script siap 10 Okt; runbook `smart-contract/DEPLOY.md`)
 - [x] `cre init --non-interactive` (template `hello-world-ts`, `resolver-workflow`), `bun install`, `bunx cre-setup`, hapus file contoh, baca nama target dari `workflow.yaml`
 - [ ] Target `local-simulation` lulus sebelum target onchain (10 Okt: build WASM dan run di QuickJS sampai validasi trigger; butuh tx `requestResolution` nyata)
 - [ ] Uji `resolve` di dalam workflow (QuickJS menerima `source/shared`)
