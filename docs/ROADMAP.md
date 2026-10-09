@@ -18,7 +18,7 @@ Prinsip:
 - [x] Pulihkan paket dokumen v1
 - [x] Verifikasi data Lichess, alamat forwarder CRE, RPC dan gas Monad, API Mera
 - [x] Buat SOT (`docs/SOT.md`, `sot/`) dan sesuaikan semua dokumen
-- [x] `git init` dan push (10 Okt): empat repo **private** di akun `danustaif` (`movemarket-source`, `-smart-contract`, `-fe`, `-backend`). Buka menjadi publik sebelum submit
+- [x] `git init` dan push (10 Okt): empat repo di akun `danustaif`. `movemarket-backend` dan `movemarket-smart-contract` publik sejak 10 Okt; `movemarket-source` dan `movemarket-fe` masih private, buka sebelum submit (backend dan fe butuh `source` untuk build)
 - [ ] Pasang skill: `chainlink-cre-skill` dan monskills (perintah di SOT bagian 0.5)
 - [x] `cre login`, `cre registry list` (hanya `private` dan `onchain:ethereum-mainnet`), `cre workflow supported-chains` (forwarder cocok SOT), 10 Okt
 - [ ] **Ajukan Early Access** (`cre account access`, interaktif, dijalankan user). Status 10 Okt: Deploy Access belum aktif
