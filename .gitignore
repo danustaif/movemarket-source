@@ -5,3 +5,5 @@ node_modules/
 !.env.example
 design/refs/_to_delete/
 design/refs/SOURCES.md
+design/refs/landing/
+design/refs/raw/
