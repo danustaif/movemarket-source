@@ -65,18 +65,19 @@ Prinsip:
 
 ## Hari 5 (Jum 9 Okt): Frontend inti
 
-- [ ] Vite + React + Tailwind + TanStack Router + Query, deploy ke domain final sejak hari ini
-- [ ] Akun Mera dengan derivasi SOT bagian 12, onboarding, faucet otomatis, unlock setelah reload
-- [ ] Beranda daftar partai, layar partai dengan `LiveBoard` + SSE
-- [ ] `MarketCard`, `Countdown`, `BetPanel`, `useBet` optimistic dan rollback
-- [ ] Semua teks dari `sot/copy.en.json`
+- [x] Vite + React + Tailwind + TanStack Router + Query (10 Okt)
+- [ ] Deploy frontend ke domain final (menunggu domain/rpId)
+- [x] Akun Mera dengan derivasi SOT bagian 12, onboarding, faucet otomatis, unlock setelah reload (diuji dengan vektor; passkey nyata belum)
+- [x] Beranda daftar partai, layar partai dengan `LiveBoard` + SSE
+- [x] `MarketCard`, `Countdown`, `BetPanel`, `useBet` optimistic dan rollback
+- [x] Semua teks dari `sot/copy.en.json` (label layar di bagian `ui`)
 
 **DoD:** pengguna baru membuat akun dan memasang taruhan dari ponsel dalam kurang dari 60 detik.
 
 ## Hari 6 (Sab 10 Okt): Hasil, klaim, live
 
-- [ ] Tampilan hasil sementara dan final, `market_locked`
-- [ ] Halaman `/me`: posisi, claim, claim all, refund (sementara dari `GET /positions/:address` resolver)
+- [x] Tampilan hasil sementara dan final, `market_locked`
+- [x] Halaman `/me`: posisi, claim, claim all, refund (Envio dengan cadangan `GET /positions/:address`; transaksi nyata belum diuji)
 - [x] Ingest broadcast round (sumber live utama)
 - [x] Replay otomatis hanya saat ada penonton
 - [ ] Deploy resolver ke server 24 jam (container berisi CLI `cre` dan proyek `backend/cre/`)
@@ -90,7 +91,7 @@ Prinsip:
 - [ ] Uji dengan broadcast live (pilih turnamen `standard` yang sedang berjalan di `/api/broadcast/top`)
 - [ ] Uji di Safari iOS dan Chrome Android
 - [ ] Minimal 20 pasar final lewat CRE
-- [ ] Polesan visual dengan skill `frontend-design`
+- [ ] Polesan visual dengan skill `frontend-design` (selisih dengan prototype: pool bar vertikal, lower third pasar Open, landing 3D, toggle 2D/3D, dialog detail pasar, konfirmasi Claim all, link tx CRE; bundle 920 kB tanpa code-splitting)
 - [ ] Kalau Early Access keluar: `cre account link-key`, deploy workflow, `cre workflow activate`, `setForwarder(KeystoneForwarder)`, `CRE_MODE=don`, uji ulang
 
 **DoD:** checklist di `docs/FRONTEND.md` dan `docs/CRE_WORKFLOW.md` lengkap.
