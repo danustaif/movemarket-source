@@ -1,6 +1,6 @@
 # Source of Truth: MoveMarket
 
-Versi 2.8.0 · 10 Oktober 2026 · Pemilik: Danu
+Versi 2.9.0 · 10 Oktober 2026 · Pemilik: Danu
 
 Dokumen ini adalah acuan tunggal untuk semua nilai yang dipakai lebih dari satu komponen. Kontrak, workflow CRE, resolver, indexer, dan frontend harus cocok dengan dokumen ini dan folder `sot/`.
 
@@ -431,10 +431,10 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | Alamat forwarder CRE dan chain selector | Terverifikasi dari dokumentasi | 5 Okt | Forwarder Directory |
 | Signature fungsi Mera 0.2.0 | Terverifikasi | 5 Okt | File `.d.ts` paket npm |
 | Alamat forwarder untuk organisasimu | Terverifikasi: org `My Org`, `monad-testnet` selector `2183018362218727504`, mock `0xB9F79d...`, produksi `0xF8344CFd...`, sama dengan SOT | 10 Okt | `cre workflow supported-chains --output json` (CLI 1.33.0) |
-| `resolve.ts` berjalan di QuickJS | Sebagian: WASM ter-build (bundle `@movemarket/shared`) dan berjalan di simulator sampai validasi trigger; `resolve` belum dieksekusi atas data nyata | 10 Okt | `cre workflow build`, `simulate --target local-simulation` |
-| Log trigger CRE di Monad Testnet | Belum | | Simulasi dengan tx nyata |
-| Latensi request sampai final | Belum | | Ukur di simulasi `--broadcast` |
-| Gas nyata semua fungsi | Sebagian: semua kecuali `claim`, `claimManyBase`, `claimManyPerMarket` (butuh pasar RESOLVED lewat report CRE) | 10 Okt | `measure-gas.mjs --write` di Monad Testnet, nonce 3-14 wallet `0x4ac3...8e33` |
+| `resolve.ts` berjalan di QuickJS | Terverifikasi: payload konsensus `1:2,2:1,3:2,4:2,5:2,6:1,7:2` dari export `e9SJcXpJ` sama dengan `resolve()` di Bun atas data on-chain yang sama | 10 Okt | `simulate --target local-simulation` dengan tx `requestResolution` `0x20a3...ab67` |
+| Log trigger CRE di Monad Testnet | Terverifikasi: trigger `ResolutionRequested` (finalized), `getMarkets`, fetch Lichess, konsensus, `--broadcast` lewat MockKeystoneForwarder; 2 pasar RESOLVED, 5 VOID_NO_WINNERS, 1 dilewati | 10 Okt | Report tx `0xb9ee7926662bce84c62e0907087a05ee75c8afdbc79c7b27c1f7fc4e56f013c5` |
+| Latensi request sampai final | Sebagian: satu run `simulate --broadcast` sekitar 9 detik (CLI lokal, bukan DON); latensi dari blok request belum diukur end-to-end dengan runner resolver | 10 Okt | `simulate --broadcast` |
+| Gas nyata semua fungsi | Terverifikasi: `measure-gas.mjs --write` (nonce 3-14 wallet `0x4ac3...8e33`); `claim`/`claimMany` dari `eth_estimateGas` worst case (saldo tUSDC penerima di-override nol) setelah report CRE pertama, +10% | 10 Okt | Monad Testnet |
 | Rancangan CRE dicocokkan dengan `chainlink-cre-skill` v0.0.24 | Terverifikasi | 5 Okt | Review terhadap SKILL.md dan semua `references/` |
 | Rancangan dicocokkan dengan monskills v0.7.2 | Terverifikasi | 5 Okt | Review terhadap `concepts`, `gas`, `scaffold`, `indexer`, `wallet` |
 | Monad Testnet di daftar `chainlink-cre-skill` | Tidak ada di skill | 5 Okt | Pakai halaman dokumentasi CRE |
@@ -446,6 +446,10 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | Sumber MON testnet dalam jumlah besar | Sebagian | 5 Okt | Faucet agen Monad `agents.devnads.com/v1/faucet` (dari monskills), batasnya belum diketahui |
 
 ## 17. Riwayat perubahan
+
+### v2.9.0 (10 Oktober 2026)
+- `gas.limits.claim`, `claimManyBase`, `claimManyPerMarket` diukur di Monad Testnet setelah report CRE pertama (worst case, +10%). Semua `gas.limits` kini terisi; Claim all aktif.
+- Status verifikasi bagian 16: `resolve.ts` di QuickJS dan log trigger CRE di Monad Testnet terverifikasi.
 
 ### v2.8.0 (10 Oktober 2026)
 - `copy.en.json` 2.8.0: `errors.INDEXER_OFFLINE` untuk kegagalan indexer Envio (leaderboard), terpisah dari `RESOLVER_OFFLINE`.

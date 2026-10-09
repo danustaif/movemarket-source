@@ -45,10 +45,10 @@ Prinsip:
 - [x] Ukur gas semua fungsi dengan `eth_estimateGas` di testnet + 10%, isi `gas.limits` di `sot/constants.json` (10 Okt; `claim`/`claimMany` menyusul setelah report CRE pertama)
 - [x] `node script/sync-sot.mjs` (smart-contract) mengisi alamat di `sot/constants.json` dan config CRE (10 Okt)
 - [x] `cre init --non-interactive` (template `hello-world-ts`, `resolver-workflow`), `bun install`, `bunx cre-setup`, hapus file contoh, baca nama target dari `workflow.yaml`
-- [ ] Target `local-simulation` lulus sebelum target onchain (10 Okt: build WASM dan run di QuickJS sampai validasi trigger; butuh tx `requestResolution` nyata)
-- [ ] Uji `resolve` di dalam workflow (QuickJS menerima `source/shared`)
-- [ ] Buat pasar manual dengan `cast`, panggil `requestResolution`, jalankan `simulate` dry run lalu `--broadcast`
-- [ ] Ukur latensi request sampai `MarketResolved` dan gas `onReport` untuk 8 pasar, perbarui `cre.gasLimit`
+- [x] Target `local-simulation` lulus sebelum target onchain (10 Okt, tx `requestResolution` nyata)
+- [x] Uji `resolve` di dalam workflow (QuickJS menerima `source/shared`; hasil sama dengan Bun)
+- [x] Buat pasar (lewat `measure-gas.mjs`), panggil `requestResolution`, jalankan `simulate` dry run lalu `--broadcast` (report tx `0xb9ee...13c5`)
+- [ ] Ukur latensi request sampai `MarketResolved` dan gas `onReport` untuk 8 pasar, perbarui `cre.gasLimit` (10 Okt: `gasLimit` 1.000.000 cukup untuk 7 pasar; receipt Monad mencatat limit, bukan gas terpakai, jadi angka nyata belum ada)
 
 **DoD:** satu batch pasar diselesaikan CRE di testnet, hash transaksi dicatat di `docs/SOT.md` bagian 16.
 
