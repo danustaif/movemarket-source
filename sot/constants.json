@@ -284,9 +284,9 @@
     "limits": {
       "approve": 59230,
       "bet": 185093,
-      "claim": 150000,
-      "claimManyBase": null,
-      "claimManyPerMarket": null,
+      "claim": 142805,
+      "claimManyBase": 97316,
+      "claimManyPerMarket": 46246,
       "refund": 149864,
       "createMarketsBase": 69365,
       "createMarketsPerMarket": 69164,
