@@ -15,7 +15,7 @@ const out = `// File hasil scripts/gen.mjs dari sot/*.json. Jangan diedit tangan
 
 export const LIVE_MARKET_ABI_HR = ${lit([...L.structs, ...Object.values(L.functions).flat(), ...L.events, ...L.errors])} as const;
 
-export const MOCK_USDC_ABI_HR = ${lit(A.mockUsdc.functions)} as const;
+export const MOCK_USDC_ABI_HR = ${lit([...A.mockUsdc.functions, ...A.mockUsdc.errors])} as const;
 
 export const ENUMS = ${lit(Object.fromEntries(Object.entries(C.enums).filter(([k]) => !k.startsWith("_"))))} as const;
 

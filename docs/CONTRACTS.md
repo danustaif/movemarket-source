@@ -315,10 +315,11 @@ Contoh angka untuk test payout:
 ```solidity
 contract MockUSDC is ERC20, Ownable {
     mapping(address => bool) public minters;
+    error NotMinter();
     constructor() ERC20("Test USDC", "tUSDC") Ownable(msg.sender) {}
     function decimals() public pure override returns (uint8) { return 6; }
     function setMinter(address m, bool ok) external onlyOwner;
-    function mint(address to, uint256 amount) external; // hanya minter
+    function mint(address to, uint256 amount) external; // hanya minter, selain itu NotMinter()
 }
 ```
 

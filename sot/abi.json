@@ -1,7 +1,7 @@
 {
   "_meta": {
     "name": "MoveMarket source of truth: ABI LiveMarket dan MockUSDC",
-    "version": "2.2.0",
+    "version": "2.4.0",
     "updated": "2026-10-10",
     "rule": "Human-readable ABI (format viem parseAbi) di bawah adalah kontrak antarmuka. Solidity, indexer, workflow CRE, resolver, dan frontend wajib cocok. Bagian computed dihitung ulang oleh sot/check.mjs; jangan diedit tangan."
   },
@@ -94,7 +94,10 @@
       "function minters(address) view returns (bool)",
       "function decimals() pure returns (uint8)"
     ],
-    "note": "Ditambah fungsi standar ERC20 OpenZeppelin."
+    "errors": [
+      "error NotMinter()"
+    ],
+    "note": "Ditambah fungsi, event, dan error standar ERC20 dan Ownable OpenZeppelin."
   },
   "computed": {
     "functions": {

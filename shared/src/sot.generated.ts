@@ -69,7 +69,8 @@ export const MOCK_USDC_ABI_HR = [
   "function setMinter(address minter, bool ok)",
   "function mint(address to, uint256 amount)",
   "function minters(address) view returns (bool)",
-  "function decimals() pure returns (uint8)"
+  "function decimals() pure returns (uint8)",
+  "error NotMinter()"
 ] as const;
 
 export const ENUMS = {

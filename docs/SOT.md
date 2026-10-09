@@ -1,6 +1,6 @@
 # Source of Truth: MoveMarket
 
-Versi 2.3.0 · 10 Oktober 2026 · Pemilik: Danu
+Versi 2.4.0 · 10 Oktober 2026 · Pemilik: Danu
 
 Dokumen ini adalah acuan tunggal untuk semua nilai yang dipakai lebih dari satu komponen. Kontrak, workflow CRE, resolver, indexer, dan frontend harus cocok dengan dokumen ini dan folder `sot/`.
 
@@ -180,7 +180,7 @@ Event dan topic0 (dihitung ulang oleh `check.mjs`):
 | `ResolverUpdated(address)` | `0x15cd6d20bba01b3fcb790c73829dd07412cbdf689ef818c96a2505889f3736a2` |
 | `FeesWithdrawn(address,uint256)` | `0xc0819c13be868895eb93e40eaceb96de976442fa1d404e5c55f14bb65a8c489a` |
 
-Error: `NotResolver`, `UnauthorizedForwarder`, `InvalidParams`, `InvalidMarket`, `MarketNotOpen`, `BettingClosed`, `AmountTooSmall`, `StakeCapExceeded`, `NotClaimable`, `NothingToClaim`, `AlreadySettled`, `NotRefundable`, `BadReport`, `BadBatch`, `FeeTooHigh`. Selector ada di `sot/abi.json`.
+Error: `NotResolver`, `UnauthorizedForwarder`, `InvalidParams`, `InvalidMarket`, `MarketNotOpen`, `BettingClosed`, `AmountTooSmall`, `StakeCapExceeded`, `NotClaimable`, `NothingToClaim`, `AlreadySettled`, `NotRefundable`, `BadReport`, `BadBatch`, `FeeTooHigh`. Error MockUSDC: `NotMinter`. Selector ada di `sot/abi.json`.
 
 ## 7. Format data partai
 
@@ -436,6 +436,9 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | Sumber MON testnet dalam jumlah besar | Sebagian | 5 Okt | Faucet agen Monad `agents.devnads.com/v1/faucet` (dari monskills), batasnya belum diketahui |
 
 ## 17. Riwayat perubahan
+
+### v2.4.0 (10 Oktober 2026)
+- `sot/abi.json` bagian `mockUsdc` mendapat `errors` berisi `error NotMinter()` (selector `0xf8d2906c`), error yang sudah ada di `MockUSDC.sol` tetapi belum tercatat. `smart-contract/script/check-abi.mjs` kini juga memeriksa MockUSDC. `abi.json` versi 2.4.0.
 
 ### v2.3.0 (10 Oktober 2026)
 - `gas.limits.claimMany` (datar 1.500.000) dipecah menjadi `claimManyBase` dan `claimManyPerMarket`, keduanya null sampai diukur di Monad Testnet setelah report CRE pertama (D22). Sampai itu tombol Claim all menolak kirim dengan error jelas.
