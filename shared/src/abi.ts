@@ -1,8 +1,13 @@
 // ABI bertipe dan encoding yang dipakai lebih dari satu komponen.
 // Memakai viem (aman untuk QuickJS menurut chainlink-cre-skill), tanpa API Node.
-import { decodeAbiParameters, encodeAbiParameters, erc20Abi, keccak256, parseAbi, parseAbiParameters, stringToBytes, type Hex } from "viem";
-import { LIVE_MARKET_ABI_HR, MOCK_USDC_ABI_HR, OUTCOME_CODE } from "./sot.generated.ts";
+import {
+  decodeAbiParameters, encodeAbiParameters, erc20Abi, keccak256, parseAbi, parseAbiParameters, stringToBytes,
+  type ContractFunctionReturnType, type Hex,
+} from "viem";
+import { ENUMS, LIVE_MARKET_ABI_HR, MOCK_USDC_ABI_HR, OUTCOME_CODE } from "./sot.generated.ts";
 import type { ReportOutcomeCode } from "./constants.ts";
+import { encodeConsensusPayload, resolve } from "./resolve.ts";
+import type { MarketSpec, Snapshot } from "./types.ts";
 
 export const liveMarketAbi = parseAbi(LIVE_MARKET_ABI_HR);
 export const mockUsdcAbi = [...erc20Abi, ...parseAbi(MOCK_USDC_ABI_HR)] as const;
@@ -40,3 +45,34 @@ export function parseConsensusPayload(payload: string): { ids: bigint[]; outcome
   }
   return { ids, outcomes };
 }
+
+// ======================================================================= langkah handler CRE
+// Dipakai workflow CRE (backend/cre/resolver-workflow) dan runner mock resolver (SOT D23). CRE_WORKFLOW.md bagian 4.
+
+/** Isi event ResolutionRequested. */
+export interface ResolutionRequest {
+  gameKey: Hex;
+  gameRef: string;
+  ids: readonly bigint[];
+}
+
+/** null kalau batch layak diproses; selain itu catatan alasan berhenti tanpa menulis. */
+export function batchProblem(req: ResolutionRequest, maxMarketsPerReport: number): string | null {
+  if (gameKeyOf(req.gameRef) !== req.gameKey) return "gameKey mismatch";
+  if (req.ids.length === 0) return "empty batch";
+  if (req.ids.length > maxMarketsPerReport) return "batch too large";
+  return null;
+}
+
+/** Satu elemen hasil getMarkets (struct MarketView di sot/abi.json). */
+export type MarketView = ContractFunctionReturnType<typeof liveMarketAbi, "view", "getMarkets">[number];
+
+const STATUS_OPEN = ENUMS.Status.indexOf("OPEN");
+
+/** Hanya pasar OPEN milik partai ini yang ikut di-resolve. */
+export const openViews = (views: readonly MarketView[], gameKey: Hex): MarketView[] =>
+  views.filter((v) => v.status === STATUS_OPEN && v.gameKey.toLowerCase() === gameKey.toLowerCase());
+
+/** Snapshot export -> payload konsensus "id:code,..." (tanpa PENDING). */
+export const consensusPayload = (game: Snapshot, views: readonly MarketView[]): string =>
+  encodeConsensusPayload(views.map((v) => ({ id: v.id, outcome: resolve(game, v as MarketSpec) })));
