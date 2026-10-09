@@ -1,0 +1,1560 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MoveMarket · Prototype</title>
+<script src="./support.js"></script>
+<script src="/_blob/2003b1eee037616f5e55ea6dd1f98d7f"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0d3a35}
+a{color:#ffffff}a:hover{color:#f2c14e}
+::selection{background:#f2c14e;color:#0d3a35}
+button{font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid #f2c14e;outline-offset:2px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border:0;border-radius:4px;font-weight:800;font-size:16px;line-height:1.1;text-decoration:none;transition:background-color .12s ease,box-shadow .12s ease,transform .06s ease;white-space:nowrap}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.btn:disabled{cursor:not-allowed;opacity:.45}
+.btn.lg{min-height:56px;padding:0 28px;font-size:20px;font-weight:900;font-stretch:75%;text-transform:uppercase}
+.btn.sm{min-height:38px;padding:0 14px;font-size:14px}
+.btn.gold{background:#f2c14e;color:#082a26}.btn.gold:hover:not(:disabled){background:#f7d47f}.btn.gold:active:not(:disabled){background:#dca937}
+.btn.dark{background:#082a26;color:#ffffff}.btn.dark:hover:not(:disabled){background:#14463f}
+.btn.ghost{background:transparent;color:#ffffff;box-shadow:inset 0 0 0 2px #2b5c55}.btn.ghost:hover:not(:disabled){box-shadow:inset 0 0 0 2px #a9c7c2;background:rgba(255,255,255,.04)}
+.btn.ghostd{background:transparent;color:#082a26;box-shadow:inset 0 0 0 2px #082a26}.btn.ghostd:hover:not(:disabled){background:#eef4f3}
+.btn.yes{background:#f2c14e;color:#082a26;flex:1 1 0}.btn.yes:hover:not(:disabled){background:#f7d47f}
+.btn.no{background:#ff8a6b;color:#2a0d05;flex:1 1 0}.btn.no:hover:not(:disabled){background:#ffa68e}
+.btn.busy{opacity:1;cursor:progress}
+.link{background:none;border:0;padding:0;color:#ffffff;font-weight:700;text-decoration:underline;text-underline-offset:3px;font-size:15px}.link:hover{color:#f2c14e}
+.linkd{background:none;border:0;padding:0;color:#082a26;font-weight:700;text-decoration:underline;text-underline-offset:3px;font-size:15px}
+.chip{min-height:44px;min-width:52px;padding:0 12px;border-radius:4px;border:0;background:#d6e4e2;color:#082a26;font-weight:800;font-size:16px}.chip:hover{background:#c3d7d4}.chip.on{background:#082a26;color:#ffffff}
+.side{flex:1 1 0;min-height:64px;border-radius:4px;border:2px solid #082a26;background:#ffffff;color:#082a26;font-weight:800;font-size:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.side small{font-weight:600;font-size:13px}.side:hover{background:#f4f7f6}
+.side.yes.on{background:#f2c14e}.side.no.on{background:#ff8a6b}
+.nav{background:none;border:0;color:#a9c7c2;font-weight:700;font-size:15px;padding:8px 12px;border-radius:4px;display:inline-flex;gap:6px;align-items:center}.nav:hover{color:#ffffff;background:rgba(255,255,255,.05)}.nav.on{color:#ffffff;background:#12463f}
+.tab{flex:1 1 0;background:none;border:0;color:#a9c7c2;font-weight:700;font-size:13px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:58px;position:relative}.tab.on{color:#f2c14e}
+.seg{min-height:34px;padding:0 12px;border:0;background:transparent;color:#a9c7c2;font-weight:800;font-size:14px;border-radius:3px}.seg.on{background:#f2c14e;color:#082a26}
+.icon{width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:4px;background:transparent;color:inherit}.icon:hover{background:rgba(127,127,127,.15)}
+.ctl{min-height:32px;padding:0 10px;border-radius:3px;border:1px solid #4a4f4e;background:#232827;color:#e8ecea;font:600 12.5px/1.1 system-ui,sans-serif}.ctl:hover{background:#2f3534}.ctl.on{background:#e8ecea;color:#151918;border-color:#e8ecea}
+.amt{width:100%;box-sizing:border-box;min-height:52px;border-radius:4px;border:2px solid #9fb9b5;padding:0 64px 0 14px;font:800 22px/1 Archivo,system-ui,sans-serif;color:#082a26;background:#ffffff;font-variant-numeric:tabular-nums}.amt:focus{border-color:#082a26;outline:3px solid #f2c14e;outline-offset:1px}.amt.bad{border-color:#c4302b}
+.mcard{background:#12463f;border-radius:6px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.spin{animation:mmspin .9s linear infinite}
+@keyframes mmspin{to{transform:rotate(360deg)}}
+@keyframes mmup{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}
+.pop{animation:mmup .16s ease-out}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #0d3a35; color: #ffffff; font-family: Archivo, system-ui, sans-serif; font-size: 16px; line-height: 1.45; font-variant-numeric: tabular-nums">
+
+<sc-if value="{{isLanding}}" hint-placeholder-val="{{true}}">
+<dc-import name="L2-OnAir3D" layout="{{landingLayout}}" on-start="{{onStart}}" hint-size="100%,1900px"></dc-import>
+</sc-if>
+
+<sc-if value="{{isApp}}" hint-placeholder-val="{{false}}">
+<div style="min-height: 100vh; display: flex; flex-direction: column; padding-bottom: {{tabPad}}">
+
+<header style="position: sticky; top: 0; z-index: 20; background: #082a26">
+<div style="max-width: 1380px; margin: 0 auto; padding: 0 {{gutter}}; min-height: 60px; display: flex; align-items: center; gap: 12px 26px; position: relative">
+<button type="button" onClick="{{goLanding}}" style="border: 0; background: none; padding: 0; color: #ffffff; text-align: left; font-weight: 800; font-size: 22px; font-stretch: 75%; text-transform: uppercase; letter-spacing: 0.02em">MoveMarket <span style="color: #f2c14e">Live</span></button>
+<sc-if value="{{wide}}" hint-placeholder-val="{{true}}">
+<nav aria-label="Main" style="display: flex; gap: 6px; align-items: center">
+<button type="button" class="{{navGames}}" aria-current="{{gamesCurrent}}" onClick="{{goHome}}">Games</button>
+<button type="button" class="{{navMe}}" aria-current="{{meCurrent}}" onClick="{{goMe}}">Positions<sc-if value="{{hasClaimBadge}}" hint-placeholder-val="{{false}}"><span style="min-width: 20px; height: 20px; padding: 0 5px; box-sizing: border-box; border-radius: 10px; background: #f2c14e; color: #082a26; font-size: 12px; font-weight: 900; display: inline-flex; align-items: center; justify-content: center">{{claimBadge}}</span></sc-if></button>
+</nav>
+</sc-if>
+<div style="flex: 1 1 auto"></div>
+<span style="font-size: 13px; font-weight: 700; color: #082a26; background: #a9c7c2; padding: 3px 8px; border-radius: 2px; white-space: nowrap">Monad Testnet</span>
+<sc-if value="{{acctNone}}" hint-placeholder-val="{{true}}"><button type="button" class="btn gold sm" onClick="{{createAcct}}">Create account</button></sc-if>
+<sc-if value="{{acctLocked}}" hint-placeholder-val="{{false}}"><button type="button" class="btn gold sm" onClick="{{unlock}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2.2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="2.2"></path></svg><sc-if value="{{wide}}" hint-placeholder-val="{{true}}"><span>Unlock with passkey</span></sc-if><sc-if value="{{narrow}}" hint-placeholder-val="{{false}}"><span>Unlock</span></sc-if></button></sc-if>
+<sc-if value="{{acctActive}}" hint-placeholder-val="{{false}}">
+<button type="button" onClick="{{toggleMenu}}" aria-expanded="{{menuExpanded}}" aria-haspopup="dialog" style="display: flex; align-items: center; gap: 10px; min-height: 42px; padding: 0 6px 0 12px; border: 0; border-radius: 4px; background: #12463f; color: #ffffff; font-weight: 800; font-size: 15px">
+<span>{{usdc}} <span style="font-weight: 600; color: #a9c7c2">tUSDC</span></span>
+<span style="display: inline-flex; align-items: center; gap: 6px; padding: 5px 8px; border-radius: 3px; background: #f2c14e; color: #082a26; font-size: 13px"><sc-if value="{{wide}}" hint-placeholder-val="{{true}}"><span>{{addr}}</span></sc-if><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5l3.5 3.5 3.5-3.5" stroke="currentColor" stroke-width="2" fill="none"></path></svg></span>
+</button>
+</sc-if>
+
+<sc-if value="{{menuOpen}}" hint-placeholder-val="{{false}}">
+<div role="dialog" aria-label="Account" class="pop" style="position: absolute; right: {{gutter}}; top: 62px; width: 300px; max-width: calc(100vw - 32px); background: #ffffff; color: #082a26; border-radius: 6px; box-shadow: 0 18px 50px rgba(0,0,0,.35); z-index: 30; overflow: hidden">
+<div style="padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid #dfe8e6"><div><div style="font-size: 13px; color: #3d5c58; font-weight: 600">Passkey account</div><div style="font-weight: 800; font-size: 17px">{{addr}}</div></div><button type="button" class="btn ghostd sm" onClick="{{copyAddr}}">Copy</button></div>
+<div style="padding: 12px 16px; display: flex; flex-direction: column; gap: 6px; font-size: 15px">
+<div style="display: flex; justify-content: space-between"><span>tUSDC</span><b>{{usdc}}</b></div>
+<div style="display: flex; justify-content: space-between"><span>MON for gas</span><b>{{mon}}</b></div>
+<span style="font-size: 13px; color: #3d5c58">Gas refills by itself when it runs low, up to 3 times a day.</span>
+</div>
+<div style="padding: 0 16px 16px; display: flex; flex-direction: column; gap: 10px"><button type="button" class="btn gold" onClick="{{getTokens}}">Get test tokens</button><a href="https://testnet.monadexplorer.com" target="_blank" rel="noopener" class="linkd" style="text-align: center">View on Monad explorer</a></div>
+</div>
+</sc-if>
+</div>
+</header>
+
+<sc-if value="{{offline}}" hint-placeholder-val="{{false}}">
+<div role="status" style="background: #ffd27a; color: #082a26"><div style="max-width: 1380px; margin: 0 auto; padding: 10px {{gutter}}; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3l10 18H2L12 3z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"></path><path d="M12 10v5M12 18v.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path></svg><b>Live data is temporarily unavailable.</b><span style="font-size: 14px">The board is paused. Markets and final results still come from the chain.</span></div></div>
+</sc-if>
+<sc-if value="{{reconnecting}}" hint-placeholder-val="{{false}}">
+<div role="status" style="background: #12463f"><div style="max-width: 1380px; margin: 0 auto; padding: 10px {{gutter}}; display: flex; gap: 10px; align-items: center; font-weight: 700"><svg class="spin" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" opacity=".25"></circle><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path></svg>Reconnecting...</div></div>
+</sc-if>
+<sc-if value="{{sessionEnded}}" hint-placeholder-val="{{false}}">
+<div role="status" style="background: #ffffff; color: #082a26"><div style="max-width: 1380px; margin: 0 auto; padding: 10px {{gutter}}; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2.2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="2.2"></path></svg><b style="flex: 1 1 240px">Your session ended. Unlock with your passkey again.</b><button type="button" class="btn dark sm" onClick="{{unlock}}">Unlock with passkey</button></div></div>
+</sc-if>
+
+<main style="flex: 1 1 auto; width: 100%; max-width: 1380px; margin: 0 auto; box-sizing: border-box; padding: {{mainPad}}">
+
+<sc-if value="{{isOnb}}" hint-placeholder-val="{{false}}">
+<section aria-labelledby="onb-h" style="max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h1 id="onb-h" style="margin: 0; font-weight: 900; font-stretch: 70%; text-transform: uppercase; font-size: {{onbH}}; line-height: 0.95">Create your account</h1>
+<p style="margin: 0; font-size: 17px; color: #d3e5e2; font-weight: 500">Use Face ID, Touch ID or your screen lock. No seed phrase, no extension. Everything runs on Monad Testnet and test tokens have no value.</p>
+<sc-if value="{{onbIntent}}" hint-placeholder-val="{{false}}"><p style="margin: 0; font-size: 15px; font-weight: 700; color: #f2c14e">Your pick is saved. We take you back to it when the account is ready.</p></sc-if>
+</div>
+<ol aria-label="Setup progress" style="list-style: none; margin: 0; padding: 0; background: #12463f; border-radius: 6px; overflow: hidden">
+<sc-for list="{{onbSteps}}" as="st" hint-placeholder-count="3">
+<li style="display: flex; gap: 14px; padding: 16px; border-top: 1px solid #1d5a51; align-items: flex-start">
+<span style="flex: none; width: 30px; height: 30px; border-radius: 50%; background: {{st.dotBg}}; color: {{st.dotFg}}; display: inline-flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px"><sc-if value="{{st.done}}" hint-placeholder-val="{{false}}"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-label="Done"><path d="M3.5 8.5l3 3 6-7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path></svg></sc-if><sc-if value="{{st.fail}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 14 14" aria-label="Failed"><path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path></svg></sc-if>{{st.mark}}</span>
+<div style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 4px">
+<span style="font-weight: 800; font-size: 17px">{{st.title}}</span>
+<span style="font-size: 14px; color: #c3dad6; font-weight: 500">{{st.detail}}</span>
+<sc-if value="{{st.busy}}" hint-placeholder-val="{{false}}"><span style="margin-top: 6px; display: flex; height: 6px; border-radius: 3px; background: #0a302b; overflow: hidden"><span style="width: {{st.progress}}; background: #f2c14e; transition: width .3s"></span></span></sc-if>
+</div>
+</li>
+</sc-for>
+</ol>
+<sc-if value="{{hasOnbErr}}" hint-placeholder-val="{{false}}">
+<div role="alert" style="display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border-radius: 6px; background: #3b1416; color: #ffd2cf; box-shadow: inset 0 0 0 1px #7a2a2d"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="flex: none; margin-top: 1px"><circle cx="12" cy="12" r="10" stroke="#ff9c94" stroke-width="2.2"></circle><path d="M12 7v6M12 16.5v.5" stroke="#ff9c94" stroke-width="2.4" stroke-linecap="round"></path></svg><span style="font-weight: 600">{{onbErr}}</span></div>
+</sc-if>
+<div style="display: flex; flex-direction: column; gap: 12px">
+<sc-if value="{{onbIntro}}" hint-placeholder-val="{{true}}"><button type="button" class="btn gold lg" onClick="{{createPasskey}}">Create account</button></sc-if>
+<sc-if value="{{onbFaucetFail}}" hint-placeholder-val="{{false}}"><button type="button" class="btn gold lg" onClick="{{retryFaucet}}">Try again</button></sc-if>
+<sc-if value="{{onbBusy}}" hint-placeholder-val="{{false}}"><button type="button" class="btn gold lg busy" disabled="{{true}}"><svg class="spin" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" opacity=".25"></circle><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path></svg>Setting up</button></sc-if>
+<sc-if value="{{onbReady}}" hint-placeholder-val="{{false}}"><button type="button" class="btn gold lg" onClick="{{finishOnb}}">{{readyCta}}</button></sc-if>
+<button type="button" class="link" onClick="{{watchFirst}}" style="align-self: center">Watch the game first</button>
+</div>
+<p style="margin: 0; font-size: 13px; color: #a9c7c2">Your passkey is saved by iCloud Keychain, Google Password Manager or 1Password. The private key is never stored; you unlock once per visit.</p>
+</section>
+</sc-if>
+
+<sc-if value="{{isHome}}" hint-placeholder-val="{{false}}">
+<section aria-labelledby="home-h" style="display: flex; flex-direction: column; gap: 22px">
+<div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap"><h1 id="home-h" style="margin: 0; font-weight: 900; font-stretch: 70%; text-transform: uppercase; font-size: {{h1Size}}; line-height: 1">Games</h1><span style="color: #a9c7c2; font-size: 15px">Live games come first. A replay runs when none is live.</span></div>
+<sc-if value="{{restarting}}" hint-placeholder-val="{{false}}">
+<div role="status" style="display: flex; align-items: center; gap: 12px; padding: 18px; border-radius: 6px; background: #12463f; font-weight: 800; font-size: 18px"><svg class="spin" width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" opacity=".25"></circle><path d="M21 12a9 9 0 0 0-9-9" stroke="#f2c14e" stroke-width="3" stroke-linecap="round"></path></svg>Starting a replay...</div>
+</sc-if>
+<sc-if value="{{notRestarting}}" hint-placeholder-val="{{true}}">
+<article aria-label="Table 1" style="display: flex; flex-wrap: wrap; gap: 0; background: #12463f; border-radius: 6px; overflow: hidden">
+<button type="button" onClick="{{goGame}}" aria-label="Open table 1" style="flex: 0 0 {{miniBoard}}; border: 0; padding: 0; background: #0a302b; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); grid-template-rows: repeat(8, minmax(0, 1fr)); aspect-ratio: 1 / 1; width: {{miniBoard}}">
+<sc-for list="{{squares}}" as="sq" hint-placeholder-count="64"><span style="position: relative; background: {{sq.bg}}"><sc-if value="{{sq.has}}" hint-placeholder-val="{{false}}"><img src="{{sq.src}}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%"></sc-if></span></sc-for>
+</button>
+<div style="flex: 1 1 320px; padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; min-width: 0">
+<div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap"><span style="font-weight: 800; font-stretch: 70%; text-transform: uppercase; font-size: 13px; letter-spacing: 0.06em; background: #a9c7c2; color: #082a26; padding: 2px 7px; border-radius: 2px">Replay</span><h2 style="margin: 0; font-weight: 900; font-stretch: 72%; text-transform: uppercase; font-size: 30px; line-height: 1">Table 1</h2></div>
+<div style="display: flex; flex-direction: column; gap: 4px; font-size: 17px"><span><b>bullet_baron</b> <span style="color: #a9c7c2">2826 · White</span></span><span><b>nocturne_qd</b> <span style="color: #a9c7c2">2959 · Black</span></span></div>
+<sc-if value="{{gameLive}}" hint-placeholder-val="{{true}}"><span style="color: #d3e5e2">Move {{move}} · ply {{ply}} · last {{lastSan}} · {{openCount}} open markets</span></sc-if>
+<sc-if value="{{gameOver}}" hint-placeholder-val="{{false}}"><span style="color: #d3e5e2">Finished · White wins by checkmate, 1-0</span></sc-if>
+<div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: auto">
+<sc-if value="{{gameLive}}" hint-placeholder-val="{{true}}"><button type="button" class="btn gold" onClick="{{goGame}}">Watch and predict</button></sc-if>
+<sc-if value="{{gameOver}}" hint-placeholder-val="{{false}}"><button type="button" class="btn gold" onClick="{{restart}}">Watch the replay again</button><button type="button" class="btn ghost" onClick="{{goGame}}">See results</button></sc-if>
+</div>
+</div>
+</article>
+</sc-if>
+<section aria-labelledby="open-h" style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px"><h2 id="open-h" style="margin: 0; font-weight: 900; font-stretch: 72%; text-transform: uppercase; font-size: 26px">Open now</h2><span style="color: #a9c7c2; font-size: 14px">Next batch at ply {{nextSpawn}}</span></div>
+<sc-if value="{{noOpen}}" hint-placeholder-val="{{false}}"><div style="padding: 18px; border-radius: 6px; background: #0a302b; color: #d3e5e2">Nothing open right now. New markets open every 4 plies, the next at ply {{nextSpawn}}.</div></sc-if>
+<div style="display: grid; grid-template-columns: {{homeCols}}; gap: 10px">
+<sc-for list="{{homeOpen}}" as="c" hint-placeholder-count="2">
+<div class="mcard">
+<div style="display: flex; justify-content: space-between; gap: 10px; align-items: center"><span style="font-weight: 900; font-stretch: 75%; font-size: 15px; padding: 3px 8px; border-radius: 2px; background: {{c.stBg}}; color: {{c.stFg}}">{{c.status}}</span><span style="font-size: 14px; color: #a9c7c2">Table 1 · {{c.pool}} tUSDC pooled</span></div>
+<b style="font-size: 18px; line-height: 1.25">{{c.q}}</b>
+<div style="display: flex; gap: 8px"><button type="button" class="btn yes" onClick="{{c.pickYes}}" disabled="{{c.closing}}">Yes {{c.yesPct}}%</button><button type="button" class="btn no" onClick="{{c.pickNo}}" disabled="{{c.closing}}">No {{c.noPct}}%</button></div>
+</div>
+</sc-for>
+</div>
+</section>
+<section aria-labelledby="past-h" style="display: flex; flex-direction: column; gap: 8px">
+<h2 id="past-h" style="margin: 0; font-weight: 900; font-stretch: 72%; text-transform: uppercase; font-size: 22px; color: #d3e5e2">Earlier today</h2>
+<div style="display: flex; flex-direction: column; gap: 3px; font-size: 15px">
+<div style="display: flex; flex-wrap: wrap; gap: 4px 16px; padding: 12px 14px; background: #0a302b; border-radius: 3px"><b>Table 2 · Rapid 10+0</b><span style="color: #a9c7c2">e4_enjoyer vs quiet_bishop · ½-½ · 18 markets settled</span></div>
+<div style="display: flex; flex-wrap: wrap; gap: 4px 16px; padding: 12px 14px; background: #0a302b; border-radius: 3px"><b>Table 3 · Classical 30+20</b><span style="color: #a9c7c2">rookhouse vs lateknight · 0-1 · 34 markets settled</span></div>
+</div>
+</section>
+</section>
+</sc-if>
+
+<sc-if value="{{isGame}}" hint-placeholder-val="{{false}}">
+<section aria-labelledby="game-h" style="display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px">
+<span style="font-weight: 800; font-stretch: 70%; text-transform: uppercase; font-size: 13px; letter-spacing: 0.06em; background: #a9c7c2; color: #082a26; padding: 3px 8px; border-radius: 2px">Replay</span>
+<h1 id="game-h" style="margin: 0; font-size: {{gameH}}; font-weight: 900; font-stretch: 72%; text-transform: uppercase; line-height: 1">Table 1</h1>
+<span style="color: #d3e5e2">Move {{move}} · ply {{ply}}</span>
+<sc-if value="{{gameLive}}" hint-placeholder-val="{{true}}"><span style="display: inline-flex; align-items: center; gap: 8px; font-size: 14px; color: #a9c7c2">next ply <span aria-hidden="true" style="width: 70px; height: 5px; border-radius: 3px; background: #0a302b; overflow: hidden; display: inline-flex"><span style="width: {{plyProgress}}; background: #a9c7c2"></span></span></span></sc-if>
+</div>
+
+<sc-if value="{{gameOver}}" hint-placeholder-val="{{false}}">
+<div role="status" style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 16px 18px; border-radius: 6px; background: #ffffff; color: #082a26">
+<div style="flex: 1 1 320px; display: flex; flex-direction: column; gap: 2px"><b style="font-weight: 900; font-stretch: 72%; text-transform: uppercase; font-size: 26px; line-height: 1">Game over · 1-0</b><span>White wins by checkmate on ply 59 (Qxb7#). Markets that reach past ply 59 are voided and refunded.</span></div>
+<button type="button" class="btn dark" onClick="{{goMe}}">Go to positions</button>
+<button type="button" class="btn ghostd" onClick="{{restart}}">Watch the replay again</button>
+</div>
+</sc-if>
+
+<div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start">
+<div style="flex: 1 1 440px; max-width: {{boardMax}}; min-width: 0; display: flex; flex-direction: column; gap: 8px">
+<div style="display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 4px; background: #12463f; box-shadow: {{bRing}}"><span style="width: 14px; height: 14px; border-radius: 2px; background: #1c2322; box-shadow: inset 0 0 0 1px #5d8580"></span><b>nocturne_qd</b><span style="color: #a9c7c2; font-size: 14px">2959</span><span style="margin-left: auto; font-size: 13px; color: #c3dad6">took {{capB}}</span><sc-if value="{{hasMatB}}" hint-placeholder-val="{{false}}"><b style="font-size: 14px">{{matB}}</b></sc-if></div>
+<div style="position: relative">
+<sc-if value="{{view2d}}" hint-placeholder-val="{{true}}">
+<div role="img" aria-label="Board after {{lastSan}}, ply {{ply}}" style="display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); grid-template-rows: repeat(8, minmax(0, 1fr)); aspect-ratio: 1 / 1; border-radius: 4px; overflow: hidden">
+<sc-for list="{{squares}}" as="sq" hint-placeholder-count="64"><div style="position: relative; background: {{sq.bg}}"><sc-if value="{{sq.has}}" hint-placeholder-val="{{false}}"><img src="{{sq.src}}" alt="{{sq.alt}}" style="position: absolute; inset: 0; width: 100%; height: 100%"></sc-if><span aria-hidden="true" style="position: absolute; left: 3px; top: 1px; font-size: 11px; font-weight: 800; color: {{sq.lblColor}}">{{sq.rank}}</span><span aria-hidden="true" style="position: absolute; right: 3px; bottom: 0; font-size: 11px; font-weight: 800; color: {{sq.lblColor}}">{{sq.file}}</span></div></sc-for>
+</div>
+</sc-if>
+<sc-if value="{{view3d}}" hint-placeholder-val="{{false}}"><div style="aspect-ratio: 1 / 1; border-radius: 4px; background: #0a302b; overflow: hidden; position: relative"><canvas ref="{{canvasRef}}" tabindex="0" aria-label="3D board after {{lastSan}}, ply {{ply}}. Drag or use the arrow keys to turn it." style="display: block; width: 100%; height: 100%; touch-action: pan-y; cursor: grab"></canvas><span aria-hidden="true" style="position: absolute; left: 10px; bottom: 8px; font-size: 12px; font-weight: 600; color: #a9c7c2; pointer-events: none">Drag to turn · double-click to reset</span></div></sc-if>
+<sc-if value="{{offline}}" hint-placeholder-val="{{false}}"><div style="position: absolute; inset: 0; background: rgba(8,42,38,.55); display: flex; align-items: center; justify-content: center; border-radius: 4px"><span style="background: #ffd27a; color: #082a26; font-weight: 800; padding: 8px 12px; border-radius: 4px">Board paused at ply {{ply}}</span></div></sc-if>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 4px; background: #12463f; box-shadow: {{wRing}}"><span style="width: 14px; height: 14px; border-radius: 2px; background: #f1ecdf"></span><b>bullet_baron</b><span style="color: #a9c7c2; font-size: 14px">2826</span><span style="margin-left: auto; font-size: 13px; color: #c3dad6">took {{capW}}</span><sc-if value="{{hasMatW}}" hint-placeholder-val="{{false}}"><b style="font-size: 14px">{{matW}}</b></sc-if></div>
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap">
+<div role="group" aria-label="Board view" style="display: inline-flex; gap: 2px; padding: 3px; border-radius: 4px; background: #0a302b"><button type="button" class="{{b2Cls}}" onClick="{{set2d}}" aria-pressed="{{view2dPressed}}">2D</button><button type="button" class="{{b3Cls}}" onClick="{{set3d}}" aria-pressed="{{view3dPressed}}">3D</button></div>
+<span style="font-size: 14px; color: #a9c7c2">{{toMove}}</span>
+</div>
+<ol aria-label="Recent plies" style="list-style: none; margin: 0; padding: 0; display: flex; gap: 4px; overflow-x: auto">
+<sc-for list="{{moves}}" as="mvx" hint-placeholder-count="8"><li style="flex: none; display: flex; flex-direction: column; gap: 1px; padding: 6px 9px; border-radius: 3px; background: {{mvx.bg}}; color: {{mvx.fg}}; font-size: 14px"><span style="font-size: 11px; font-weight: 700; opacity: .75">ply {{mvx.ply}}</span><b>{{mvx.label}}</b><sc-if value="{{mvx.hasTag}}" hint-placeholder-val="{{false}}"><span style="font-size: 11px; font-weight: 800; text-transform: uppercase; font-stretch: 75%">{{mvx.tag}}</span></sc-if></li></sc-for>
+</ol>
+</div>
+
+<div style="flex: 1 1 340px; min-width: 0; display: flex; flex-direction: column; gap: 18px">
+<section aria-labelledby="mo-h" style="display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: baseline; justify-content: space-between; gap: 10px"><h2 id="mo-h" style="margin: 0; font-weight: 900; font-stretch: 72%; text-transform: uppercase; font-size: 28px">Open now <span style="color: #a9c7c2">{{openCount}}</span></h2><sc-if value="{{gameLive}}" hint-placeholder-val="{{true}}"><span style="font-size: 14px; color: #a9c7c2">Next batch at ply {{nextSpawn}}</span></sc-if></div>
+<sc-if value="{{noOpen}}" hint-placeholder-val="{{false}}"><div style="padding: 16px; border-radius: 6px; background: #0a302b; color: #d3e5e2; font-size: 15px">{{noOpenText}}</div></sc-if>
+<sc-for list="{{open}}" as="c" hint-placeholder-count="2">
+<article class="mcard" style="box-shadow: inset 0 0 0 2px #2b5c55">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px"><span style="font-weight: 900; font-stretch: 75%; font-size: 15px; padding: 3px 8px; border-radius: 2px; background: {{c.clockColor}}; color: #082a26">{{c.status}}</span><span style="font-size: 14px; color: #a9c7c2">{{c.pool}} tUSDC pooled</span></div>
+<h3 style="margin: 0; font-size: 20px; line-height: 1.3; font-weight: 800">{{c.q}}</h3>
+<div aria-hidden="true" style="display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: #ff8a6b"><span style="width: {{c.yesW}}; background: #f2c14e"></span></div>
+<div style="display: flex; gap: 8px">
+<button type="button" class="btn yes" onClick="{{c.pickYes}}" disabled="{{c.closing}}" style="flex-direction: column; gap: 0; min-height: 54px"><span>Yes {{c.yesPct}}%</span><small style="font-weight: 700; font-size: 12px">pays {{c.oddsYes}}</small></button>
+<button type="button" class="btn no" onClick="{{c.pickNo}}" disabled="{{c.closing}}" style="flex-direction: column; gap: 0; min-height: 54px"><span>No {{c.noPct}}%</span><small style="font-weight: 700; font-size: 12px">pays {{c.oddsNo}}</small></button>
+</div>
+<sc-if value="{{c.hasMine}}" hint-placeholder-val="{{false}}"><span style="font-size: 14px; font-weight: 700; color: #f2c14e">Your stake: {{c.mine}} tUSDC</span></sc-if>
+</article>
+</sc-for>
+</section>
+
+<section aria-labelledby="mp-h" style="display: flex; flex-direction: column; gap: 8px">
+<h2 id="mp-h" style="margin: 0; font-weight: 900; font-stretch: 72%; text-transform: uppercase; font-size: 26px">In play <span style="color: #a9c7c2">{{inPlayCount}}</span></h2>
+<sc-if value="{{noInPlay}}" hint-placeholder-val="{{false}}"><span style="color: #a9c7c2; font-size: 15px">Locked markets wait here for their plies.</span></sc-if>
+<sc-for list="{{inPlay}}" as="c" hint-placeholder-count="2">
+<article class="mcard" style="gap: 8px">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px"><span style="font-weight: 900; font-stretch: 75%; font-size: 15px; padding: 3px 8px; border-radius: 2px; background: {{c.stBg}}; color: {{c.stFg}}">{{c.status}}</span><button type="button" class="link" onClick="{{c.openDetail}}" style="font-size: 14px">Details</button></div>
+<b style="font-size: 16px; line-height: 1.3">{{c.q}}</b>
+<span style="font-size: 14px; color: #c3dad6">{{c.note}}</span>
+<div style="display: flex; justify-content: space-between; gap: 10px; font-size: 14px"><span><span style="color: #f2c14e; font-weight: 800">Yes {{c.yes}}</span> · <span style="color: #ff8a6b; font-weight: 800">No {{c.no}}</span> tUSDC</span><sc-if value="{{c.hasMine}}" hint-placeholder-val="{{false}}"><b style="color: #f2c14e">You: {{c.mine}}</b></sc-if></div>
+</article>
+</sc-for>
+</section>
+
+<section aria-labelledby="mr-h" style="display: flex; flex-direction: column; gap: 8px">
+<h2 id="mr-h" style="margin: 0; font-weight: 900; font-stretch: 72%; text-transform: uppercase; font-size: 26px">Results <span style="color: #a9c7c2">{{settledCount}}</span></h2>
+<sc-if value="{{noSettled}}" hint-placeholder-val="{{false}}"><span style="color: #a9c7c2; font-size: 15px">Final results from Chainlink CRE land here.</span></sc-if>
+<sc-for list="{{settled}}" as="c" hint-placeholder-count="2">
+<article class="mcard" style="gap: 8px; background: {{c.cardBg}}">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 10px"><span style="font-weight: 900; font-stretch: 75%; font-size: 15px; padding: 3px 8px; border-radius: 2px; background: {{c.stBg}}; color: {{c.stFg}}; box-shadow: inset 0 0 0 1px #2b5c55">{{c.status}}</span><button type="button" class="link" onClick="{{c.openDetail}}" style="font-size: 14px">Details</button></div>
+<b style="font-size: 16px; line-height: 1.3">{{c.short}}</b>
+<span style="font-size: 14px; color: #c3dad6">{{c.note}}</span>
+<sc-if value="{{c.hasResult}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap"><b style="color: {{c.resultColor}}">{{c.result}}</b>
+<sc-if value="{{c.canClaim}}" hint-placeholder-val="{{false}}"><button type="button" class="btn gold sm" onClick="{{c.doClaim}}" disabled="{{c.busy}}"><sc-if value="{{c.busy}}" hint-placeholder-val="{{false}}"><svg class="spin" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" opacity=".25"></circle><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path></svg></sc-if>Claim</button></sc-if>
+<sc-if value="{{c.canRefund}}" hint-placeholder-val="{{false}}"><button type="button" class="btn ghost sm" onClick="{{c.doRefund}}" disabled="{{c.busy}}"><sc-if value="{{c.busy}}" hint-placeholder-val="{{false}}"><svg class="spin" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" opacity=".25"></circle><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path></svg></sc-if>Refund</button></sc-if>
+</div>
+</sc-if>
+</article>
+</sc-for>
+</section>
+</div>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{isMe}}" hint-placeholder-val="{{false}}">
+<section aria-labelledby="me-h" style="display: flex; flex-direction: column; gap: 22px">
+<h1 id="me-h" style="margin: 0; font-weight: 900; font-stretch: 70%; text-transform: uppercase; font-size: {{h1Size}}; line-height: 1">Positions</h1>
+<sc-if value="{{acctNone}}" hint-placeholder-val="{{false}}">
+<div style="padding: 22px; border-radius: 6px; background: #12463f; display: flex; flex-direction: column; gap: 12px; align-items: flex-start"><b style="font-size: 20px">No account on this device yet.</b><span style="color: #d3e5e2">Create one with your passkey to stake, claim and see your positions here.</span><button type="button" class="btn gold" onClick="{{createAcct}}">Create account</button></div>
+</sc-if>
+<sc-if value="{{hasAcct}}" hint-placeholder-val="{{true}}">
+<div style="display: grid; grid-template-columns: {{meCols}}; gap: 12px">
+<div style="padding: 18px; border-radius: 6px; background: #12463f; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; color: #a9c7c2; font-weight: 600">Balance</span>
+<b style="font-weight: 900; font-stretch: 75%; font-size: 40px; line-height: 1">{{usdc}} <span style="font-size: 20px; color: #a9c7c2">tUSDC</span></b>
+<span style="font-size: 14px; color: #c3dad6">{{mon}} MON for gas</span>
+<button type="button" class="btn ghost sm" onClick="{{getTokens}}" style="align-self: flex-start; margin-top: 6px">Get test tokens</button>
+</div>
+<div style="padding: 18px; border-radius: 6px; background: #f2c14e; color: #082a26; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 14px; font-weight: 700">Ready to claim</span>
+<b style="font-weight: 900; font-stretch: 75%; font-size: 40px; line-height: 1">{{claimSum}} <span style="font-size: 20px">tUSDC</span></b>
+<span style="font-size: 14px; font-weight: 600">{{claimCount}} winning positions · {{refundSum}} tUSDC to refund</span>
+<button type="button" class="btn dark sm" onClick="{{openClaimAll}}" disabled="{{claimAllDisabled}}" style="align-self: flex-start; margin-top: 6px">Claim all</button>
+</div>
+<div style="padding: 18px; border-radius: 6px; background: #12463f; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; align-content: center">
+<div><span style="font-size: 13px; color: #a9c7c2">Staked</span><div style="font-weight: 900; font-stretch: 75%; font-size: 26px">{{staked}}</div></div>
+<div><span style="font-size: 13px; color: #a9c7c2">Won</span><div style="font-weight: 900; font-stretch: 75%; font-size: 26px; color: #f2c14e">{{won}}</div></div>
+<div><span style="font-size: 13px; color: #a9c7c2">Lost</span><div style="font-weight: 900; font-stretch: 75%; font-size: 26px; color: #ff8a6b">{{lost}}</div></div>
+</div>
+</div>
+
+<sc-if value="{{noPositions}}" hint-placeholder-val="{{false}}">
+<div style="padding: 22px; border-radius: 6px; background: #0a302b; display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center"><span style="flex: 1 1 260px; color: #d3e5e2">No positions yet. Pick Yes or No on an open market and it shows up here.</span><button type="button" class="btn gold" onClick="{{goGame}}">Go to the game</button></div>
+</sc-if>
+
+<sc-for list="{{meSections}}" as="sec" hint-placeholder-count="2">
+<section style="display: flex; flex-direction: column; gap: 6px">
+<h2 style="margin: 0; font-weight: 900; font-stretch: 72%; text-transform: uppercase; font-size: 22px">{{sec.title}} <span style="color: #a9c7c2">{{sec.count}}</span></h2>
+<sc-for list="{{sec.rows}}" as="r" hint-placeholder-count="2">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; padding: 12px 14px; border-radius: 4px; background: #12463f">
+<span style="flex: 0 0 auto; font-weight: 900; font-stretch: 75%; font-size: 14px; padding: 3px 8px; border-radius: 2px; background: {{r.stBg}}; color: {{r.stFg}}; box-shadow: inset 0 0 0 1px #2b5c55">{{r.status}}</span>
+<div style="flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column"><b>{{r.short}}</b><span style="font-size: 14px; color: #c3dad6">Table 1 · your stake {{r.mine}} tUSDC</span></div>
+<b style="color: {{r.resultColor}}">{{r.result}}</b>
+<div style="display: flex; gap: 8px; align-items: center">
+<sc-if value="{{r.canClaim}}" hint-placeholder-val="{{false}}"><button type="button" class="btn gold sm" onClick="{{r.doClaim}}" disabled="{{r.busy}}"><sc-if value="{{r.busy}}" hint-placeholder-val="{{false}}"><svg class="spin" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" opacity=".25"></circle><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path></svg></sc-if>Claim</button></sc-if>
+<sc-if value="{{r.canRefund}}" hint-placeholder-val="{{false}}"><button type="button" class="btn ghost sm" onClick="{{r.doRefund}}" disabled="{{r.busy}}"><sc-if value="{{r.busy}}" hint-placeholder-val="{{false}}"><svg class="spin" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" opacity=".25"></circle><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path></svg></sc-if>Refund</button></sc-if>
+<button type="button" class="link" onClick="{{r.openDetail}}" style="font-size: 14px">Details</button>
+</div>
+</div>
+</sc-for>
+</section>
+</sc-for>
+</sc-if>
+</section>
+</sc-if>
+</main>
+
+<footer style="max-width: 1380px; width: 100%; box-sizing: border-box; margin: 0 auto; padding: 14px {{gutter}} 24px; display: flex; flex-wrap: wrap; gap: 6px 24px; font-size: 13px; color: #a9c7c2"><span>Monad Testnet only. Test tokens have no value.</span><span>Game data from Lichess</span><span>Final results by Chainlink CRE</span></footer>
+
+<sc-if value="{{narrow}}" hint-placeholder-val="{{false}}">
+<nav aria-label="Main" style="position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; background: #082a26; display: flex; box-shadow: 0 -1px 0 #1d5a51">
+<button type="button" class="{{tabGames}}" aria-current="{{gamesCurrent}}" onClick="{{goHome}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="1.5" stroke="currentColor" stroke-width="2"></rect><path d="M3.5 12h17M12 3.5v17" stroke="currentColor" stroke-width="2"></path></svg>Games</button>
+<button type="button" class="{{tabMe}}" aria-current="{{meCurrent}}" onClick="{{goMe}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 19V9M10 19V5M16 19v-7M21 19H3" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>Positions<sc-if value="{{hasClaimBadge}}" hint-placeholder-val="{{false}}"><span style="position: absolute; top: 6px; left: calc(50% + 8px); min-width: 18px; height: 18px; padding: 0 4px; box-sizing: border-box; border-radius: 9px; background: #f2c14e; color: #082a26; font-size: 11px; font-weight: 900; display: inline-flex; align-items: center; justify-content: center">{{claimBadge}}</span></sc-if></button>
+</nav>
+</sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{menuOpen}}" hint-placeholder-val="{{false}}"><div aria-hidden="true" onClick="{{closeMenu}}" style="position: fixed; inset: 0; z-index: 15"></div></sc-if>
+
+<sc-if value="{{hasStake}}" hint-placeholder-val="{{false}}">
+<div style="position: fixed; inset: 0; z-index: 40; background: rgba(4,20,18,.62); display: flex; align-items: {{dlgAlign}}; justify-content: center; padding: {{dlgPad}}">
+<div role="dialog" aria-modal="true" aria-labelledby="sk-h" class="pop" style="width: 100%; max-width: 520px; max-height: 92vh; overflow-y: auto; box-sizing: border-box; background: #ffffff; color: #082a26; border-radius: {{dlgRadius}}; box-shadow: 0 24px 60px rgba(0,0,0,.4)">
+<div style="display: flex; align-items: center; gap: 10px; padding: 12px 12px 0 18px"><span style="font-weight: 900; font-stretch: 75%; font-size: 15px; padding: 3px 8px; border-radius: 2px; background: {{sk.clockBg}}">{{sk.clock}}</span><span style="font-size: 14px; color: #3d5c58">Table 1 · Replay</span><button type="button" class="icon" onClick="{{closeStake}}" aria-label="Close" style="margin-left: auto"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M4 4l10 10M14 4L4 14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path></svg></button></div>
+<div style="padding: 6px 18px 18px; display: flex; flex-direction: column; gap: 14px">
+<h2 id="sk-h" style="margin: 0; font-size: 22px; line-height: 1.2; font-weight: 800">{{sk.q}}</h2>
+<div role="group" aria-label="Your call" style="display: flex; gap: 8px">
+<button type="button" class="{{sk.yesCls}}" aria-pressed="{{sk.yesPressed}}" onClick="{{sk.setYes}}"><span>Yes</span><small>{{sk.yesPct}}% of the pool</small></button>
+<button type="button" class="{{sk.noCls}}" aria-pressed="{{sk.noPressed}}" onClick="{{sk.setNo}}"><span>No</span><small>{{sk.noPct}}% of the pool</small></button>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<label for="sk-amt" style="font-weight: 800; font-size: 15px; display: flex; justify-content: space-between"><span>Stake</span><span style="font-weight: 600; color: #3d5c58">Balance {{sk.bal}} tUSDC</span></label>
+<div style="position: relative"><input id="sk-amt" class="{{amtCls}}" inputmode="decimal" autocomplete="off" value="{{sk.amt}}" onChange="{{sk.onAmt}}" aria-invalid="{{amtInvalid}}" aria-describedby="sk-help"><span aria-hidden="true" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-weight: 700; color: #3d5c58">tUSDC</span></div>
+<div style="display: flex; gap: 6px; flex-wrap: wrap"><sc-for list="{{sk.chips}}" as="ch" hint-placeholder-count="4"><button type="button" class="{{ch.cls}}" onClick="{{ch.pick}}">{{ch.label}}</button></sc-for></div>
+<span id="sk-help" style="font-size: 13px; color: #3d5c58">1 to 100 tUSDC per market. You have {{sk.mine}} in this one, {{sk.room}} left.</span>
+<sc-if value="{{sk.hasHint}}" hint-placeholder-val="{{false}}"><span style="font-size: 14px; font-weight: 700; color: #b0261f">{{sk.hint}}</span></sc-if>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; border-radius: 4px; background: #eef4f3; font-size: 15px">
+<div style="display: flex; justify-content: space-between; gap: 10px"><span>If you are right</span><b style="font-size: 18px">{{sk.payout}} tUSDC</b></div>
+<div style="display: flex; justify-content: space-between; gap: 10px; color: #3d5c58; font-size: 14px"><span>Profit at the current pool</span><span>+{{sk.profit}}</span></div>
+<span style="font-size: 13px; color: #3d5c58">{{sk.feeLine}} The payout moves as others stake until the market locks.</span>
+<div style="display: flex; justify-content: space-between; gap: 10px; color: #3d5c58; font-size: 13px"><span>Gas</span><span>about {{sk.gas}} MON of {{sk.mon}}</span></div>
+</div>
+<sc-if value="{{sk.hasErr}}" hint-placeholder-val="{{false}}">
+<div role="alert" style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 12px 14px; border-radius: 4px; background: #fde7e5; color: #6b1410"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2.2"></circle><path d="M12 7v6M12 16.5v.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"></path></svg><b style="flex: 1 1 200px">{{sk.err}}</b><sc-if value="{{sk.errFunds}}" hint-placeholder-val="{{false}}"><button type="button" class="btn dark sm" onClick="{{getTokens}}">Get test tokens</button></sc-if></div>
+</sc-if>
+<div style="display: flex; gap: 10px; flex-wrap: wrap">
+<button type="button" class="btn ghostd" onClick="{{closeStake}}" style="flex: 1 1 120px">Cancel</button>
+<button type="button" class="{{sk.ctaCls}}" onClick="{{submitStake}}" disabled="{{sk.ctaDisabled}}" style="flex: 3 1 240px"><sc-if value="{{sk.busy}}" hint-placeholder-val="{{false}}"><svg class="spin" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" opacity=".25"></circle><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path></svg></sc-if><sc-if value="{{sk.lockedAcct}}" hint-placeholder-val="{{false}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="10" width="14" height="10" rx="2" stroke="currentColor" stroke-width="2.2"></rect><path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" stroke-width="2.2"></path></svg></sc-if>{{sk.cta}}</button>
+</div>
+<sc-if value="{{sk.guest}}" hint-placeholder-val="{{false}}"><span style="font-size: 13px; color: #3d5c58">Takes about a minute: a passkey, then 50 tUSDC and 0.5 MON arrive by themselves.</span></sc-if>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{hasDetail}}" hint-placeholder-val="{{false}}">
+<div style="position: fixed; inset: 0; z-index: 40; background: rgba(4,20,18,.62); display: flex; align-items: {{dlgAlign}}; justify-content: center; padding: {{dlgPad}}">
+<div role="dialog" aria-modal="true" aria-labelledby="dt-h" class="pop" style="width: 100%; max-width: 520px; max-height: 92vh; overflow-y: auto; box-sizing: border-box; background: #0a302b; color: #ffffff; border-radius: {{dlgRadius}}; box-shadow: 0 24px 60px rgba(0,0,0,.45)">
+<div style="display: flex; align-items: center; gap: 10px; padding: 12px 12px 0 18px"><span style="font-weight: 900; font-stretch: 75%; font-size: 15px; padding: 3px 8px; border-radius: 2px; background: {{dt.stBg}}; color: {{dt.stFg}}; box-shadow: inset 0 0 0 1px #2b5c55">{{dt.status}}</span><button type="button" class="icon" onClick="{{closeDetail}}" aria-label="Close" style="margin-left: auto"><svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M4 4l10 10M14 4L4 14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path></svg></button></div>
+<div style="padding: 6px 18px 18px; display: flex; flex-direction: column; gap: 16px">
+<h2 id="dt-h" style="margin: 0; font-size: 21px; line-height: 1.25; font-weight: 800">{{dt.q}}</h2>
+<ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px">
+<sc-for list="{{dt.steps}}" as="x" hint-placeholder-count="4"><li style="display: flex; gap: 12px"><span style="flex: none; width: 24px; height: 24px; border-radius: 50%; background: {{x.dot}}; color: #082a26; font-size: 13px; font-weight: 900; display: inline-flex; align-items: center; justify-content: center">{{x.n}}</span><div style="display: flex; flex-direction: column"><b style="color: {{x.fg}}">{{x.t}}</b><span style="font-size: 14px; color: #a9c7c2">{{x.d}}</span></div></li></sc-for>
+</ol>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; font-size: 14px">
+<div style="padding: 10px; border-radius: 4px; background: #12463f"><span style="color: #a9c7c2">Yes pool</span><div style="font-weight: 900; font-size: 20px; color: #f2c14e">{{dt.yesAmt}}</div></div>
+<div style="padding: 10px; border-radius: 4px; background: #12463f"><span style="color: #a9c7c2">No pool</span><div style="font-weight: 900; font-size: 20px; color: #ff8a6b">{{dt.noAmt}}</div></div>
+<div style="padding: 10px; border-radius: 4px; background: #12463f"><span style="color: #a9c7c2">Fee</span><div style="font-weight: 900; font-size: 20px">{{dt.feeAmt}}</div></div>
+</div>
+<div style="display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 15px"><span>Your stake: Yes {{dt.myYes}} · No {{dt.myNo}}</span><sc-if value="{{dt.hasResult}}" hint-placeholder-val="{{false}}"><b style="color: {{dt.resultColor}}">{{dt.result}}</b></sc-if></div>
+<div style="display: flex; gap: 10px; flex-wrap: wrap">
+<sc-if value="{{dt.canClaim}}" hint-placeholder-val="{{false}}"><button type="button" class="btn gold" onClick="{{dt.doClaim}}" disabled="{{dt.busy}}" style="flex: 1 1 160px">Claim</button></sc-if>
+<sc-if value="{{dt.canRefund}}" hint-placeholder-val="{{false}}"><button type="button" class="btn gold" onClick="{{dt.doRefund}}" disabled="{{dt.busy}}" style="flex: 1 1 160px">Refund</button></sc-if>
+<button type="button" class="btn ghost" onClick="{{closeDetail}}" style="flex: 1 1 120px">Close</button>
+</div>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{claimAll}}" hint-placeholder-val="{{false}}">
+<div style="position: fixed; inset: 0; z-index: 40; background: rgba(4,20,18,.62); display: flex; align-items: {{dlgAlign}}; justify-content: center; padding: {{dlgPad}}">
+<div role="dialog" aria-modal="true" aria-labelledby="ca-h" class="pop" style="width: 100%; max-width: 460px; box-sizing: border-box; background: #ffffff; color: #082a26; border-radius: {{dlgRadius}}; padding: 18px; display: flex; flex-direction: column; gap: 14px">
+<h2 id="ca-h" style="margin: 0; font-weight: 900; font-stretch: 72%; text-transform: uppercase; font-size: 28px; line-height: 1">Claim {{claimSum}} tUSDC</h2>
+<ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px">
+<sc-for list="{{claimMarkets}}" as="x" hint-placeholder-count="2"><li style="display: flex; justify-content: space-between; gap: 10px; padding: 8px 10px; background: #eef4f3; border-radius: 3px"><span>{{x.short}}</span><b>{{x.amt}}</b></li></sc-for>
+</ul>
+<span style="font-size: 14px; color: #3d5c58">One transaction for every winning market. Gas about {{claimGas}} MON.</span>
+<div style="display: flex; gap: 10px">
+<button type="button" class="btn ghostd" onClick="{{claimAllClose}}" disabled="{{claimAllBusy}}" style="flex: 1 1 0">Cancel</button>
+<button type="button" class="btn gold" onClick="{{claimAllGo}}" disabled="{{claimAllBusy}}" style="flex: 2 1 0"><sc-if value="{{claimAllBusy}}" hint-placeholder-val="{{false}}"><svg class="spin" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" opacity=".25"></circle><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path></svg></sc-if>{{claimAllLabel}}</button>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{mismatch}}" hint-placeholder-val="{{false}}">
+<div style="position: fixed; inset: 0; z-index: 45; background: rgba(4,20,18,.62); display: flex; align-items: {{dlgAlign}}; justify-content: center; padding: {{dlgPad}}">
+<div role="alertdialog" aria-modal="true" aria-labelledby="mm-h" class="pop" style="width: 100%; max-width: 440px; box-sizing: border-box; background: #ffffff; color: #082a26; border-radius: {{dlgRadius}}; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+<h2 id="mm-h" style="margin: 0; font-size: 21px; font-weight: 800">This passkey belongs to a different account.</h2>
+<p style="margin: 0; color: #3d5c58">It does not match 0x7a3f…c91e, the account saved on this device. Pick the right passkey, or start a new account.</p>
+<div style="display: flex; gap: 10px; flex-wrap: wrap"><button type="button" class="btn dark" onClick="{{mismatchRetry}}" style="flex: 1 1 160px">Try another passkey</button><button type="button" class="btn ghostd" onClick="{{mismatchNew}}" style="flex: 1 1 160px">Create a new account</button></div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{sheet}}" hint-placeholder-val="{{false}}">
+<div style="position: fixed; inset: 0; z-index: 50; background: rgba(0,0,0,.45); display: flex; align-items: {{sheetAlign}}; justify-content: center; padding: {{sheetPad}}; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif">
+<div style="width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 8px">
+<span style="align-self: center; font-size: 12px; color: #e8ecea; background: rgba(0,0,0,.4); padding: 3px 8px; border-radius: 10px">Shown by your device, not by MoveMarket</span>
+<div role="dialog" aria-modal="true" aria-labelledby="pk-h" class="pop" style="background: #f2f2f7; color: #1c1c1e; border-radius: 14px; padding: 22px 20px 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,.35)">
+<svg width="54" height="54" viewBox="0 0 54 54" fill="none" aria-hidden="true"><path d="M6 17V11a5 5 0 0 1 5-5h6M37 6h6a5 5 0 0 1 5 5v6M48 37v6a5 5 0 0 1-5 5h-6M17 48h-6a5 5 0 0 1-5-5v-6" stroke="#0a84ff" stroke-width="3" stroke-linecap="round"></path><path d="M19 20v3M35 20v3M27 21v9h-2M20 36c4 3 10 3 14 0" stroke="#0a84ff" stroke-width="3" stroke-linecap="round"></path></svg>
+<sc-if value="{{sheetCreate}}" hint-placeholder-val="{{true}}"><h2 id="pk-h" style="margin: 0; font-size: 19px; font-weight: 700">Create a passkey for movemarket.app?</h2><p style="margin: 0; font-size: 14px; color: #3c3c43">A passkey for "MoveMarket account" will be saved in iCloud Keychain and available on your devices.</p></sc-if>
+<sc-if value="{{sheetUnlock}}" hint-placeholder-val="{{false}}"><h2 id="pk-h" style="margin: 0; font-size: 19px; font-weight: 700">Sign in to movemarket.app?</h2><p style="margin: 0; font-size: 14px; color: #3c3c43">Use your saved passkey for "MoveMarket account".</p></sc-if>
+<sc-if value="{{sheetBusy}}" hint-placeholder-val="{{false}}"><span style="display: inline-flex; gap: 8px; align-items: center; font-size: 15px; color: #3c3c43; min-height: 50px"><svg class="spin" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="#0a84ff" stroke-width="3" opacity=".25"></circle><path d="M21 12a9 9 0 0 0-9-9" stroke="#0a84ff" stroke-width="3" stroke-linecap="round"></path></svg>Face ID</span></sc-if>
+<sc-if value="{{sheetIdle}}" hint-placeholder-val="{{true}}">
+<button type="button" onClick="{{sheetContinue}}" style="width: 100%; min-height: 50px; border: 0; border-radius: 12px; background: #0066d6; color: #ffffff; font-size: 17px; font-weight: 600; font-family: inherit">Continue</button>
+<button type="button" onClick="{{sheetCancel}}" style="width: 100%; min-height: 44px; border: 0; border-radius: 12px; background: transparent; color: #0a84ff; font-size: 17px; font-family: inherit">Cancel</button>
+</sc-if>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{hasToasts}}" hint-placeholder-val="{{false}}">
+<div aria-live="polite" style="position: fixed; z-index: 60; right: {{toastRight}}; left: {{toastLeft}}; bottom: {{toastBottom}}; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; pointer-events: none">
+<sc-for list="{{toasts}}" as="t" hint-placeholder-count="1">
+<div role="status" class="pop" style="pointer-events: auto; width: 100%; max-width: 380px; box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 12px 8px 12px 14px; border-radius: 6px; background: {{t.bg}}; color: {{t.fg}}; box-shadow: 0 14px 40px rgba(0,0,0,.35); font-weight: 700; font-size: 15px">
+<sc-if value="{{t.isOk}}" hint-placeholder-val="{{true}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="flex: none"><circle cx="12" cy="12" r="10" fill="#f2c14e"></circle><path d="M7.5 12.5l3 3 6-7" stroke="#082a26" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"></path></svg></sc-if>
+<sc-if value="{{t.isErr}}" hint-placeholder-val="{{false}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="flex: none"><circle cx="12" cy="12" r="10" stroke="#ff9c94" stroke-width="2.2"></circle><path d="M12 7v6M12 16.5v.5" stroke="#ff9c94" stroke-width="2.4" stroke-linecap="round"></path></svg></sc-if>
+<sc-if value="{{t.isPend}}" hint-placeholder-val="{{false}}"><svg class="spin" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="flex: none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" opacity=".25"></circle><path d="M21 12a9 9 0 0 0-9-9" stroke="#f2c14e" stroke-width="3" stroke-linecap="round"></path></svg></sc-if>
+<sc-if value="{{t.isInfo}}" hint-placeholder-val="{{false}}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="flex: none"><circle cx="12" cy="12" r="10" stroke="#a9c7c2" stroke-width="2.2"></circle><path d="M12 11v6M12 7.5v.5" stroke="#a9c7c2" stroke-width="2.4" stroke-linecap="round"></path></svg></sc-if>
+<span style="flex: 1 1 auto">{{t.text}}</span>
+<sc-if value="{{t.hasAction}}" hint-placeholder-val="{{false}}"><button type="button" class="btn gold sm" onClick="{{t.action}}">Try again</button></sc-if>
+<button type="button" class="icon" onClick="{{t.close}}" aria-label="Dismiss" style="width: 32px; height: 32px; flex: none"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg></button>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<div style="position: fixed; z-index: 70; left: 12px; bottom: {{ctlBottom}}; font-family: system-ui, sans-serif; color: #e8ecea">
+<sc-if value="{{ctlClosed}}" hint-placeholder-val="{{true}}">
+<button type="button" onClick="{{toggleCtl}}" aria-expanded="false" style="display: inline-flex; align-items: center; gap: 8px; min-height: 36px; padding: 0 12px; border-radius: 18px; border: 1px dashed #8a918f; background: #151918; color: #e8ecea; font: 600 13px/1 system-ui, sans-serif"><svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M2 4h10M2 10h10" stroke="currentColor" stroke-width="1.6"></path><circle cx="5" cy="4" r="1.8" fill="#151918" stroke="currentColor" stroke-width="1.4"></circle><circle cx="9" cy="10" r="1.8" fill="#151918" stroke="currentColor" stroke-width="1.4"></circle></svg>Prototype controls · {{simClock}} · {{speedLabel}}</button>
+</sc-if>
+<sc-if value="{{ctlOpen}}" hint-placeholder-val="{{false}}">
+<div role="dialog" aria-label="Prototype controls" style="width: 300px; max-width: calc(100vw - 24px); max-height: 74vh; overflow-y: auto; box-sizing: border-box; padding: 12px; border-radius: 8px; border: 1px dashed #8a918f; background: #151918; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; justify-content: space-between; gap: 8px"><b style="font-size: 13px">Prototype controls</b><span style="font-size: 12px; color: #9aa3a1">{{simClock}} · {{speedLabel}}</span><button type="button" onClick="{{toggleCtl}}" class="ctl" aria-label="Close controls">Close</button></div>
+<span style="font-size: 12px; color: #9aa3a1">Not part of the product. Use these to reach every state.</span>
+<sc-for list="{{ctl}}" as="g" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; gap: 6px"><sc-if value="{{g.hasGroup}}" hint-placeholder-val="{{true}}"><span style="font-size: 11px; font-weight: 700; color: #9aa3a1; text-transform: uppercase">{{g.group}}</span></sc-if><div style="display: flex; flex-wrap: wrap; gap: 4px"><sc-for list="{{g.items}}" as="it" hint-placeholder-count="4"><button type="button" class="{{it.cls}}" aria-pressed="{{it.pressed}}" onClick="{{it.act}}">{{it.label}}</button></sc-for></div></div>
+</sc-for>
+</div>
+</sc-if>
+</div>
+
+</div>
+</x-dc>
+
+<script type="text/x-dc" data-dc-script data-props='{"device":{"editor":"enum","options":["auto","desktop","mobile"],"default":"auto"},"scenario":{"editor":"enum","options":["landing","onboarding","home","game","stake","me","gameover","locked","offline"],"default":"landing"},"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = this.initialState(props.scenario || 'landing');
+    this.timeouts = [];
+    this.scene = null;
+    this.canvasEl = null;
+    this.lastPly = -1;
+    this.canvasRef = (el) => {
+      if (el === this.canvasEl) return;
+      if (this.scene) { this.scene.dispose(); this.scene = null; }
+      this.canvasEl = el;
+      if (el) this.mount3d(el);
+    };
+    this.onResize = () => this.setState({ vw: window.innerWidth });
+  }
+
+  /* ---------- data ---------- */
+  plies() { return [["rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR","","",""],["rnbqkbnr/pppppppp/8/8/3P4/8/PPP1PPPP/RNBQKBNR","d2d4","d4",""],["r1bqkbnr/pppppppp/2n5/8/3P4/8/PPP1PPPP/RNBQKBNR","b8c6","Nc6",""],["r1bqkbnr/pppppppp/2n5/3P4/8/8/PPP1PPPP/RNBQKBNR","d4d5","d5",""],["r1bqkbnr/pppppppp/8/3Pn3/8/8/PPP1PPPP/RNBQKBNR","c6e5","Ne5",""],["r1bqkbnr/pppppppp/8/3Pn3/5P2/8/PPP1P1PP/RNBQKBNR","f2f4","f4",""],["r1bqkbnr/pppppppp/6n1/3P4/5P2/8/PPP1P1PP/RNBQKBNR","e5g6","Ng6",""],["r1bqkbnr/pppppppp/6n1/3P4/4PP2/8/PPP3PP/RNBQKBNR","e2e4","e4",""],["r1bqkbnr/pppp1ppp/6n1/3Pp3/4PP2/8/PPP3PP/RNBQKBNR","e7e5","e5",""],["r1bqkbnr/pppp1ppp/6n1/3PpP2/4P3/8/PPP3PP/RNBQKBNR","f4f5","f5",""],["r1bqkbnr/ppppnppp/8/3PpP2/4P3/8/PPP3PP/RNBQKBNR","g6e7","N6e7",""],["r1bqkbnr/ppppnppp/8/3PpP2/4P3/5N2/PPP3PP/RNBQKB1R","g1f3","Nf3",""],["r1bqkbnr/ppp1nppp/3p4/3PpP2/4P3/5N2/PPP3PP/RNBQKB1R","d7d6","d6",""],["r1bqkbnr/ppp1nppp/3p4/3PpP2/2P1P3/5N2/PP4PP/RNBQKB1R","c2c4","c4",""],["r1bqkbnr/ppp1np1p/3p2p1/3PpP2/2P1P3/5N2/PP4PP/RNBQKB1R","g7g6","g6",""],["r1bqkbnr/ppp1np1p/3p2P1/3Pp3/2P1P3/5N2/PP4PP/RNBQKB1R","f5g6","fxg6","x"],["r1bqkbnr/ppp1np2/3p2p1/3Pp3/2P1P3/5N2/PP4PP/RNBQKB1R","h7g6","hxg6","x"],["r1bqkbnr/ppp1np2/3p2p1/3Pp3/2P1P3/2N2N2/PP4PP/R1BQKB1R","b1c3","Nc3",""],["r1bqk1nr/ppp1np2/3p2pb/3Pp3/2P1P3/2N2N2/PP4PP/R1BQKB1R","f8h6","Bh6",""],["r1bqk1nr/ppp1np2/3p2pb/3Pp3/2P1P3/2NB1N2/PP4PP/R1BQK2R","f1d3","Bd3",""],["r1bqk1nr/ppp1np2/3p2p1/3Pp3/2P1P3/2NB1N2/PP4PP/R1bQK2R","h6c1","Bxc1","x"],["r1bqk1nr/ppp1np2/3p2p1/3Pp3/2P1P3/2NB1N2/PP4PP/2RQK2R","a1c1","Rxc1","x"],["r2qk1nr/ppp1np2/3p2p1/3Pp3/2P1P1b1/2NB1N2/PP4PP/2RQK2R","c8g4","Bg4",""],["r2qk1nr/ppp1np2/3p2p1/3Pp3/2P1P1b1/2NB1N1P/PP4P1/2RQK2R","h2h3","h3",""],["r2qk1nr/ppp1np2/3p2p1/3Pp3/2P1P3/2NB1b1P/PP4P1/2RQK2R","g4f3","Bxf3","x"],["r2qk1nr/ppp1np2/3p2p1/3Pp3/2P1P3/2NB1Q1P/PP4P1/2R1K2R","d1f3","Qxf3","x"],["r3k1nr/pppqnp2/3p2p1/3Pp3/2P1P3/2NB1Q1P/PP4P1/2R1K2R","d8d7","Qd7",""],["r3k1nr/pppqnp2/3p2p1/3Pp3/2P1P3/2NB1Q1P/PP4P1/2R2RK1","e1g1","O-O","W"],["r3k2r/pppqnp2/3p2pn/3Pp3/2P1P3/2NB1Q1P/PP4P1/2R2RK1","g8h6","Nh6",""],["r3k2r/pppqnp2/3p2pn/3Pp3/1PP1P3/2NB1Q1P/P5P1/2R2RK1","b2b4","b4",""],["r3k2r/pppqn3/3p2pn/3Ppp2/1PP1P3/2NB1Q1P/P5P1/2R2RK1","f7f5","f5",""],["r3k2r/pppqn3/3p2pn/3PpP2/1PP5/2NB1Q1P/P5P1/2R2RK1","e4f5","exf5","x"],["r3k2r/pppqn3/3p3n/3Ppp2/1PP5/2NB1Q1P/P5P1/2R2RK1","g6f5","gxf5","x"],["r3k2r/pppqn3/3p3n/3Ppp1Q/1PP5/2NB3P/P5P1/2R2RK1","f3h5","Qh5+","k"],["r3k2r/pppqnn2/3p4/3Ppp1Q/1PP5/2NB3P/P5P1/2R2RK1","h6f7","Nf7",""],["r3k2r/pppqnn2/3p4/3Ppp2/1PP5/2NB3P/P3Q1P1/2R2RK1","h5e2","Qe2",""],["2kr3r/pppqnn2/3p4/3Ppp2/1PP5/2NB3P/P3Q1P1/2R2RK1","e8c8","O-O-O","B"],["2kr3r/pppqnn2/3p4/2PPpp2/1P6/2NB3P/P3Q1P1/2R2RK1","c4c5","c5",""],["1k1r3r/pppqnn2/3p4/2PPpp2/1P6/2NB3P/P3Q1P1/2R2RK1","c8b8","Kb8",""],["1k1r3r/pppqnn2/2Pp4/3Ppp2/1P6/2NB3P/P3Q1P1/2R2RK1","c5c6","c6",""],["1kqr3r/ppp1nn2/2Pp4/3Ppp2/1P6/2NB3P/P3Q1P1/2R2RK1","d7c8","Qc8",""],["1kqr3r/pPp1nn2/3p4/3Ppp2/1P6/2NB3P/P3Q1P1/2R2RK1","c6b7","cxb7","x"],["1k1r3r/pqp1nn2/3p4/3Ppp2/1P6/2NB3P/P3Q1P1/2R2RK1","c8b7","Qxb7","x"],["1k1r3r/pqp1nn2/B2p4/3Ppp2/1P6/2N4P/P3Q1P1/2R2RK1","d3a6","Ba6",""],["1k1r3r/p1p1nn2/Bq1p4/3Ppp2/1P6/2N4P/P3Q1P1/2R2RK1","b7b6","Qb6+","k"],["1k1r3r/p1p1nn2/Bq1p4/3Ppp2/1P6/2N4P/P3Q1PK/2R2R2","g1h2","Kh2",""],["1k1r3r/p1p1n3/Bq1p4/3Pppn1/1P6/2N4P/P3Q1PK/2R2R2","f7g5","Ng5",""],["1k1r3r/p1p1n3/Bq1p4/3Pppn1/NP6/7P/P3Q1PK/2R2R2","c3a4","Na4",""],["1k1r3r/p1p1n3/B2p4/3Pppn1/NP1q4/7P/P3Q1PK/2R2R2","b6d4","Qd4",""],["1k1r3r/p1p1n3/B2p4/3Pppn1/NPRq4/7P/P3Q1PK/5R2","c1c4","Rc4",""],["1k1r3r/p1p1n3/B2p4/3qppn1/NPR5/7P/P3Q1PK/5R2","d4d5","Qxd5","x"],["1k1r3r/p1p1n3/B2p4/3qppn1/NPR5/7P/P3Q1PK/3R4","f1d1","Rd1",""],["qk1r3r/p1p1n3/B2p4/4ppn1/NPR5/7P/P3Q1PK/3R4","d5a8","Qa8",""],["qk1r3r/p1p1n3/B2p4/2N1ppn1/1PR5/7P/P3Q1PK/3R4","a4c5","Nc5",""],["qk1r3r/p1p1n3/B2p4/2N1p1n1/1PR2p2/7P/P3Q1PK/3R4","f5f4","f4",""],["qk1r3r/p1p1n3/B2p4/2N1p1n1/1P3R2/7P/P3Q1PK/3R4","c4f4","Rxf4","x"],["qk1r3r/p1p1n3/B2p4/2N3n1/1P3p2/7P/P3Q1PK/3R4","e5f4","exf4","x"],["qk1r3r/p1p1n3/B2p4/1QN3n1/1P3p2/7P/P5PK/3R4","e2b5","Qb5+","k"],["1k1r3r/pqp1n3/B2p4/1QN3n1/1P3p2/7P/P5PK/3R4","a8b7","Qb7",""],["1k1r3r/pQp1n3/B2p4/2N3n1/1P3p2/7P/P5PK/3R4","b5b7","Qxb7#","kx"]]; }
+  crowd() {
+    return {
+      '20-CHECK-ANY': [140, 260], '20-CAPTURE-ANY': [310, 120], '20-CASTLE-WHITE': [220, 90], '20-CASTLE-BLACK': [60, 200],
+      '24-CHECK-ANY': [90, 230], '24-CAPTURE-ANY': [260, 150], '24-CASTLE-WHITE': [0, 0], '24-CASTLE-BLACK': [120, 160],
+      '28-CHECK-ANY': [130, 240], '28-CAPTURE-ANY': [270, 110], '28-CASTLE-BLACK': [150, 140],
+      '32-CHECK-ANY': [180, 170], '32-CAPTURE-ANY': [240, 0], '32-CASTLE-BLACK': [0, 0],
+      '36-CHECK-ANY': [110, 210], '36-CAPTURE-ANY': [200, 140],
+      '40-CHECK-ANY': [160, 180], '40-CAPTURE-ANY': [230, 150],
+      '44-CHECK-ANY': [120, 200], '44-CAPTURE-ANY': [210, 120],
+      '48-CHECK-ANY': [170, 150], '48-CAPTURE-ANY': [250, 100],
+      '52-CHECK-ANY': [200, 130], '52-CAPTURE-ANY': [260, 90],
+      '56-CHECK-ANY': [150, 120], '56-CAPTURE-ANY': [180, 110]
+    };
+  }
+  C() {
+    return { START: 20, LAST: 59, PLY_SEC: 20, LOCK_SEC: 15, FINAL_WAIT: 120, FEE: 0.02, MIN: 1, CAP: 100,
+      GAS: { bet: 0.0204, claim: 0.0153, claimMany: 0.153, refund: 0.0153, approve: 0.0082 }, GAS_MIN: 0.05, GAS_TOPUP: 0.5, GAS_TOPUP_MAX: 3 };
+  }
+
+  initialState(scn) {
+    const base = {
+      screen: 'landing', account: 'none', usdc: 0, mon: 0, gasRefills: 0, approved: false,
+      simT: 0, speed: 1, paused: false, startedAt: 0, replaySeen: false, restarting: false,
+      finalsAt: null, pastDeadline: false, offlineFrom: null, reconnecting: false,
+      pos: {}, pending: null,
+      onb: { step: 'intro', error: '', blocks: 0 }, intent: null,
+      sheet: null, stake: null, detail: null, claimAll: false, menu: false, mismatch: false, gameOverSeen: false,
+      toasts: [], view3d: false, tab: 'markets', ctl: { open: false },
+      sim: { noPrf: false, noCrypto: false, faucetFail: false, mismatch: false, lockDuringStake: false },
+      vw: typeof window !== 'undefined' ? window.innerWidth : 1440
+    };
+    const active = { account: 'active', usdc: 50, mon: 0.5, approved: true };
+    if (scn === 'onboarding') return { ...base, screen: 'onboard' };
+    if (scn === 'home') return { ...base, ...active, screen: 'home', simT: 83, replaySeen: true };
+    if (scn === 'game') return { ...base, ...active, screen: 'game', simT: 163, replaySeen: true, usdc: 40, pos: { '24-CAPTURE-ANY': { yes: 10, no: 0, done: '' } } };
+    if (scn === 'stake') {
+      const s = { ...base, ...active, screen: 'game', simT: 163, paused: true, replaySeen: true };
+      s.stake = { id: '28-CHECK-ANY', side: 'YES', amt: '10', err: '', busy: false };
+      return s;
+    }
+    if (scn === 'me' || scn === 'gameover') {
+      const s = { ...base, ...active, screen: scn === 'me' ? 'me' : 'game', simT: scn === 'me' ? 640 : 800, finalsAt: scn === 'me' ? 640 : 800, replaySeen: true, usdc: 12.5, mon: 0.31,
+        pos: { '20-CAPTURE-ANY': { yes: 10, no: 0, done: '' }, '24-CHECK-ANY': { yes: 5, no: 0, done: '' }, '28-CHECK-ANY': { yes: 10, no: 0, done: '' }, '32-CAPTURE-ANY': { yes: 5, no: 0, done: '' }, '36-CAPTURE-ANY': { yes: 0, no: 5, done: '' }, '52-CHECK-ANY': { yes: 2.5, no: 0, done: '' }, '56-CAPTURE-ANY': { yes: 0, no: 5, done: '' } } };
+      return s;
+    }
+    if (scn === 'locked') return { ...base, ...active, account: 'locked', screen: 'game', simT: 164, replaySeen: true };
+    if (scn === 'offline') return { ...base, ...active, screen: 'game', simT: 300, offlineFrom: 262, replaySeen: true };
+    return base;
+  }
+
+  /* ---------- lifecycle ---------- */
+  componentDidMount() {
+    this.timer = setInterval(() => this.tick(), 250);
+    window.addEventListener('resize', this.onResize);
+  }
+  componentWillUnmount() {
+    clearInterval(this.timer);
+    this.timeouts.forEach(clearTimeout);
+    window.removeEventListener('resize', this.onResize);
+    if (this.scene) this.scene.dispose();
+  }
+  later(ms, fn) { const id = setTimeout(fn, ms); this.timeouts.push(id); return id; }
+  tick() {
+    const now = Date.now();
+    this.setState((s) => {
+      const up = {};
+      if (!s.paused && !s.restarting && s.replaySeen) {
+        const end = (this.C().LAST - this.C().START) * this.C().PLY_SEC + 200;
+        up.simT = Math.min(end, s.simT + 0.25 * s.speed);
+      }
+      const toasts = s.toasts.filter((t) => t.until > now);
+      if (toasts.length !== s.toasts.length) up.toasts = toasts;
+      return up;
+    }, () => this.sync());
+  }
+  toast(kind, text, extra) {
+    const id = Math.random().toString(36).slice(2);
+    const t = { id, kind, text, until: Date.now() + (kind === 'error' ? 6000 : 4200), ...(extra || {}) };
+    this.setState((s) => ({ toasts: s.toasts.concat([t]).slice(-3) }));
+  }
+
+  /* ---------- clock / chess ---------- */
+  seenT(s) { return s.offlineFrom != null ? Math.min(s.simT, s.offlineFrom) : s.simT; }
+  plyAt(t) { const c = this.C(); return Math.min(c.LAST, c.START + Math.floor(t / c.PLY_SEC)); }
+  ended(t) { const c = this.C(); return t >= (c.LAST - c.START) * c.PLY_SEC; }
+  mv(p) { return Math.ceil(p / 2); }
+  range(a, b) {
+    if (a === b) return 'ply ' + a + ' (move ' + this.mv(a) + ')';
+    if (this.mv(a) === this.mv(b)) return 'plies ' + a + ' to ' + b + ' (move ' + this.mv(a) + ')';
+    return 'plies ' + a + ' to ' + b + ' (moves ' + this.mv(a) + ' to ' + this.mv(b) + ')';
+  }
+  question(m) {
+    const q = { 'CHECK-ANY': 'Any check in {range}?', 'CAPTURE-ANY': 'Any capture in {range}?', 'CASTLE-WHITE': 'White castles in {range}?', 'CASTLE-BLACK': 'Black castles in {range}?' };
+    return q[m.kind + '-' + m.side].replace('{range}', this.range(m.from, m.to));
+  }
+  shortQ(m) {
+    const q = { 'CHECK-ANY': 'Any check', 'CAPTURE-ANY': 'Any capture', 'CASTLE-WHITE': 'White castles', 'CASTLE-BLACK': 'Black castles' };
+    return q[m.kind + '-' + m.side] + ' · ' + m.from + '–' + m.to;
+  }
+
+  /* ---------- markets (planner + resolution) ---------- */
+  allMarkets(s) {
+    const c = this.C(), P = this.plies(), crowd = this.crowd();
+    const t = s.simT, ply = this.plyAt(t), gameEnd = this.ended(t);
+    const castled = (side, upto) => { for (let q = 1; q <= upto; q++) if (P[q][3] === side) return true; return false; };
+    const out = [];
+    for (let sp = c.START; sp <= ply; sp += 4) {
+      const spawnT = (sp - c.START) * c.PLY_SEC;
+      const from = sp + 4 + 1, to = from + 3;
+      const kinds = [['CHECK', 'ANY', 'k', to], ['CAPTURE', 'ANY', 'x', to]];
+      if (sp < 40 && !castled('W', sp)) kinds.push(['CASTLE', 'WHITE', 'W', from + 7]);
+      if (sp < 40 && !castled('B', sp)) kinds.push(['CASTLE', 'BLACK', 'B', from + 7]);
+      kinds.forEach(([kind, side, flag, end]) => {
+        const id = sp + '-' + kind + '-' + side;
+        const lockT = Math.min(spawnT + c.LOCK_SEC, (from - 1 - c.START) * c.PLY_SEC);
+        const cr = crowd[id] || [100, 100];
+        const f = Math.max(0, Math.min(1, (Math.min(t, lockT) - spawnT) / c.LOCK_SEC));
+        const g = Math.pow(f, 0.7);
+        const crowdYes = Math.round(cr[0] * g), crowdNo = Math.round(cr[1] * g);
+        let hitPly = 0;
+        for (let q = from; q <= Math.min(end, ply, c.LAST); q++) { if (P[q][3].indexOf(flag) >= 0) { hitPly = q; break; } }
+        let outcome = '', provT = null;
+        if (hitPly) { outcome = 'YES'; provT = (hitPly - c.START) * c.PLY_SEC; }
+        else if (end <= c.LAST && ply >= end) { outcome = 'NO'; provT = (end - c.START) * c.PLY_SEC; }
+        else if (end > c.LAST && gameEnd) { outcome = 'VOID'; provT = (c.LAST - c.START) * c.PLY_SEC + 4; }
+        const p = s.pos[id] || { yes: 0, no: 0, done: '' };
+        const pend = s.pending && s.pending.id === id ? s.pending : null;
+        const yes = crowdYes + p.yes + (pend && pend.side === 'YES' ? pend.amt : 0);
+        const no = crowdNo + p.no + (pend && pend.side === 'NO' ? pend.amt : 0);
+        out.push({ id, kind, side, flag, from, to: end, spawnPly: sp, spawnT, lockT, yes, no, outcome, provT, hitPly, hitSan: hitPly ? P[hitPly][2] : '', my: p });
+      });
+    }
+    return out.map((m) => this.status(m, s));
+  }
+  status(m, s) {
+    const c = this.C(), t = s.simT, total = m.yes + m.no;
+    const finalT = m.provT == null ? null : (s.finalsAt != null && m.provT <= s.finalsAt ? Math.max(m.provT, Math.min(s.finalsAt, m.provT + c.FINAL_WAIT)) : m.provT + c.FINAL_WAIT);
+    const offline = s.offlineFrom != null;
+    let st;
+    if (t < m.lockT) st = 'open';
+    else if (total === 0) st = 'noStakes';
+    else if (finalT != null && t >= finalT) {
+      if (m.outcome === 'VOID') st = 'voided';
+      else if ((m.outcome === 'YES' ? m.yes : m.no) === 0) st = 'voidedNoWinners';
+      else st = 'final';
+    } else if (s.pastDeadline) st = 'expired';
+    else if (m.provT != null && t >= m.provT && !offline) st = 'provisional';
+    else if (this.plyAt(this.seenT(s)) >= m.from && this.plyAt(this.seenT(s)) < m.to) st = 'waiting';
+    else st = 'locked';
+    const fee = m.yes > 0 && m.no > 0 ? total * c.FEE : 0;
+    const winPool = m.outcome === 'YES' ? m.yes : m.no;
+    const myStake = m.my.yes + m.my.no;
+    const myWin = m.outcome === 'YES' ? m.my.yes : (m.outcome === 'NO' ? m.my.no : 0);
+    const payout = st === 'final' && myWin > 0 ? myWin * (total - fee) / winPool : 0;
+    const refundable = (st === 'voided' || st === 'voidedNoWinners' || st === 'expired') && myStake > 0;
+    const claimable = st === 'final' && myWin > 0;
+    const lost = st === 'final' && myStake > 0 && myWin === 0;
+    const pendingFinal = st === 'provisional' && t - m.provT > 60;
+    return { ...m, st, total, fee, winPool, myStake, myWin, payout, refundable, claimable, lost, pendingFinal, finalT, left: Math.max(0, Math.ceil(m.lockT - t)) };
+  }
+
+  /* ---------- sync 3D ---------- */
+  sync() {
+    if (!this.scene) return;
+    const s = this.state, P = this.plies();
+    const ply = this.plyAt(this.seenT(s));
+    if (ply !== this.lastPly) {
+      this.scene.setPosition(P[ply][0], P[ply][1], this.lastPly >= 0 && ply === this.lastPly + 1);
+      this.lastPly = ply;
+    }
+    const ms = this.allMarkets(s).filter((m) => m.st === 'open');
+    if (ms.length) this.scene.setPool(ms[0].yes + ms[0].no > 0 ? ms[0].yes / (ms[0].yes + ms[0].no) : 0.5);
+  }
+  mount3d(el) {
+    if (typeof window === 'undefined' || !window.THREE) { this.setState({ view3d: false }); return; }
+    try {
+      this.scene = this.scene3d(window.THREE, el, { dist: this.isNarrow() ? 28 : 25, offset: [0.03, -0.02], offsetNarrow: [0.03, -0.02], elev: 0.7 });
+      this.lastPly = -1;
+      this.sync();
+    } catch (e) { this.setState({ view3d: false }); }
+  }
+  isNarrow() {
+    const d = this.props.device;
+    if (d === 'mobile') return true;
+    if (d === 'desktop') return false;
+    return (this.state.vw || 1440) < 760;
+  }
+
+  /* ---------- actions ---------- */
+  go(screen) {
+    this.setState({ screen, menu: false, stake: null, detail: null, claimAll: false });
+    if (screen === 'game' && !this.state.replaySeen) this.setState({ replaySeen: true });
+    if (screen === 'home' && !this.state.replaySeen) {
+      this.setState({ restarting: true, replaySeen: true });
+      this.later(1600, () => this.setState({ restarting: false }));
+    }
+    if (typeof window !== 'undefined' && window.scrollTo) window.scrollTo(0, 0);
+  }
+  start() {
+    if (this.state.account === 'none') this.setState({ onb: { step: 'intro', error: '', blocks: 0 } }, () => this.go('onboard'));
+    else this.go('home');
+  }
+  createAccount() {
+    if (this.state.sim.noCrypto) { this.setState({ onb: { step: 'intro', error: 'CRYPTO_UNAVAILABLE', blocks: 0 } }); return; }
+    this.setState({ sheet: { mode: 'create' }, onb: { ...this.state.onb, error: '' } });
+  }
+  sheetCancel() {
+    const mode = this.state.sheet && this.state.sheet.mode;
+    this.setState({ sheet: null });
+    if (mode === 'create') this.setState({ onb: { step: 'intro', error: 'PASSKEY_CANCELLED', blocks: 0 } });
+    else this.toast('error', 'Unlock was cancelled.');
+  }
+  sheetContinue() {
+    const mode = this.state.sheet && this.state.sheet.mode;
+    this.setState({ sheet: { mode, busy: true } });
+    this.later(900, () => {
+      this.setState({ sheet: null });
+      if (mode === 'create') {
+        if (this.state.sim.noPrf) { this.setState({ onb: { step: 'intro', error: 'PRF_UNAVAILABLE', blocks: 0 } }); return; }
+        this.setState({ onb: { step: 'faucet', error: '', blocks: 0 } });
+        this.runFaucet();
+      } else {
+        if (this.state.sim.mismatch) { this.setState({ mismatch: true }); return; }
+        this.setState({ account: 'active' });
+        this.toast('success', 'Unlocked. Your stakes no longer ask for the passkey this session.');
+      }
+    });
+  }
+  runFaucet() {
+    this.later(1200, () => {
+      if (this.state.sim.faucetFail) { this.setState({ onb: { step: 'faucet', error: 'FAUCET_FAILED', blocks: 0 } }); return; }
+      const blk = (n) => {
+        if (n > 3) {
+          this.setState({ account: 'active', usdc: 50, mon: 0.5, onb: { step: 'approve', error: '', blocks: 3 } });
+          this.later(1100, () => this.setState((s) => ({ approved: true, mon: +(s.mon - this.C().GAS.approve).toFixed(4), onb: { step: 'ready', error: '', blocks: 3 } })));
+          return;
+        }
+        this.setState({ onb: { step: 'faucet', error: '', blocks: n } });
+        this.later(450, () => blk(n + 1));
+      };
+      blk(1);
+    });
+  }
+  retryFaucet() { this.setState({ onb: { step: 'faucet', error: '', blocks: 0 } }); this.runFaucet(); }
+  finishOnboarding() {
+    const intent = this.state.intent;
+    this.setState({ intent: null });
+    if (intent && intent.id) {
+      this.go('game');
+      this.later(50, () => this.openStake(intent.id, intent.side));
+    } else this.go('home');
+  }
+  getTokens() {
+    this.setState({ menu: false });
+    this.toast('pending', 'Requesting test tokens…');
+    this.later(1300, () => {
+      if (this.state.sim.faucetFail) { this.toast('error', 'Test tokens were not sent yet. Please try again in a moment.', { action: 'retryTokens' }); return; }
+      this.setState((s) => ({ usdc: s.usdc + 50, mon: +(s.mon + 0.5).toFixed(4) }));
+      this.toast('success', '50 tUSDC and 0.5 MON added.');
+      if (this.state.stake) this.setState({ stake: { ...this.state.stake, err: '' } });
+    });
+  }
+  openStake(id, side) {
+    const s = this.state;
+    if (s.account === 'none') { this.setState({ intent: { id, side } }); this.setState({ stake: { id, side, amt: '5', err: '', busy: false } }); return; }
+    this.setState({ stake: { id, side: side || 'YES', amt: '5', err: '', busy: false } });
+  }
+  stakeSet(patch) { if (this.state.stake) this.setState({ stake: { ...this.state.stake, ...patch, err: '' } }); }
+  validate(m, amt) {
+    const s = this.state, c = this.C();
+    if (!m || m.st !== 'open' || s.simT >= m.lockT - 1) return 'BettingClosed';
+    if (!(amt >= c.MIN)) return 'AmountTooSmall';
+    if (m.myStake + amt > c.CAP) return 'StakeCapExceeded';
+    if (amt > s.usdc + 1e-9) return 'INSUFFICIENT_USDC';
+    return '';
+  }
+  submitStake() {
+    const s = this.state, c = this.C();
+    if (!s.stake || s.stake.busy) return;
+    if (s.account === 'none') { this.setState({ intent: { id: s.stake.id, side: s.stake.side }, stake: null, onb: { step: 'intro', error: '', blocks: 0 } }, () => this.go('onboard')); return; }
+    if (s.account === 'locked') { this.setState({ sheet: { mode: 'unlock' } }); return; }
+    const m = this.allMarkets(s).find((x) => x.id === s.stake.id);
+    const amt = Math.round(Number(s.stake.amt) * 100) / 100;
+    const err = this.validate(m, amt);
+    if (err) { this.setState({ stake: { ...s.stake, err } }); return; }
+    const send = () => {
+      const st = this.state.stake;
+      this.setState({ stake: { ...st, busy: true }, pending: { id: st.id, side: st.side, amt } });
+      if (this.state.sim.lockDuringStake) this.setState((x) => ({ simT: Math.max(x.simT, m.lockT), sim: { ...x.sim, lockDuringStake: false } }));
+      this.later(1300, () => {
+        const now = this.state;
+        const mm = this.allMarkets({ ...now, pending: null }).find((x) => x.id === st.id);
+        if (!mm || now.simT >= mm.lockT) {
+          this.setState({ pending: null, stake: { ...now.stake, busy: false, err: 'BettingClosed' } });
+          this.toast('error', 'This market is locked.');
+          return;
+        }
+        const p = now.pos[st.id] || { yes: 0, no: 0, done: '' };
+        const np = { ...p, [st.side === 'YES' ? 'yes' : 'no']: (st.side === 'YES' ? p.yes : p.no) + amt };
+        this.setState({ pending: null, stake: null, pos: { ...now.pos, [st.id]: np }, usdc: +(now.usdc - amt).toFixed(2), mon: +(now.mon - c.GAS.bet).toFixed(4) });
+        this.toast('success', 'Staked ' + this.money(amt) + ' tUSDC on ' + (st.side === 'YES' ? 'Yes' : 'No') + '.');
+      });
+    };
+    this.withGas(c.GAS.bet, send, () => this.setState({ stake: { ...this.state.stake, busy: false } }));
+  }
+  withGas(cost, fn, onFail) {
+    const s = this.state, c = this.C();
+    if (s.mon - cost >= c.GAS_MIN) { fn(); return; }
+    if (s.gasRefills >= c.GAS_TOPUP_MAX) { this.toast('error', 'Gas refill limit reached. Please try again tomorrow.'); if (onFail) onFail(); return; }
+    if (this.state.stake) this.setState({ stake: { ...this.state.stake, busy: true } });
+    this.toast('pending', 'Out of gas funds. Refilling from the faucet.');
+    this.later(1500, () => {
+      this.setState((x) => ({ mon: +(x.mon + c.GAS_TOPUP).toFixed(4), gasRefills: x.gasRefills + 1 }));
+      this.toast('success', 'Gas refilled: 0.5 MON.');
+      fn();
+    });
+  }
+  claim(id) {
+    const s = this.state, c = this.C();
+    const m = this.allMarkets(s).find((x) => x.id === id);
+    if (!m || !m.claimable || m.my.done) { this.toast('error', 'Nothing to claim.'); return; }
+    if (s.account !== 'active') { this.setState({ sheet: { mode: 'unlock' } }); return; }
+    this.setState({ busyId: id });
+    this.withGas(c.GAS.claim, () => this.later(1100, () => {
+      const now = this.state;
+      this.setState({ busyId: null, usdc: +(now.usdc + m.payout).toFixed(2), mon: +(now.mon - c.GAS.claim).toFixed(4), pos: { ...now.pos, [id]: { ...now.pos[id], done: 'claimed', got: m.payout } } });
+      this.toast('success', 'Claimed ' + this.money(m.payout) + ' tUSDC.');
+    }), () => this.setState({ busyId: null }));
+  }
+  refund(id) {
+    const s = this.state, c = this.C();
+    const m = this.allMarkets(s).find((x) => x.id === id);
+    if (!m || !m.refundable || m.my.done) { this.toast('error', 'Not refundable yet.'); return; }
+    if (s.account !== 'active') { this.setState({ sheet: { mode: 'unlock' } }); return; }
+    this.setState({ busyId: id });
+    this.withGas(c.GAS.refund, () => this.later(1100, () => {
+      const now = this.state;
+      this.setState({ busyId: null, usdc: +(now.usdc + m.myStake).toFixed(2), mon: +(now.mon - c.GAS.refund).toFixed(4), pos: { ...now.pos, [id]: { ...now.pos[id], done: 'refunded', got: m.myStake } } });
+      this.toast('success', 'Refunded ' + this.money(m.myStake) + ' tUSDC.');
+    }), () => this.setState({ busyId: null }));
+  }
+  claimAllNow() {
+    const s = this.state, c = this.C();
+    const list = this.allMarkets(s).filter((m) => m.claimable && !m.my.done);
+    if (!list.length) { this.setState({ claimAll: false }); this.toast('error', 'Nothing to claim.'); return; }
+    this.setState({ claimAll: 'busy' });
+    this.withGas(c.GAS.claimMany, () => this.later(1500, () => {
+      const now = this.state;
+      const pos = { ...now.pos };
+      let sum = 0;
+      list.forEach((m) => { pos[m.id] = { ...pos[m.id], done: 'claimed', got: m.payout }; sum += m.payout; });
+      this.setState({ claimAll: false, pos, usdc: +(now.usdc + sum).toFixed(2), mon: +(now.mon - c.GAS.claimMany).toFixed(4) });
+      this.toast('success', 'Claimed ' + this.money(sum) + ' tUSDC from ' + list.length + (list.length === 1 ? ' market.' : ' markets.'));
+    }), () => this.setState({ claimAll: true }));
+  }
+  restartReplay() {
+    this.setState({ restarting: true, simT: 0, finalsAt: null, pastDeadline: false, offlineFrom: null, gameOverSeen: false, stake: null, detail: null });
+    this.later(1600, () => this.setState({ restarting: false }));
+  }
+  money(n) { return (Math.round(n * 100) / 100).toFixed(2); }
+
+  /* ---------- prototype controls ---------- */
+  control(key) {
+    const s = this.state, c = this.C();
+    const sim = { ...s.sim };
+    switch (key) {
+      case 'pause': this.setState({ paused: !s.paused }); break;
+      case 'nextPly': this.setState({ simT: Math.min((c.LAST - c.START) * c.PLY_SEC, (Math.floor(s.simT / c.PLY_SEC) + 1) * c.PLY_SEC) }); break;
+      case 'finals': this.setState({ finalsAt: s.simT }); this.toast('info', 'Chainlink CRE reports written for every provisional result.'); break;
+      case 'offline':
+        if (s.offlineFrom != null) { this.setState({ offlineFrom: null }); this.toast('success', 'Live data is back.'); }
+        else this.setState({ offlineFrom: s.simT });
+        break;
+      case 'sse': this.setState({ reconnecting: true }); this.later(3200, () => this.setState({ reconnecting: false })); break;
+      case 'session': this.setState({ account: s.account === 'none' ? 'none' : 'locked', menu: false }); if (s.account !== 'none') this.toast('error', 'Your session ended. Unlock with your passkey again.'); break;
+      case 'drainGas': this.setState({ mon: 0.031 }); break;
+      case 'drainUsdc': this.setState({ usdc: 3 }); break;
+      case 'deadline': this.setState({ pastDeadline: !s.pastDeadline }); break;
+      case 'end': this.setState({ simT: (c.LAST - c.START) * c.PLY_SEC + 4, paused: false }); break;
+      case 'returning': this.setState({ account: 'locked', usdc: s.usdc || 50, mon: s.mon || 0.5, approved: true }); this.go('home'); break;
+      case 'reset': this.timeouts.forEach(clearTimeout); this.timeouts = []; this.setState(this.initialState('landing')); break;
+      default:
+        if (key.indexOf('speed') === 0) this.setState({ speed: Number(key.slice(5)), paused: false });
+        else if (key.indexOf('sim.') === 0) { const k = key.slice(4); sim[k] = !sim[k]; this.setState({ sim }); }
+        else if (key.indexOf('go.') === 0) this.go(key.slice(3));
+    }
+  }
+
+  scene3d(THREE, canvas, opts) {
+    opts = opts || {};
+    if (THREE.ColorManagement) THREE.ColorManagement.legacyMode = false;
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.95;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 100);
+    const disposables = [];
+    const keep = (x) => { disposables.push(x); return x; };
+
+    /* studio environment for reflections: a dim teal room with two soft boxes */
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    const envScene = new THREE.Scene();
+    const room = new THREE.Mesh(new THREE.BoxGeometry(24, 12, 24), new THREE.MeshBasicMaterial({ color: 0x0f2f2b, side: THREE.BackSide }));
+    envScene.add(room);
+    const panel = (w, h, rgb, pos, rot) => {
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }));
+      m.material.color.setRGB(rgb[0], rgb[1], rgb[2]);
+      m.position.set(pos[0], pos[1], pos[2]);
+      m.rotation.set(rot[0], rot[1], rot[2]);
+      envScene.add(m);
+    };
+    panel(10, 6, [2.2, 2.05, 1.8], [-4, 5.9, 3], [Math.PI / 2, 0, 0]);
+    panel(6, 4, [0.35, 1.1, 0.95], [11.9, 3, -4], [0, -Math.PI / 2, 0]);
+    panel(5, 3, [1.4, 1.1, 0.6], [-11.9, 2, 5], [0, Math.PI / 2, 0]);
+    const envTex = pmrem.fromScene(envScene, 0.035).texture;
+    scene.environment = envTex;
+    envScene.traverse((o) => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
+
+    scene.add(new THREE.HemisphereLight(0xd9efe9, 0x0d3a35, 0.25));
+    const key = new THREE.DirectionalLight(0xffe6bd, 2.1);
+    key.position.set(-5, 11, 6);
+    key.castShadow = true;
+    key.shadow.mapSize.set(2048, 2048);
+    key.shadow.camera.left = -9; key.shadow.camera.right = 9; key.shadow.camera.top = 9; key.shadow.camera.bottom = -9;
+    key.shadow.camera.near = 1; key.shadow.camera.far = 30;
+    key.shadow.bias = -0.0004; key.shadow.normalBias = 0.02; key.shadow.radius = 5;
+    scene.add(key);
+    const rim = new THREE.DirectionalLight(0x86e0cf, 0.8);
+    rim.position.set(7, 4, -8);
+    scene.add(rim);
+
+    const root = new THREE.Group();
+    scene.add(root);
+    const floor = new THREE.Mesh(keep(new THREE.PlaneGeometry(60, 60)), keep(new THREE.ShadowMaterial({ opacity: 0.34 })));
+    floor.rotation.x = -Math.PI / 2; floor.position.y = -0.64; floor.receiveShadow = true;
+    scene.add(floor);
+
+    const phys = (c, r, o) => keep(new THREE.MeshPhysicalMaterial(Object.assign({ color: c, roughness: r, envMapIntensity: 0.8 }, o || {})));
+    const rrect = (w, h, r) => {
+      const s = new THREE.Shape();
+      const x = -w / 2, y = -h / 2;
+      s.moveTo(x + r, y); s.lineTo(x + w - r, y); s.quadraticCurveTo(x + w, y, x + w, y + r);
+      s.lineTo(x + w, y + h - r); s.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      s.lineTo(x + r, y + h); s.quadraticCurveTo(x, y + h, x, y + h - r);
+      s.lineTo(x, y + r); s.quadraticCurveTo(x, y, x + r, y);
+      return s;
+    };
+    const flatExtrude = (shape, depth, bevel, segs) => {
+      const g = new THREE.ExtrudeGeometry(shape, { depth: depth, bevelEnabled: bevel > 0, bevelThickness: bevel, bevelSize: bevel, bevelSegments: segs || 3, curveSegments: 12 });
+      g.rotateX(-Math.PI / 2);
+      return keep(g);
+    };
+
+    /* board: plinth, lacquered frame with a gold inlay, bevelled squares */
+    const plinth = new THREE.Mesh(flatExtrude(rrect(10.3, 10.3, 0.3), 0.1, 0.03), phys(0x041613, 0.7, { envMapIntensity: 0.3 }));
+    plinth.position.y = -0.6; plinth.receiveShadow = true; plinth.castShadow = true; root.add(plinth);
+    const frameShape = rrect(9.9, 9.9, 0.22);
+    frameShape.holes.push(rrect(8.2, 8.2, 0.02));
+    const frame = new THREE.Mesh(flatExtrude(frameShape, 0.5, 0.06, 4), phys(0x0b3a33, 0.34, { clearcoat: 0.7, clearcoatRoughness: 0.2, envMapIntensity: 0.55 }));
+    frame.position.y = -0.48; frame.castShadow = true; frame.receiveShadow = true; root.add(frame);
+    const bed = new THREE.Mesh(keep(new THREE.BoxGeometry(8.24, 0.5, 8.24)), phys(0x041a17, 0.8));
+    bed.position.y = -0.26; bed.receiveShadow = true; root.add(bed);
+    const inlayShape = rrect(8.72, 8.72, 0.06);
+    inlayShape.holes.push(rrect(8.56, 8.56, 0.04));
+    const inlay = new THREE.Mesh(flatExtrude(inlayShape, 0.012, 0), phys(0xd6b04f, 0.28, { metalness: 0.85 }));
+    inlay.position.y = 0.082; root.add(inlay);
+    const mats = {
+      l: phys(0xe2dfc2, 0.6, { clearcoat: 0.15, clearcoatRoughness: 0.4, envMapIntensity: 0.4 }), d: phys(0x2f6e5e, 0.55, { clearcoat: 0.15, clearcoatRoughness: 0.4, envMapIntensity: 0.4 }),
+      hl: phys(0xf0e67a, 0.5, { clearcoat: 0.15, envMapIntensity: 0.4 }), hd: phys(0xa8b94e, 0.5, { clearcoat: 0.15, envMapIntensity: 0.4 })
+    };
+    const sqGeo = flatExtrude(rrect(0.96, 0.96, 0.03), 0.05, 0.018, 2);
+    const squares = {};
+    for (let f = 0; f < 8; f++) {
+      for (let r = 0; r < 8; r++) {
+        const dark = (f + r) % 2 === 0;
+        const m = new THREE.Mesh(sqGeo, dark ? mats.d : mats.l);
+        m.position.set(f - 3.5, 0.0, 3.5 - r);
+        m.receiveShadow = true;
+        m.userData.dark = dark;
+        root.add(m);
+        squares['abcdefgh'[f] + (r + 1)] = m;
+      }
+    }
+    const labelTex = (txt) => {
+      const c = document.createElement('canvas'); c.width = 64; c.height = 64;
+      const g = c.getContext('2d'); g.fillStyle = '#b8d3ce'; g.font = '700 40px Archivo, Arial, sans-serif';
+      g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(txt, 32, 34);
+      const t = keep(new THREE.CanvasTexture(c)); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4; return t;
+    };
+    const labelGeo = keep(new THREE.PlaneGeometry(0.32, 0.32));
+    for (let i = 0; i < 8; i++) {
+      const fm = new THREE.Mesh(labelGeo, keep(new THREE.MeshBasicMaterial({ map: labelTex('abcdefgh'[i]), transparent: true })));
+      fm.rotation.x = -Math.PI / 2; fm.position.set(i - 3.5, 0.09, 4.58); root.add(fm);
+      const rm = new THREE.Mesh(labelGeo, keep(new THREE.MeshBasicMaterial({ map: labelTex(String(i + 1)), transparent: true })));
+      rm.rotation.x = -Math.PI / 2; rm.position.set(-4.58, 0.09, 3.5 - i); root.add(rm);
+    }
+
+    /* pieces: turned profiles with collars, crowns and a sculpted knight */
+    const V = (pts) => pts.map((p) => new THREE.Vector2(p[0], p[1]));
+    const ball = (cy, r, from) => { const out = []; for (let a = from; a <= 90; a += 10) out.push([r * Math.cos(a * Math.PI / 180), cy + r * Math.sin(a * Math.PI / 180)]); return out; };
+    const base = [[0, 0], [0.35, 0], [0.36, 0.015], [0.36, 0.06], [0.34, 0.085], [0.3, 0.1], [0.3, 0.125], [0.27, 0.15], [0.24, 0.175], [0.21, 0.2]];
+    const profiles = {
+      p: base.concat([[0.17, 0.24], [0.13, 0.32], [0.11, 0.4], [0.18, 0.43], [0.19, 0.455], [0.17, 0.475], [0.1, 0.49]]).concat(ball(0.6, 0.14, -50)),
+      r: base.concat([[0.2, 0.28], [0.19, 0.5], [0.2, 0.56], [0.25, 0.6], [0.27, 0.63], [0.27, 0.66], [0.25, 0.68], [0.27, 0.7], [0.27, 0.8], [0.19, 0.8], [0.19, 0.74], [0, 0.74]]),
+      b: base.concat([[0.16, 0.3], [0.12, 0.46], [0.1, 0.58], [0.2, 0.62], [0.21, 0.645], [0.19, 0.665], [0.11, 0.68], [0.14, 0.74], [0.18, 0.84], [0.175, 0.93], [0.14, 1.0], [0.08, 1.06], [0.04, 1.09]]).concat(ball(1.135, 0.05, -40)),
+      q: base.concat([[0.17, 0.3], [0.13, 0.5], [0.11, 0.7], [0.23, 0.74], [0.24, 0.765], [0.22, 0.785], [0.12, 0.8], [0.14, 0.9], [0.2, 1.0], [0.25, 1.05], [0.25, 1.085], [0.19, 1.08], [0.1, 1.1], [0.06, 1.14]]).concat(ball(1.19, 0.06, -40)),
+      k: base.concat([[0.17, 0.32], [0.13, 0.55], [0.11, 0.74], [0.24, 0.78], [0.25, 0.805], [0.23, 0.825], [0.12, 0.84], [0.15, 0.96], [0.21, 1.08], [0.23, 1.11], [0.23, 1.14], [0.16, 1.15], [0.08, 1.17], [0, 1.175]]),
+      n: base.concat([[0.23, 0.22], [0.25, 0.24], [0.25, 0.28], [0, 0.28]])
+    };
+    const geos = {};
+    Object.keys(profiles).forEach((k) => { geos[k] = keep(new THREE.LatheGeometry(V(profiles[k]), 48)); });
+    const head = new THREE.Shape();
+    head.moveTo(-0.2, 0.26); head.lineTo(0.15, 0.26);
+    head.quadraticCurveTo(0.11, 0.42, 0.24, 0.5);
+    head.quadraticCurveTo(0.38, 0.56, 0.42, 0.62);
+    head.quadraticCurveTo(0.46, 0.68, 0.4, 0.73);
+    head.quadraticCurveTo(0.3, 0.77, 0.2, 0.78);
+    head.quadraticCurveTo(0.16, 0.9, 0.09, 0.97);
+    head.lineTo(0.07, 1.06); head.lineTo(0.0, 1.0);
+    head.quadraticCurveTo(-0.16, 0.93, -0.22, 0.74);
+    head.quadraticCurveTo(-0.29, 0.5, -0.2, 0.26);
+    const headGeo = keep(new THREE.ExtrudeGeometry(head, { depth: 0.2, bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.045, bevelSegments: 5, curveSegments: 18 }));
+    headGeo.translate(0, 0, -0.1);
+    const maneShape = new THREE.Shape();
+    maneShape.moveTo(-0.02, 0.98); maneShape.quadraticCurveTo(-0.2, 0.92, -0.26, 0.7); maneShape.quadraticCurveTo(-0.3, 0.5, -0.24, 0.3);
+    maneShape.lineTo(-0.2, 0.3); maneShape.quadraticCurveTo(-0.25, 0.52, -0.2, 0.72); maneShape.quadraticCurveTo(-0.14, 0.88, 0.0, 0.95);
+    const maneGeo = keep(new THREE.ExtrudeGeometry(maneShape, { depth: 0.1, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 3, curveSegments: 14 }));
+    maneGeo.translate(-0.01, 0, -0.05);
+    const eyeGeo = keep(new THREE.SphereGeometry(0.024, 12, 8));
+    const crossShape = new THREE.Shape();
+    [[-0.035, 0], [0.035, 0], [0.035, 0.11], [0.1, 0.11], [0.1, 0.165], [0.035, 0.165], [0.035, 0.26], [-0.035, 0.26], [-0.035, 0.165], [-0.1, 0.165], [-0.1, 0.11], [-0.035, 0.11]].forEach((p, i) => (i ? crossShape.lineTo(p[0], p[1]) : crossShape.moveTo(p[0], p[1])));
+    const crossGeo = keep(new THREE.ExtrudeGeometry(crossShape, { depth: 0.05, bevelEnabled: true, bevelThickness: 0.015, bevelSize: 0.012, bevelSegments: 2 }));
+    crossGeo.translate(0, 1.16, -0.025);
+    const merlonGeo = keep(new THREE.BoxGeometry(0.12, 0.1, 0.1));
+    const pearlGeo = keep(new THREE.SphereGeometry(0.036, 12, 8));
+    const slitGeo = keep(new THREE.BoxGeometry(0.03, 0.2, 0.3));
+    const feltGeo = keep(new THREE.CylinderGeometry(0.335, 0.335, 0.012, 40));
+    const pMat = {
+      w: phys(0xe9e2d2, 0.34, { clearcoat: 0.6, clearcoatRoughness: 0.22, envMapIntensity: 0.7 }),
+      b: phys(0x1a201f, 0.22, { metalness: 0.06, clearcoat: 1, clearcoatRoughness: 0.12 })
+    };
+    const darkMat = phys(0x0a0d0c, 0.5);
+    const feltMat = phys(0x0f3a33, 1);
+    const makePiece = (ch) => {
+      const color = ch === ch.toUpperCase() ? 'w' : 'b';
+      const t = ch.toLowerCase();
+      const g = new THREE.Group();
+      const add = (geo, mat) => { const m = new THREE.Mesh(geo, mat || pMat[color]); m.castShadow = true; m.receiveShadow = true; g.add(m); return m; };
+      add(geos[t]);
+      const felt = add(feltGeo, feltMat); felt.position.y = -0.004; felt.castShadow = false;
+      if (t === 'n') {
+        const face = color === 'w' ? Math.PI / 2 : -Math.PI / 2;
+        const h = add(headGeo); h.rotation.y = face;
+        const mane = add(maneGeo); mane.rotation.y = face;
+        [-1, 1].forEach((sd) => {
+          const e = add(eyeGeo, darkMat);
+          const lx = 0.2, lz = sd * 0.15;
+          e.position.set(Math.cos(face) * lx + Math.sin(face) * lz, 0.8, -Math.sin(face) * lx + Math.cos(face) * lz);
+        });
+      }
+      if (t === 'k') { add(crossGeo); }
+      if (t === 'r') {
+        for (let i = 0; i < 6; i++) { const m = add(merlonGeo); const a = (i / 6) * Math.PI * 2; m.position.set(Math.cos(a) * 0.23, 0.85, Math.sin(a) * 0.23); m.rotation.y = -a; }
+      }
+      if (t === 'q') {
+        for (let i = 0; i < 9; i++) { const m = add(pearlGeo); const a = (i / 9) * Math.PI * 2; m.position.set(Math.cos(a) * 0.235, 1.1, Math.sin(a) * 0.235); }
+      }
+      if (t === 'b') { const s = add(slitGeo, darkMat); s.position.set(0.09, 0.92, 0); s.rotation.z = -0.6; s.scale.set(1, 0.9, 0.55); s.castShadow = false; }
+      g.scale.setScalar(0.86);
+      g.userData = { type: ch };
+      return g;
+    };
+    const sqPos = (sq) => new THREE.Vector3('abcdefgh'.indexOf(sq[0]) - 3.5, 0.075, 3.5 - (Number(sq[1]) - 1));
+    const parse = (fen) => {
+      const map = {};
+      fen.split('/').forEach((row, ri) => {
+        let fi = 0;
+        for (const ch of row) {
+          const n = Number(ch);
+          if (n) { fi += n; continue; }
+          map['abcdefgh'[fi] + (8 - ri)] = ch; fi++;
+        }
+      });
+      return map;
+    };
+    const pieces = {};
+    const tweens = [];
+    const removeMesh = (m) => { root.remove(m); };
+    const removePiece = (sq) => { const m = pieces[sq]; if (m) { removeMesh(m); delete pieces[sq]; } };
+    const place = (sq, ch) => { const m = makePiece(ch); m.position.copy(sqPos(sq)); root.add(m); pieces[sq] = m; return m; };
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const tween = (mesh, from, to, dur) => { if (reduce) { mesh.position.copy(to); return; } tweens.push({ mesh, from: from.clone(), to: to.clone(), t0: performance.now(), dur }); };
+    const highlight = (a, b) => {
+      Object.keys(squares).forEach((k) => { const s = squares[k]; s.material = (k === a || k === b) ? (s.userData.dark ? mats.hd : mats.hl) : (s.userData.dark ? mats.d : mats.l); });
+    };
+
+    /* captured pieces wait beside the board */
+    let tray = [];
+    const layTray = (next) => {
+      tray.forEach(removeMesh); tray = [];
+      const start = { q: 1, r: 2, b: 2, n: 2, p: 8 };
+      const cnt = {};
+      Object.keys(next).forEach((k) => { cnt[next[k]] = (cnt[next[k]] || 0) + 1; });
+      if (opts.tray === false) return;
+      [['w', -3.4], ['b', 3.4]].forEach(([col, z0]) => {
+        let i = 0;
+        ['q', 'r', 'b', 'n', 'p'].forEach((t) => {
+          const ch = col === 'w' ? t.toUpperCase() : t;
+          const miss = Math.max(0, start[t] - (cnt[ch] || 0));
+          for (let k = 0; k < miss; k++) {
+            const m = makePiece(ch);
+            m.scale.setScalar(0.6);
+            const row = Math.floor(i / 2), c2 = i % 2;
+            m.position.set(-5.55 - c2 * 0.52, -0.63, z0 + (z0 < 0 ? 1 : -1) * row * 0.6);
+            root.add(m); tray.push(m); i++;
+          }
+        });
+      });
+    };
+    const setPosition = (fen, uci, animate) => {
+      const next = parse(fen);
+      const from = uci ? uci.slice(0, 2) : '', to = uci ? uci.slice(2, 4) : '';
+      if (animate && from && pieces[from]) {
+        const mover = pieces[from];
+        delete pieces[from];
+        removePiece(to);
+        pieces[to] = mover;
+        tween(mover, mover.position, sqPos(to), 650);
+      }
+      const gone = [], fresh = [];
+      Object.keys(pieces).forEach((sq) => { if (!next[sq] || next[sq] !== pieces[sq].userData.type) gone.push(sq); });
+      Object.keys(next).forEach((sq) => { if (!pieces[sq] || pieces[sq].userData.type !== next[sq]) fresh.push(sq); });
+      const pairs = [];
+      gone.slice().forEach((g) => {
+        const ty = pieces[g] && pieces[g].userData.type;
+        const i = fresh.findIndex((f) => next[f] === ty && !pieces[f]);
+        if (animate && ty && i >= 0) { pairs.push([g, fresh[i]]); fresh.splice(i, 1); gone.splice(gone.indexOf(g), 1); }
+      });
+      pairs.forEach(([g, f]) => { const m = pieces[g]; delete pieces[g]; pieces[f] = m; tween(m, m.position, sqPos(f), 650); });
+      gone.forEach(removePiece);
+      fresh.forEach((sq) => { removePiece(sq); place(sq, next[sq]); });
+      highlight(from, to);
+      layTray(next);
+    };
+
+    /* orbit: drag to rotate, arrow keys, double click to reset, pinch or ctrl+wheel to zoom */
+    const baseAng = opts.angle != null ? opts.angle : -0.62;
+    const baseElev = opts.elev != null ? opts.elev : 0.62;
+    let ang = baseAng, elev = baseElev, zoom = 1, vel = 0, dragging = false, touched = false, lastX = 0, lastY = 0, resetT = 0;
+    const clampElev = (e) => Math.max(0.22, Math.min(1.35, e));
+    const onDown = (e) => {
+      if (e.button != null && e.button !== 0) return;
+      dragging = true; touched = true; lastX = e.clientX; lastY = e.clientY; vel = 0; resetT = 0;
+      if (canvas.setPointerCapture && e.pointerId != null) { try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ } }
+      canvas.style.cursor = 'grabbing';
+    };
+    const onMove = (e) => {
+      if (!dragging) return;
+      const dx = e.clientX - lastX, dy = e.clientY - lastY;
+      lastX = e.clientX; lastY = e.clientY;
+      ang -= dx * 0.008; vel = -dx * 0.008;
+      if (e.pointerType !== 'touch') elev = clampElev(elev + dy * 0.006);
+    };
+    const onUp = () => { dragging = false; canvas.style.cursor = 'grab'; };
+    const onDbl = () => { resetT = performance.now(); vel = 0; };
+    const onKey = (e) => {
+      const k = e.key;
+      if (k === 'ArrowLeft') ang += 0.18; else if (k === 'ArrowRight') ang -= 0.18;
+      else if (k === 'ArrowUp') elev = clampElev(elev + 0.1); else if (k === 'ArrowDown') elev = clampElev(elev - 0.1);
+      else if (k === 'Home' || k === '0') resetT = performance.now();
+      else return;
+      touched = true; e.preventDefault();
+    };
+    const onWheel = (e) => { if (!e.ctrlKey) return; e.preventDefault(); zoom = Math.max(0.7, Math.min(1.45, zoom * (1 + e.deltaY * 0.004))); touched = true; };
+    canvas.style.cursor = 'grab';
+    canvas.style.touchAction = 'pan-y';
+    canvas.addEventListener('pointerdown', onDown);
+    canvas.addEventListener('pointermove', onMove);
+    canvas.addEventListener('pointerup', onUp);
+    canvas.addEventListener('pointercancel', onUp);
+    canvas.addEventListener('dblclick', onDbl);
+    canvas.addEventListener('keydown', onKey);
+    canvas.addEventListener('wheel', onWheel, { passive: false });
+
+    let w = 0, h = 0, raf = 0, alive = true;
+    const t0 = performance.now();
+    const resize = () => {
+      const parent = canvas.parentElement;
+      const nw = Math.max(1, parent.clientWidth), nh = Math.max(1, parent.clientHeight);
+      if (nw === w && nh === h) return;
+      w = nw; h = nh;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      const off = (w / h >= 1.3 ? (opts.offset || [0, 0]) : (opts.offsetNarrow || [0, 0]));
+      camera.setViewOffset(w, h, -w * off[0], -h * off[1], w, h);
+      camera.updateProjectionMatrix();
+    };
+    const frameLoop = (now) => {
+      if (!alive) return;
+      resize();
+      const t = (now - t0) / 1000;
+      const aspect = w / h;
+      const dist = (opts.dist || (aspect < 0.9 ? 24 : (aspect < 1.3 ? 19 : 17))) * zoom;
+      if (!dragging && Math.abs(vel) > 0.0001) { ang += vel; vel *= 0.93; }
+      if (resetT) {
+        const k = Math.min(1, (now - resetT) / 600), e = 1 - Math.pow(1 - k, 3);
+        ang += (baseAng - ang) * e; elev += (baseElev - elev) * e; zoom += (1 - zoom) * e;
+        if (k >= 1) { resetT = 0; touched = false; }
+      }
+      const a = touched || reduce ? ang : baseAng + Math.sin(t * 0.12) * 0.07;
+      if (!touched) ang = a;
+      camera.position.set(Math.sin(a) * dist * Math.cos(elev), dist * Math.sin(elev), Math.cos(a) * dist * Math.cos(elev));
+      camera.lookAt(0.2, -0.4, 0.2);
+      for (let i = tweens.length - 1; i >= 0; i--) {
+        const tw = tweens[i];
+        const k = Math.min(1, (now - tw.t0) / tw.dur);
+        const e = 1 - Math.pow(1 - k, 3);
+        tw.mesh.position.lerpVectors(tw.from, tw.to, e);
+        tw.mesh.position.y = tw.to.y + Math.sin(Math.PI * k) * 0.5;
+        if (k >= 1) { tw.mesh.position.copy(tw.to); tweens.splice(i, 1); }
+      }
+      renderer.render(scene, camera);
+      raf = requestAnimationFrame(frameLoop);
+    };
+    raf = requestAnimationFrame(frameLoop);
+    return {
+      setPosition,
+      setPool: () => {},
+      dispose: () => {
+        alive = false; cancelAnimationFrame(raf);
+        canvas.removeEventListener('pointerdown', onDown);
+        canvas.removeEventListener('pointermove', onMove);
+        canvas.removeEventListener('pointerup', onUp);
+        canvas.removeEventListener('pointercancel', onUp);
+        canvas.removeEventListener('dblclick', onDbl);
+        canvas.removeEventListener('keydown', onKey);
+        canvas.removeEventListener('wheel', onWheel);
+        scene.traverse((o) => { if (o.geometry && disposables.indexOf(o.geometry) < 0) o.geometry.dispose(); });
+        disposables.forEach((d) => d.dispose && d.dispose());
+        envTex.dispose(); pmrem.dispose();
+        renderer.dispose();
+      }
+    };
+  }
+
+  /* ---------- view model ---------- */
+  board(fen, uci, size) {
+    const src = {
+      K: '/_blob/b8fb06ae020716114026dd05efe77cd2', Q: '/_blob/0556872e10df836fe74cf38d93fcc19d', R: '/_blob/63a03828d350581fe3563604ce207c9d',
+      B: '/_blob/4e4d1851dd2efcb49520c927f1e56435', N: '/_blob/87a799ed4078cd075f3945e0dd36045d', P: '/_blob/7ce769c22487b3fc1a9480b470f92b3c',
+      k: '/_blob/ff0a95e5936af6937b303666d460662a', q: '/_blob/2770b4f339815231da9b8c64702acf75', r: '/_blob/f02c39cb8aeafc05ddf7d781f157f13a',
+      b: '/_blob/f8e6d88a2815e74a21f97ccab184a80a', n: '/_blob/29c94df3d3759cb9cee1765f2521eb36', p: '/_blob/6c5483ec964165d9b4adb7b8c14ad64a'
+    };
+    const names = { k: 'king', q: 'queen', r: 'rook', b: 'bishop', n: 'knight', p: 'pawn' };
+    const a = (uci || '').slice(0, 2), b = (uci || '').slice(2, 4);
+    const out = [];
+    fen.split('/').forEach((row, ri) => {
+      let fi = 0;
+      for (const ch of row) {
+        const n = Number(ch);
+        for (let k = 0; k < (n || 1); k++) {
+          const piece = n ? '' : ch;
+          const sq = 'abcdefgh'[fi] + (8 - ri);
+          const dark = (ri + fi) % 2 === 1;
+          const hl = sq === a || sq === b;
+          out.push({
+            bg: hl ? (dark ? '#b8c95c' : '#f5f08a') : (dark ? '#5f9f8f' : '#eeeed2'), has: !!piece, src: piece ? src[piece] : '',
+            alt: piece ? (piece === piece.toUpperCase() ? 'White ' : 'Black ') + names[piece.toLowerCase()] + ' on ' + sq : '',
+            file: ri === 7 ? 'abcdefgh'[fi] : '', rank: fi === 0 ? String(8 - ri) : '', lblColor: dark ? '#eeeed2' : '#5f9f8f'
+          });
+          fi++;
+        }
+      }
+    });
+    return out;
+  }
+  captured(fen) {
+    const start = { p: 8, n: 2, b: 2, r: 2, q: 1 };
+    const cnt = {};
+    fen.split('/').join('').split('').forEach((ch) => { if (isNaN(Number(ch))) cnt[ch] = (cnt[ch] || 0) + 1; });
+    const val = { p: 1, n: 3, b: 3, r: 5, q: 9 };
+    const names = { p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen' };
+    const lost = (white) => {
+      const parts = []; let pts = 0;
+      ['q', 'r', 'b', 'n', 'p'].forEach((t) => {
+        const have = cnt[white ? t.toUpperCase() : t] || 0;
+        const miss = Math.max(0, start[t] - have);
+        if (miss) { parts.push(miss > 1 ? miss + ' ' + names[t] + 's' : names[t]); pts += miss * val[t]; }
+      });
+      return { text: parts.length ? parts.join(', ') : 'nothing yet', pts };
+    };
+    const w = lost(false), b = lost(true);
+    return { byWhite: w.text, byBlack: b.text, diff: w.pts - b.pts };
+  }
+  statusView(m) {
+    const map = {
+      open: ['Open · 0:' + String(m.left).padStart(2, '0'), '#f2c14e', '#082a26'],
+      locked: ['Locked', '#ffd27a', '#082a26'],
+      waiting: ['Waiting for ply ' + m.to, '#d3e5e2', '#082a26'],
+      provisional: ['Provisional: ' + m.outcome, '#ffffff', '#082a26'],
+      final: ['Final: ' + m.outcome, '#082a26', '#ffffff'],
+      voided: ['Voided', '#3b4a48', '#ffffff'],
+      voidedNoWinners: ['Voided: no winning stakes', '#3b4a48', '#ffffff'],
+      expired: ['Expired', '#3b4a48', '#ffffff'],
+      noStakes: ['No stakes', '#0a302b', '#a9c7c2']
+    };
+    const v = map[m.st];
+    return { label: v[0], bg: v[1], fg: v[2] };
+  }
+  card(m, s) {
+    const c = this.C();
+    const total = m.yes + m.no;
+    const yesPct = total ? Math.round(m.yes / total * 100) : 50;
+    const fee = m.yes > 0 && m.no > 0 ? c.FEE : 0;
+    const odds = (side) => (side > 0 ? 'x' + (total * (1 - fee) / side).toFixed(2) : '–');
+    const sv = this.statusView(m);
+    const busy = s.busyId === m.id;
+    const mine = m.myStake > 0 ? (m.my.yes ? 'Yes ' + this.money(m.my.yes) : '') + (m.my.yes && m.my.no ? ' · ' : '') + (m.my.no ? 'No ' + this.money(m.my.no) : '') : '';
+    let note = '';
+    if (m.st === 'provisional') note = m.outcome === 'YES' ? m.hitSan + ' on ply ' + m.hitPly + '. ' : (m.outcome === 'NO' ? 'Nothing in the window. ' : 'The game ended before the window. ');
+    if (m.st === 'provisional') note += m.pendingFinal ? 'Waiting for oracle confirmation.' : 'Chainlink CRE confirms in about 2 minutes.';
+    if (m.st === 'final') note = (m.outcome === 'YES' ? m.hitSan + ' on ply ' + m.hitPly + '.' : 'No ' + (m.kind === 'CHECK' ? 'check' : m.kind === 'CAPTURE' ? 'capture' : 'castling') + ' in the window.') + ' Confirmed by Chainlink CRE.';
+    if (m.st === 'voided') note = 'The game ended before ply ' + m.to + '. Stakes are refunded.';
+    if (m.st === 'voidedNoWinners') note = 'Nobody staked ' + (m.outcome === 'YES' ? 'Yes' : 'No') + '. Every stake is refunded.';
+    if (m.st === 'expired') note = 'No oracle result before the deadline. Stakes are refunded.';
+    if (m.st === 'noStakes') note = 'Nobody staked. This market is never sent to the oracle.';
+    if (m.st === 'waiting') note = 'Plies ' + m.from + ' to ' + m.to + ' are being played.';
+    if (m.st === 'locked') note = 'No more stakes. The window starts at ply ' + m.from + '.';
+    let result = '';
+    if (m.claimable && !m.my.done) result = 'You won ' + this.money(m.payout) + ' tUSDC';
+    else if (m.my.done === 'claimed') result = 'Claimed ' + this.money(m.my.got) + ' tUSDC';
+    else if (m.my.done === 'refunded') result = 'Refunded ' + this.money(m.my.got) + ' tUSDC';
+    else if (m.refundable) result = 'Refund ' + this.money(m.myStake) + ' tUSDC';
+    else if (m.lost) result = 'Your call was wrong';
+    const locking = m.st === 'open' && m.left <= 5;
+    return {
+      id: m.id, q: this.question(m), short: this.shortQ(m), status: sv.label, stBg: sv.bg, stFg: sv.fg,
+      yes: Math.round(m.yes), no: Math.round(m.no), pool: Math.round(total).toLocaleString('en-US'), yesPct, noPct: 100 - yesPct, yesW: yesPct + '%',
+      oddsYes: odds(m.yes), oddsNo: odds(m.no), open: m.st === 'open', openBtns: m.st === 'open' && s.simT < m.lockT - 1, closing: m.st === 'open' && s.simT >= m.lockT - 1,
+      clockColor: locking ? '#ff8a6b' : '#f2c14e', mine, hasMine: !!mine, note, hasNote: !!note, result, hasResult: !!result,
+      resultColor: m.claimable || m.my.done === 'claimed' ? '#f2c14e' : (m.lost ? '#a9c7c2' : '#ffffff'),
+      canClaim: m.claimable && !m.my.done, canRefund: m.refundable && !m.my.done, busy, notBusy: !busy,
+      pickYes: () => this.openStake(m.id, 'YES'), pickNo: () => this.openStake(m.id, 'NO'),
+      doClaim: () => this.claim(m.id), doRefund: () => this.refund(m.id), openDetail: () => this.setState({ detail: m.id }),
+      outcomeYes: m.outcome === 'YES' && (m.st === 'final' || m.st === 'provisional'), outcomeNo: m.outcome === 'NO' && (m.st === 'final' || m.st === 'provisional'),
+      dim: m.st === 'noStakes' || m.st === 'voided' || m.st === 'voidedNoWinners' || m.st === 'expired',
+      cardBg: (m.st === 'noStakes' || m.st === 'voided' || m.st === 'voidedNoWinners' || m.st === 'expired') ? '#0a302b' : '#12463f'
+    };
+  }
+
+  renderVals() {
+    const s = this.state, c = this.C(), P = this.plies();
+    const narrow = this.isNarrow();
+    const seen = this.seenT(s);
+    const ply = this.plyAt(seen);
+    const ended = this.ended(seen);
+    const ms = this.allMarkets(s);
+    const cards = ms.map((m) => ({ m, v: this.card(m, s) }));
+    const open = cards.filter((x) => x.m.st === 'open').map((x) => x.v).reverse();
+    const inPlay = cards.filter((x) => ['locked', 'waiting', 'provisional'].indexOf(x.m.st) >= 0).map((x) => x.v).reverse();
+    const settled = cards.filter((x) => ['final', 'voided', 'voidedNoWinners', 'expired', 'noStakes'].indexOf(x.m.st) >= 0).map((x) => x.v).reverse();
+    const mineAll = cards.filter((x) => x.m.myStake > 0);
+    const claimList = mineAll.filter((x) => x.m.claimable && !x.m.my.done).map((x) => x.v);
+    const refundList = mineAll.filter((x) => x.m.refundable && !x.m.my.done).map((x) => x.v);
+    const activeList = mineAll.filter((x) => ['open', 'locked', 'waiting', 'provisional'].indexOf(x.m.st) >= 0).map((x) => x.v);
+    const historyList = mineAll.filter((x) => x.m.my.done || x.m.lost).map((x) => x.v).reverse();
+    const claimSum = claimList.reduce((a, x) => a + Number(x.result.replace(/[^0-9.]/g, '')), 0);
+    const refundSum = mineAll.filter((x) => x.m.refundable && !x.m.my.done).reduce((a, x) => a + x.m.myStake, 0);
+    const staked = mineAll.reduce((a, x) => a + x.m.myStake, 0);
+    const won = mineAll.reduce((a, x) => a + (x.m.my.done === 'claimed' ? x.m.my.got : 0) + (x.m.claimable && !x.m.my.done ? x.m.payout : 0), 0);
+    const lostSum = mineAll.filter((x) => x.m.lost).reduce((a, x) => a + x.m.myStake, 0);
+
+    const fen = P[ply][0], uci = P[ply][1];
+    const cap = this.captured(fen);
+    const moves = [];
+    for (let p = Math.max(1, ply - 11); p <= ply; p++) {
+      const fl = P[p][3];
+      moves.push({ ply: p, label: (p % 2 ? this.mv(p) + '. ' : '') + P[p][2], tag: fl.indexOf('k') >= 0 ? 'check' : (fl.indexOf('x') >= 0 ? 'capture' : (fl === 'W' || fl === 'B' ? 'castle' : '')), cur: p === ply, bg: p === ply ? '#f2c14e' : '#0a302b', fg: p === ply ? '#082a26' : '#ffffff' });
+    }
+    moves.reverse();
+    moves.forEach((x) => { x.hasTag = !!x.tag; });
+    const nextSpawn = ply % 4 === 0 && !ended ? ply + 4 : Math.ceil((ply + 1) / 4) * 4;
+
+    /* stake dialog */
+    let sk = null;
+    if (s.stake) {
+      const m = ms.find((x) => x.id === s.stake.id);
+      if (m) {
+        const amt = Math.round(Number(s.stake.amt) * 100) / 100 || 0;
+        const isYes = s.stake.side === 'YES';
+        const side = isYes ? m.yes : m.no, other = isYes ? m.no : m.yes;
+        const pendAmt = s.stake.busy ? 0 : amt;
+        const tot = m.yes + m.no + pendAmt;
+        const feeOn = (side + pendAmt) > 0 && other > 0;
+        const payout = amt > 0 ? amt * tot * (feeOn ? 1 - c.FEE : 1) / (side + pendAmt) : 0;
+        const room = Math.max(0, c.CAP - m.myStake);
+        const errMsg = {
+          BettingClosed: 'This market is locked.', AmountTooSmall: 'Minimum stake is 1 tUSDC.', StakeCapExceeded: 'Maximum 100 tUSDC per market. You can add ' + this.money(room) + ' more here.',
+          INSUFFICIENT_USDC: 'Not enough tUSDC.', MarketNotOpen: 'This market no longer accepts predictions.'
+        }[s.stake.err] || '';
+        const live = this.validate(m, amt);
+        const lockedNow = m.st !== 'open' || s.simT >= m.lockT - 1;
+        const chips = [1, 5, 10].map((v) => ({ label: String(v), cls: Number(s.stake.amt) === v ? 'chip on' : 'chip', pick: () => this.stakeSet({ amt: String(v) }) }));
+        chips.push({ label: 'Max', cls: 'chip', pick: () => this.stakeSet({ amt: String(Math.max(0, Math.min(room, Math.floor(s.usdc * 100) / 100))) }) });
+        let cta = 'Stake ' + this.money(amt) + ' tUSDC on ' + (isYes ? 'Yes' : 'No');
+        if (s.account === 'none') cta = 'Create account to stake';
+        if (s.account === 'locked') cta = 'Unlock with passkey';
+        if (s.stake.busy) cta = 'Confirming on Monad…';
+        if (lockedNow && !s.stake.busy) cta = 'Locked';
+        const hint = live === 'AmountTooSmall' && amt > 0 ? 'Minimum stake is 1 tUSDC.' : (live === 'StakeCapExceeded' ? 'Maximum 100 tUSDC per market.' : (live === 'INSUFFICIENT_USDC' && s.account === 'active' ? 'Not enough tUSDC.' : ''));
+        sk = {
+          q: this.question(m), clock: lockedNow ? 'Locked' : 'Locks in 0:' + String(m.left).padStart(2, '0'), clockBg: lockedNow ? '#ffd27a' : (m.left <= 5 ? '#ff8a6b' : '#f2c14e'),
+          yesCls: isYes ? 'side yes on' : 'side yes', noCls: !isYes ? 'side no on' : 'side no', yesPressed: isYes ? 'true' : 'false', noPressed: !isYes ? 'true' : 'false',
+          yesPct: m.yes + m.no ? Math.round(m.yes / (m.yes + m.no) * 100) : 50, noPct: m.yes + m.no ? 100 - Math.round(m.yes / (m.yes + m.no) * 100) : 50,
+          setYes: () => this.stakeSet({ side: 'YES' }), setNo: () => this.stakeSet({ side: 'NO' }),
+          amt: s.stake.amt, onAmt: (e) => this.stakeSet({ amt: e.target.value.replace(/[^0-9.]/g, '').slice(0, 7) }), chips,
+          payout: this.money(payout), profit: this.money(Math.max(0, payout - amt)), feeLine: feeOn ? '2% fee is taken from the pool only when both sides have stakes.' : 'No fee while one side of the pool is empty.',
+          mine: this.money(m.myStake), room: this.money(room), bal: this.money(s.usdc), mon: s.mon.toFixed(3), gas: c.GAS.bet.toFixed(4),
+          err: errMsg, hasErr: !!errMsg, errFunds: s.stake.err === 'INSUFFICIENT_USDC', hint, hasHint: !!hint && !errMsg,
+          cta, ctaCls: s.stake.busy ? 'btn gold busy' : (lockedNow || (live && live !== 'BettingClosed' && s.account === 'active') ? 'btn gold' : 'btn gold'),
+          ctaDisabled: s.stake.busy || lockedNow || (s.account === 'active' && !!live), busy: s.stake.busy, notBusy: !s.stake.busy,
+          guest: s.account === 'none', lockedAcct: s.account === 'locked', lockedNow,
+          inputErr: !!hint || s.stake.err === 'AmountTooSmall' || s.stake.err === 'StakeCapExceeded' || s.stake.err === 'INSUFFICIENT_USDC'
+        };
+      }
+    }
+
+    /* detail dialog */
+    let dt = null;
+    if (s.detail) {
+      const m = ms.find((x) => x.id === s.detail);
+      if (m) {
+        const v = this.card(m, s);
+        const steps = [
+          { t: 'Created at ply ' + m.spawnPly, d: 'Planner batch every 4 plies. Window ' + this.range(m.from, m.to) + '.', on: true },
+          { t: 'Locked', d: m.lockT - m.spawnT >= c.LOCK_SEC ? '15 seconds after it opened.' : 'Ply ' + (m.from - 1) + ' was played.', on: s.simT >= m.lockT },
+          { t: m.provT != null && s.simT >= m.provT ? 'Provisional: ' + m.outcome : 'Provisional result', d: m.outcome === 'YES' ? m.hitSan + ' on ply ' + m.hitPly + ', seen by the resolver.' : (m.outcome === 'NO' ? 'Ply ' + m.to + ' passed with no match.' : (m.outcome === 'VOID' ? 'Game over before the window.' : 'Appears the moment the outcome is known.')), on: m.provT != null && s.simT >= m.provT },
+          { t: m.st === 'noStakes' ? 'Not sent to the oracle' : 'Final by Chainlink CRE', d: m.st === 'noStakes' ? 'Empty pool, so nothing to settle.' : (m.finalT != null && s.simT >= m.finalT ? 'Report tx 0x' + (m.spawnPly * 7919 + m.from * 104729).toString(16).padStart(8, '0') + '…' + m.kind.length + 'c4 on Monad Testnet.' : 'CRE reads the Lichess export and writes the report.'), on: (m.finalT != null && s.simT >= m.finalT) || m.st === 'noStakes' }
+        ];
+        steps.forEach((x, i) => { x.dot = x.on ? '#f2c14e' : '#2b5c55'; x.n = i + 1; x.fg = x.on ? '#ffffff' : '#a9c7c2'; });
+        dt = { ...v, steps, yesAmt: this.money(m.yes), noAmt: this.money(m.no), feeAmt: this.money(m.fee), myYes: this.money(m.my.yes), myNo: this.money(m.my.no) };
+      }
+    }
+
+    const claimMarkets = claimList.map((x) => ({ short: x.short, amt: x.result.replace('You won ', '') }));
+    const toasts = s.toasts.map((t) => ({
+      text: t.text, bg: t.kind === 'error' ? '#3b1416' : (t.kind === 'success' ? '#ffffff' : '#12463f'), fg: t.kind === 'error' ? '#ffd2cf' : (t.kind === 'success' ? '#082a26' : '#ffffff'),
+      ic: t.kind, isErr: t.kind === 'error', isOk: t.kind === 'success', isPend: t.kind === 'pending', isInfo: t.kind === 'info',
+      hasAction: t.action === 'retryTokens', action: () => this.getTokens(), close: () => this.setState({ toasts: this.state.toasts.filter((x) => x.id !== t.id) })
+    }));
+
+    const onbSteps = (() => {
+      const st = s.onb.step, e = s.onb.error;
+      const order = ['intro', 'faucet', 'approve', 'ready'];
+      const idx = order.indexOf(st);
+      const row = (n, title, detail, state) => ({ n, title, detail, done: state === 'done', cur: state === 'cur', fail: state === 'fail', mark: state === 'done' || state === 'fail' ? '' : String(n),
+        dotBg: state === 'done' ? '#f2c14e' : (state === 'cur' ? '#ffffff' : (state === 'fail' ? '#3b1416' : '#0a302b')), dotFg: state === 'fail' ? '#ff9c94' : (state === 'todo' ? '#a9c7c2' : '#082a26'),
+        progress: Math.round((s.onb.blocks / 3) * 100) + '%', busy: state === 'cur' && st === 'faucet' && !e });
+      return [
+        row(1, idx >= 1 ? 'Passkey created' : 'Create a passkey', idx >= 1 ? 'Account 0x7a3f…c91e. The key stays on your device.' : 'Face ID, Touch ID or your screen lock. No seed phrase.', idx >= 1 ? 'done' : 'cur'),
+        row(2, 'Test tokens', e === 'FAUCET_FAILED' ? 'Test tokens were not sent yet. Please try again in a moment.' : (idx > 1 ? '50 tUSDC and 0.5 MON received.' : (st === 'faucet' ? 'Sending 50 tUSDC and 0.5 MON. Block ' + Math.max(1, s.onb.blocks) + ' of 3.' : '50 tUSDC to stake and 0.5 MON for gas.')), e === 'FAUCET_FAILED' ? 'fail' : (idx > 1 ? 'done' : (idx === 1 ? 'cur' : 'todo'))),
+        row(3, 'Allow staking', idx > 2 ? 'tUSDC approved once. Stakes go straight through from now on.' : (st === 'approve' ? 'Approving tUSDC for MoveMarket…' : 'One approval so each stake is a single tap.'), idx > 2 ? 'done' : (idx === 2 ? 'cur' : 'todo'))
+      ];
+    })();
+    const onbErr = { PASSKEY_CANCELLED: 'Account creation was cancelled.', PRF_UNAVAILABLE: 'This passkey provider is not supported yet. Try saving the passkey in iCloud Keychain, Google Password Manager, or 1Password.', CRYPTO_UNAVAILABLE: 'This browser cannot create passkey accounts. Try a recent Chrome or Safari.', FAUCET_FAILED: 'Test tokens were not sent yet. Please try again in a moment.' }[s.onb.error] || '';
+
+    const sim = s.sim;
+    const tog = (on) => (on ? 'ctl on' : 'ctl');
+    const ctl = [
+      { group: 'Jump to', items: [['go.landing', 'Landing', s.screen === 'landing'], ['go.onboard', 'Onboarding', s.screen === 'onboard'], ['go.home', 'Games', s.screen === 'home'], ['go.game', 'Game', s.screen === 'game'], ['go.me', 'Positions', s.screen === 'me']] },
+      { group: 'Replay clock', items: [['pause', s.paused ? 'Play' : 'Pause', s.paused], ['speed1', '1x', s.speed === 1], ['speed2', '2x', s.speed === 2], ['speed4', '4x', s.speed === 4], ['nextPly', 'Next ply', false], ['finals', 'CRE finals now', false], ['end', 'Jump to game end', false]] },
+      { group: 'Passkey and faucet', items: [['sim.noPrf', 'Provider without PRF', sim.noPrf], ['sim.noCrypto', 'No Web Crypto', sim.noCrypto], ['sim.faucetFail', 'Faucet fails', sim.faucetFail], ['sim.mismatch', 'Unlock gives other account', sim.mismatch], ['returning', 'Returning user (reload)', false]] },
+      { group: 'Network and chain', items: [['offline', 'Resolver offline', s.offlineFrom != null], ['sse', 'Drop live stream', s.reconnecting], ['session', 'End session', s.account === 'locked'], ['drainGas', 'Drain gas to 0.031 MON', false], ['drainUsdc', 'Set tUSDC to 3', false], ['sim.lockDuringStake', 'Lock hits during next stake', sim.lockDuringStake], ['deadline', 'Past resolve deadline', s.pastDeadline]] },
+      { group: '', items: [['reset', 'Reset prototype', false]] }
+    ].map((g) => ({ group: g.group, hasGroup: !!g.group, items: g.items.map(([k, label, on]) => ({ label, cls: tog(on), pressed: on ? 'true' : 'false', act: () => this.control(k) })) }));
+
+    const acct = s.account;
+    const featured = open[0] || null;
+    const gameOver = ended;
+    const replayClock = Math.floor(s.simT / c.PLY_SEC);
+    return {
+      narrow, wide: !narrow, gutter: narrow ? '16px' : '28px',
+      isLanding: s.screen === 'landing', isOnb: s.screen === 'onboard', isHome: s.screen === 'home', isGame: s.screen === 'game', isMe: s.screen === 'me', isApp: s.screen !== 'landing',
+      onStart: () => this.start(),
+      goHome: () => this.go('home'), goGame: () => this.go('game'), goMe: () => this.go('me'), goLanding: () => this.go('landing'),
+      navGames: s.screen === 'home' || s.screen === 'game' ? 'nav on' : 'nav', navMe: s.screen === 'me' ? 'nav on' : 'nav',
+      tabGames: s.screen === 'home' || s.screen === 'game' ? 'tab on' : 'tab', tabMe: s.screen === 'me' ? 'tab on' : 'tab',
+      gamesCurrent: s.screen === 'home' || s.screen === 'game' ? 'page' : 'false', meCurrent: s.screen === 'me' ? 'page' : 'false',
+      acctNone: acct === 'none', acctLocked: acct === 'locked', acctActive: acct === 'active',
+      usdc: this.money(s.usdc), mon: s.mon.toFixed(3), addr: '0x7a3f…c91e', lowGas: s.mon < c.GAS_MIN,
+      createAcct: () => this.setState({ onb: { step: 'intro', error: '', blocks: 0 } }, () => this.go('onboard')),
+      unlock: () => this.setState({ sheet: { mode: 'unlock' } }),
+      toggleMenu: () => this.setState({ menu: !s.menu }), menuOpen: s.menu, closeMenu: () => this.setState({ menu: false }),
+      copyAddr: () => { this.setState({ menu: false }); this.toast('success', 'Address copied.'); },
+      getTokens: () => this.getTokens(), menuExpanded: s.menu ? 'true' : 'false',
+      claimBadge: claimList.length + refundList.length, hasClaimBadge: claimList.length + refundList.length > 0,
+      /* banners */
+      offline: s.offlineFrom != null, reconnecting: s.reconnecting, sessionEnded: acct === 'locked',
+      /* onboarding */
+      onbSteps, onbErr, hasOnbErr: !!onbErr, onbIntro: s.onb.step === 'intro', onbFaucet: s.onb.step === 'faucet', onbApprove: s.onb.step === 'approve', onbReady: s.onb.step === 'ready',
+      onbFaucetFail: s.onb.error === 'FAUCET_FAILED', onbBusy: (s.onb.step === 'faucet' && !s.onb.error) || s.onb.step === 'approve', onbIntent: !!s.intent,
+      createPasskey: () => this.createAccount(), retryFaucet: () => this.retryFaucet(), finishOnb: () => this.finishOnboarding(), watchFirst: () => this.go('game'),
+      readyCta: s.intent ? 'Back to your prediction' : 'See live games',
+      /* passkey sheet */
+      sheet: !!s.sheet, sheetCreate: s.sheet && s.sheet.mode === 'create', sheetUnlock: s.sheet && s.sheet.mode === 'unlock', sheetBusy: !!(s.sheet && s.sheet.busy), sheetIdle: !(s.sheet && s.sheet.busy),
+      sheetCancel: () => this.sheetCancel(), sheetContinue: () => this.sheetContinue(),
+      mismatch: s.mismatch, mismatchRetry: () => this.setState({ mismatch: false, sheet: { mode: 'unlock' } }),
+      mismatchNew: () => this.setState({ mismatch: false, account: 'none', usdc: 0, mon: 0, pos: {}, sim: { ...s.sim, mismatch: false }, onb: { step: 'intro', error: '', blocks: 0 } }, () => this.go('onboard')),
+      /* game */
+      restarting: s.restarting, ply, move: this.mv(ply), lastSan: P[ply][2] || 'start', toMove: ply % 2 ? 'Black to move' : 'White to move',
+      squares: this.board(fen, uci), moves, capW: cap.byWhite, capB: cap.byBlack, matW: cap.diff > 0 ? '+' + cap.diff : '', matB: cap.diff < 0 ? '+' + (-cap.diff) : '',
+      whiteToMove: ply % 2 === 0 && !gameOver, blackToMove: ply % 2 === 1 && !gameOver,
+      wRing: ply % 2 === 0 && !gameOver ? 'inset 0 0 0 2px #f2c14e' : 'none', bRing: ply % 2 === 1 && !gameOver ? 'inset 0 0 0 2px #f2c14e' : 'none',
+      gameOver, gameLive: !gameOver, nextSpawn, nextSpawnIn: Math.max(0, (nextSpawn - ply) * c.PLY_SEC - Math.floor(seen % c.PLY_SEC)),
+      plyProgress: Math.round(((seen % c.PLY_SEC) / c.PLY_SEC) * 100) + '%',
+      open, inPlay, settled, hasOpen: open.length > 0, noOpen: open.length === 0, hasInPlay: inPlay.length > 0, hasSettled: settled.length > 0,
+      openCount: open.length, inPlayCount: inPlay.length, settledCount: settled.length,
+      view3d: s.view3d, view2d: !s.view3d, canvasRef: this.canvasRef,
+      set2d: () => this.setState({ view3d: false }), set3d: () => this.setState({ view3d: true }), b2Cls: s.view3d ? 'seg' : 'seg on', b3Cls: s.view3d ? 'seg on' : 'seg',
+      restart: () => this.restartReplay(),
+      featured, hasFeatured: !!featured, homeOpen: open.slice(0, 4),
+      replayClock,
+      /* me */
+      claimList, refundList, activeList, historyList, hasClaim: claimList.length > 0, hasRefund: refundList.length > 0, hasActive: activeList.length > 0, hasHistory: historyList.length > 0,
+      noPositions: mineAll.length === 0, claimSum: this.money(claimSum), refundSum: this.money(refundSum), staked: this.money(staked), won: this.money(won), lost: this.money(lostSum),
+      claimAllCls: claimList.length ? 'btn gold' : 'btn gold', claimAllDisabled: claimList.length === 0,
+      openClaimAll: () => this.setState({ claimAll: true }), claimAll: !!s.claimAll, claimAllBusy: s.claimAll === 'busy', claimAllIdle: s.claimAll !== 'busy',
+      claimAllGo: () => this.claimAllNow(), claimAllClose: () => this.setState({ claimAll: false }), claimMarkets, claimGas: c.GAS.claimMany.toFixed(3),
+      /* dialogs */
+      sk, hasStake: !!sk, closeStake: () => this.setState({ stake: null, pending: null }), submitStake: () => this.submitStake(),
+      dt, hasDetail: !!dt, closeDetail: () => this.setState({ detail: null }),
+      toasts, hasToasts: toasts.length > 0,
+      /* controls */
+      ctl, ctlOpen: s.ctl.open, ctlClosed: !s.ctl.open, toggleCtl: () => this.setState({ ctl: { open: !s.ctl.open } }),
+      speedLabel: s.paused ? 'Paused' : s.speed + 'x', simClock: 'ply ' + this.plyAt(s.simT),
+      /* layout */
+      landingLayout: narrow ? 'narrow' : 'wide', tabPad: narrow ? '62px' : '0px', mainPad: narrow ? '18px 16px 28px' : '26px 28px 40px',
+      onbH: narrow ? '44px' : '60px', h1Size: narrow ? '40px' : '56px', gameH: narrow ? '28px' : '34px', boardMax: narrow ? '100%' : '600px',
+      miniBoard: narrow ? '100%' : '300px', homeCols: narrow ? 'repeat(1, minmax(0, 1fr))' : 'repeat(2, minmax(0, 1fr))', meCols: narrow ? 'repeat(1, minmax(0, 1fr))' : 'repeat(3, minmax(0, 1fr))',
+      notRestarting: !s.restarting, hasMatB: !!cap.diff && cap.diff < 0, hasMatW: cap.diff > 0,
+      view2dPressed: s.view3d ? 'false' : 'true', view3dPressed: s.view3d ? 'true' : 'false',
+      noOpenText: ended ? 'The game is over. No new markets.' : 'Nothing open. The next batch opens at ply ' + nextSpawn + '.',
+      noInPlay: inPlay.length === 0, noSettled: settled.length === 0, hasAcct: acct !== 'none', claimCount: claimList.length,
+      meSections: [['Ready to claim', claimList], ['Refunds', refundList], ['In play', activeList], ['History', historyList]].filter((x) => x[1].length).map((x) => ({ title: x[0], count: x[1].length, rows: x[1] })),
+      amtCls: sk && sk.inputErr ? 'amt bad' : 'amt', amtInvalid: sk && sk.inputErr ? 'true' : 'false',
+      dlgAlign: narrow ? 'flex-end' : 'center', dlgPad: narrow ? '0' : '24px', dlgRadius: narrow ? '12px 12px 0 0' : '8px',
+      sheetAlign: narrow ? 'flex-end' : 'center', sheetPad: narrow ? '12px' : '24px',
+      claimAllLabel: s.claimAll === 'busy' ? 'Claiming…' : 'Claim all',
+      toastRight: narrow ? '12px' : '24px', toastLeft: narrow ? '12px' : 'auto', toastBottom: narrow ? '74px' : '24px', ctlBottom: narrow ? '74px' : '16px'
+    };
+  }
+}
+</script>
+</body>
+</html>

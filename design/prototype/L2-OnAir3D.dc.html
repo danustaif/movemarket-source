@@ -1,0 +1,703 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MoveMarket · Landing · On Air 3D</title>
+<script src="./support.js"></script>
+<script src="/_blob/2003b1eee037616f5e55ea6dd1f98d7f"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0d3a35}
+a{color:#ffffff}a:hover{color:#f2c14e}
+button{font-family:inherit;cursor:pointer}
+::selection{background:#f2c14e;color:#0d3a35}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #0d3a35; color: #ffffff; font-family: Archivo, system-ui, sans-serif; font-size: 17px; line-height: 1.5; font-variant-numeric: tabular-nums">
+
+<header style="background: #082a26; position: relative; z-index: 3">
+<div style="max-width: 1440px; margin: 0 auto; padding: 0 {{gutter}}; min-height: 60px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 30px">
+<a href="#top" style="text-decoration: none; font-weight: 800; font-size: 22px; font-stretch: 75%; text-transform: uppercase; letter-spacing: 0.02em">MoveMarket <span style="color: #f2c14e">Live</span></a>
+<sc-if value="{{wide}}" hint-placeholder-val="{{true}}">
+<nav aria-label="Main" style="display: flex; gap: 22px; font-weight: 600; font-size: 15px">
+<a href="#board" style="text-decoration: none; color: #d3e5e2">Next to lock</a>
+<a href="#settle" style="text-decoration: none; color: #d3e5e2">How results work</a>
+</nav>
+</sc-if>
+<div style="flex: 1 1 auto"></div>
+<sc-if value="{{wide}}" hint-placeholder-val="{{true}}"><span style="font-size: 14px; color: #a9c7c2">Monad Testnet</span></sc-if>
+<a href="#top" onClick="{{start}}" style="display: inline-flex; align-items: center; min-height: 40px; padding: 0 16px; border-radius: 4px; background: #f2c14e; color: #082a26; font-weight: 800; font-stretch: 85%; text-decoration: none">Create account</a>
+</div>
+</header>
+
+<section id="top" aria-labelledby="hero-h" style="position: relative; background: #0d3a35; overflow: hidden">
+
+<sc-if value="{{wide}}" hint-placeholder-val="{{true}}">
+<div style="position: relative; height: 860px; max-width: 1600px; margin: 0 auto">
+<div aria-hidden="true" style="position: absolute; left: 0; right: 0; top: 0; bottom: 130px">
+<sc-if value="{{use3d}}" hint-placeholder-val="{{true}}"><canvas ref="{{canvasRef}}" style="display: block; width: 100%; height: 100%; touch-action: pan-y; cursor: grab"></canvas></sc-if>
+</div>
+<sc-if value="{{no3d}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; right: 80px; top: 60px; width: 560px; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); grid-template-rows: repeat(8, minmax(0, 1fr)); aspect-ratio: 1 / 1; border-radius: 4px; overflow: hidden">
+<sc-for list="{{squares}}" as="sq" hint-placeholder-count="64"><div style="position: relative; background: {{sq.bg}}"><sc-if value="{{sq.has}}" hint-placeholder-val="{{false}}"><img src="{{sq.src}}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%"></sc-if></div></sc-for>
+</div>
+</sc-if>
+
+<div style="position: absolute; left: 56px; top: 52px; width: 500px; display: flex; flex-direction: column; gap: 18px">
+<div style="display: flex; align-items: center; gap: 10px"><span style="font-weight: 800; font-stretch: 70%; text-transform: uppercase; font-size: 13px; letter-spacing: 0.06em; background: #c8301f; padding: 2px 7px; border-radius: 2px">Replay</span><b style="font-weight: 800; font-stretch: 75%; text-transform: uppercase; font-size: 18px">Table 1</b><span style="color: #a9c7c2; font-size: 15px">bullet_baron vs nocturne_qd</span></div>
+<h1 id="hero-h" style="margin: 0; font-weight: 900; font-stretch: 66%; text-transform: uppercase; font-size: 104px; line-height: 0.86">Every move<br>is a <span style="color: #f2c14e">market.</span></h1>
+<p style="margin: 0; font-size: 19px; font-weight: 500; color: #d3e5e2; max-width: 440px">Call the next four plies of a live chess game. Yes or No, 15 seconds to decide. Chainlink CRE confirms every result on Monad.</p>
+<div style="display: flex; flex-wrap: wrap; gap: 14px; align-items: center"><a href="#top" onClick="{{start}}" style="display: inline-flex; align-items: center; min-height: 56px; padding: 0 30px; border-radius: 4px; background: #f2c14e; color: #082a26; font-weight: 900; font-stretch: 75%; text-transform: uppercase; font-size: 22px; text-decoration: none">Start</a><a href="#board" style="font-weight: 600">See what is about to lock</a></div>
+</div>
+
+<ol aria-label="Last plies" style="position: absolute; left: 56px; bottom: 152px; width: 300px; list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 3px">
+<sc-for list="{{tower}}" as="r" hint-placeholder-count="4">
+<li style="display: grid; grid-template-columns: 40px 18px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 6px 10px; background: {{r.bg}}; color: {{r.fg}}; border-radius: 3px; font-size: 15px">
+<span style="font-weight: 900; font-stretch: 75%">{{r.ply}}</span>
+<span style="width: 12px; height: 12px; border-radius: 2px; background: {{r.side}}; box-shadow: inset 0 0 0 1px #5d8580"></span>
+<span style="font-weight: 700">{{r.san}}</span>
+<span style="font-weight: 800; font-size: 12px; font-stretch: 75%; text-transform: uppercase; color: {{r.tagColor}}">{{r.tag}}</span>
+</li>
+</sc-for>
+</ol>
+
+<span aria-hidden="true" style="position: absolute; right: 48px; top: 28px; font-size: 13px; font-weight: 600; color: #a9c7c2; pointer-events: none">Drag the board to turn it</span>
+
+<div style="position: absolute; left: 28px; right: 28px; bottom: 24px; display: flex; flex-direction: column; gap: 0; border-radius: 6px; overflow: hidden; box-shadow: 0 18px 40px rgba(0,0,0,0.28)">
+<div aria-live="polite" style="display: flex; gap: 0; background: #082a26; font-size: 14px">
+<span style="flex: 0 0 auto; padding: 7px 14px; font-weight: 900; font-stretch: 70%; text-transform: uppercase; background: #12463f">Results</span>
+<sc-for list="{{results}}" as="x" hint-placeholder-count="3">
+<span style="flex: 1 1 0; min-width: 0; padding: 7px 14px; border-left: 1px solid #1d5a51; white-space: nowrap; overflow: hidden; text-overflow: ellipsis"><b style="color: {{x.color}}; font-weight: 800">{{x.state}}</b> · {{x.q}}</span>
+</sc-for>
+</div>
+<div style="display: flex; align-items: stretch; background: #ffffff; color: #082a26; min-height: 80px">
+<div style="flex: 0 0 auto; min-width: 170px; background: {{lt.tabBg}}; color: {{lt.tabFg}}; padding: 12px 18px; display: flex; flex-direction: column; justify-content: center"><span style="font-weight: 900; font-stretch: 70%; text-transform: uppercase; font-size: 24px; line-height: 1">{{lt.tab}}</span><span style="font-weight: 700; font-size: 14px">{{lt.sub}}</span></div>
+<div style="flex: 1 1 auto; padding: 10px 18px; display: flex; flex-direction: column; justify-content: center"><b style="font-weight: 800; font-size: 24px; line-height: 1.15">{{lt.q}}</b><span style="font-size: 14px; color: #3d5c58">{{lt.line}}</span></div>
+<div style="flex: 0 0 auto; display: flex; align-items: center; gap: 10px; padding: 10px 18px; background: #eef4f3">
+<a href="#top" onClick="{{start}}" style="display: inline-flex; align-items: center; justify-content: center; min-height: 52px; min-width: 130px; border-radius: 4px; border: 2px solid #082a26; background: #f2c14e; color: #082a26; font-weight: 800; font-size: 18px; text-decoration: none">Yes {{yesPct}}%</a>
+<a href="#top" onClick="{{start}}" style="display: inline-flex; align-items: center; justify-content: center; min-height: 52px; min-width: 130px; border-radius: 4px; border: 2px solid #082a26; background: #ffffff; color: #082a26; font-weight: 800; font-size: 18px; text-decoration: none">No {{noPct}}%</a>
+</div>
+</div>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{narrow}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column">
+<div style="padding: 20px 16px 0; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; align-items: center; gap: 8px; font-size: 14px"><span style="font-weight: 800; font-stretch: 70%; text-transform: uppercase; font-size: 12px; background: #c8301f; padding: 2px 6px; border-radius: 2px">Replay</span><b style="font-stretch: 75%; text-transform: uppercase; font-size: 16px">Table 1</b><span style="color: #a9c7c2">ply {{ply}} · {{lastSan}}</span></div>
+<h1 style="margin: 0; font-weight: 900; font-stretch: 66%; text-transform: uppercase; font-size: 60px; line-height: 0.86">Every move<br>is a <span style="color: #f2c14e">market.</span></h1>
+</div>
+<div style="position: relative; height: 360px">
+<sc-if value="{{use3d}}" hint-placeholder-val="{{true}}"><canvas ref="{{canvasRef}}" aria-hidden="true" style="display: block; width: 100%; height: 100%; touch-action: pan-y; cursor: grab"></canvas></sc-if>
+<sc-if value="{{no3d}}" hint-placeholder-val="{{false}}">
+<div style="margin: 12px auto 0; width: 340px; height: 340px; display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); grid-template-rows: repeat(8, minmax(0, 1fr))">
+<sc-for list="{{squares}}" as="sq" hint-placeholder-count="64"><div style="position: relative; background: {{sq.bg}}"><sc-if value="{{sq.has}}" hint-placeholder-val="{{false}}"><img src="{{sq.src}}" alt="" style="position: absolute; inset: 0; width: 100%; height: 100%"></sc-if></div></sc-for>
+</div>
+</sc-if>
+</div>
+<div style="margin: 0 16px; border-radius: 6px; overflow: hidden; background: #ffffff; color: #082a26">
+<div style="display: flex; justify-content: space-between; background: {{lt.tabBg}}; color: {{lt.tabFg}}; padding: 7px 12px; font-weight: 900; font-stretch: 70%; text-transform: uppercase; font-size: 17px"><span>{{lt.tab}}</span><span>{{lt.sub}}</span></div>
+<div style="padding: 8px 12px 4px; font-weight: 800; font-size: 17px; line-height: 1.2">{{lt.q}}</div>
+<div style="padding: 0 12px 10px; font-size: 13px; color: #3d5c58">{{lt.line}}</div>
+<div style="padding: 0 12px 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px"><a href="#top" onClick="{{start}}" style="text-align: center; padding: 12px 0; border: 2px solid #082a26; border-radius: 4px; background: #f2c14e; color: #082a26; font-weight: 800; text-decoration: none">Yes {{yesPct}}%</a><a href="#top" onClick="{{start}}" style="text-align: center; padding: 12px 0; border: 2px solid #082a26; border-radius: 4px; background: #ffffff; color: #082a26; font-weight: 800; text-decoration: none">No {{noPct}}%</a></div>
+</div>
+<div style="padding: 14px 16px 24px; display: flex; flex-direction: column; gap: 10px">
+<p style="margin: 0; font-size: 16px; font-weight: 500; color: #d3e5e2">Yes or No on the next four plies. 15 seconds to decide. Chainlink CRE confirms every result on Monad.</p>
+<a href="#top" onClick="{{start}}" style="display: flex; align-items: center; justify-content: center; min-height: 54px; border-radius: 4px; background: #f2c14e; color: #082a26; font-weight: 900; font-stretch: 75%; text-transform: uppercase; font-size: 20px; text-decoration: none">Start</a>
+</div>
+</div>
+</sc-if>
+</section>
+
+<section id="board" aria-labelledby="board-h" style="background: #061f1c">
+<div style="max-width: 1380px; margin: 0 auto; padding: 44px {{gutter}} 52px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; align-items: baseline; justify-content: space-between; gap: 8px 16px; flex-wrap: wrap"><h2 id="board-h" style="margin: 0; font-weight: 900; font-stretch: 70%; text-transform: uppercase; font-size: {{h2Size}}; line-height: 1">Next to lock</h2><span style="color: #a9c7c2">All tables, soonest first</span></div>
+<div style="overflow-x: auto">
+<div role="table" aria-label="Markets closing soon" style="min-width: {{tableMin}}; display: flex; flex-direction: column; gap: 3px">
+<div role="row" style="display: grid; grid-template-columns: 90px 110px minmax(0, 1fr) 80px 80px; gap: 12px; padding: 6px 14px; font-size: 13px; color: #a9c7c2; font-weight: 600"><span role="columnheader">Locks in</span><span role="columnheader">Table</span><span role="columnheader">Market</span><span role="columnheader">Yes</span><span role="columnheader">No</span></div>
+<sc-for list="{{departures}}" as="d" hint-placeholder-count="5">
+<div role="row" style="display: grid; grid-template-columns: 90px 110px minmax(0, 1fr) 80px 80px; gap: 12px; align-items: center; padding: 12px 14px; background: #0d2f2b; border-radius: 3px; font-size: 18px; font-weight: 700">
+<span role="cell" style="font-weight: 900; font-stretch: 75%; font-size: 26px; color: {{d.clockColor}}">0:{{d.clock}}</span>
+<span role="cell" style="font-stretch: 75%; text-transform: uppercase; font-weight: 800">{{d.table}}</span>
+<span role="cell">{{d.q}}</span>
+<span role="cell" style="color: #f2c14e">{{d.yes}}%</span>
+<span role="cell" style="color: #ff8a6b">{{d.no}}%</span>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+</section>
+
+<section id="settle" aria-labelledby="settle-h" style="max-width: 1380px; margin: 0 auto; padding: 52px {{gutter}} 60px; display: flex; flex-direction: column; gap: 28px">
+<h2 id="settle-h" style="margin: 0; font-weight: 900; font-stretch: 70%; text-transform: uppercase; font-size: {{h2Size}}; line-height: 1">From ply to payout</h2>
+<div style="position: relative; display: grid; grid-template-columns: {{stationCols}}; gap: 22px 18px">
+<sc-if value="{{wide}}" hint-placeholder-val="{{true}}"><div aria-hidden="true" style="position: absolute; left: 8px; right: 8px; top: 7px; height: 2px; background: #2b5c55"></div></sc-if>
+<sc-for list="{{stations}}" as="s" hint-placeholder-count="5">
+<div style="position: relative; display: flex; flex-direction: column; gap: 8px"><span style="width: 16px; height: 16px; border-radius: 50%; background: {{s.dot}}; box-shadow: 0 0 0 4px #0d3a35"></span><b style="font-weight: 900; font-stretch: 75%; text-transform: uppercase; font-size: 22px; line-height: 1.05; color: {{s.color}}">{{s.title}}</b><span style="font-size: 15px; color: #d3e5e2; font-weight: 500">{{s.text}}</span></div>
+</sc-for>
+</div>
+</section>
+
+<section aria-labelledby="cta-h" style="background: #f2c14e; color: #082a26">
+<div style="max-width: 1380px; margin: 0 auto; padding: 40px {{gutter}}; display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: space-between">
+<h2 id="cta-h" style="margin: 0; font-weight: 900; font-stretch: 68%; text-transform: uppercase; font-size: {{ctaSize}}; line-height: 0.9">Face ID in.<br>First call in a minute.</h2>
+<a href="#top" onClick="{{start}}" style="display: inline-flex; align-items: center; min-height: 58px; padding: 0 32px; border-radius: 4px; background: #082a26; color: #ffffff; font-weight: 900; font-stretch: 75%; text-transform: uppercase; font-size: 22px; text-decoration: none">Create account</a>
+</div>
+</section>
+<footer style="max-width: 1380px; margin: 0 auto; padding: 20px {{gutter}} 32px; display: flex; flex-wrap: wrap; gap: 8px 28px; font-size: 14px; color: #a9c7c2">
+<span>Monad Testnet only. Test tokens have no value.</span><span>Game data from Lichess</span><span>Final results by Chainlink CRE</span><span>Player names and pools are sample data</span>
+</footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"layout":{"editor":"enum","options":["auto","wide","narrow"],"default":"auto"},"onStart":{"editor":null},"$preview":{"width":1440,"height":1900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { T: 0, no3d: false, vw: (typeof window !== 'undefined' ? window.innerWidth : 1440) };
+    this.scene = null;
+    this.canvasEl = null;
+    this.lastPly = -1;
+    this.canvasRef = (el) => {
+      if (el === this.canvasEl) return;
+      if (this.scene) { this.scene.dispose(); this.scene = null; }
+      this.canvasEl = el;
+      if (el) this.mount3d(el);
+    };
+    this.onResize = () => this.setState({ vw: window.innerWidth });
+  }
+  componentDidMount() {
+    this.timer = setInterval(() => this.setState((s) => ({ T: s.T + 1 }), () => this.sync()), 1000);
+    window.addEventListener('resize', this.onResize);
+  }
+  componentWillUnmount() {
+    clearInterval(this.timer);
+    window.removeEventListener('resize', this.onResize);
+    if (this.scene) this.scene.dispose();
+  }
+  plies() {
+    return {"28": ["r3k2r/pppqnp2/3p2pn/3Pp3/2P1P3/2NB1Q1P/PP4P1/2R2RK1", "g8h6", "Nh6", ""], "29": ["r3k2r/pppqnp2/3p2pn/3Pp3/1PP1P3/2NB1Q1P/P5P1/2R2RK1", "b2b4", "b4", ""], "30": ["r3k2r/pppqn3/3p2pn/3Ppp2/1PP1P3/2NB1Q1P/P5P1/2R2RK1", "f7f5", "f5", ""], "31": ["r3k2r/pppqn3/3p2pn/3PpP2/1PP5/2NB1Q1P/P5P1/2R2RK1", "e4f5", "exf5", "x"], "32": ["r3k2r/pppqn3/3p3n/3Ppp2/1PP5/2NB1Q1P/P5P1/2R2RK1", "g6f5", "gxf5", "x"], "33": ["r3k2r/pppqn3/3p3n/3Ppp1Q/1PP5/2NB3P/P5P1/2R2RK1", "f3h5", "Qh5+", "k"], "34": ["r3k2r/pppqnn2/3p4/3Ppp1Q/1PP5/2NB3P/P5P1/2R2RK1", "h6f7", "Nf7", ""], "35": ["r3k2r/pppqnn2/3p4/3Ppp2/1PP5/2NB3P/P3Q1P1/2R2RK1", "h5e2", "Qe2", ""], "36": ["2kr3r/pppqnn2/3p4/3Ppp2/1PP5/2NB3P/P3Q1P1/2R2RK1", "e8c8", "O-O-O", "B"], "37": ["2kr3r/pppqnn2/3p4/2PPpp2/1P6/2NB3P/P3Q1P1/2R2RK1", "c4c5", "c5", ""], "38": ["1k1r3r/pppqnn2/3p4/2PPpp2/1P6/2NB3P/P3Q1P1/2R2RK1", "c8b8", "Kb8", ""], "39": ["1k1r3r/pppqnn2/2Pp4/3Ppp2/1P6/2NB3P/P3Q1P1/2R2RK1", "c5c6", "c6", ""], "40": ["1kqr3r/ppp1nn2/2Pp4/3Ppp2/1P6/2NB3P/P3Q1P1/2R2RK1", "d7c8", "Qc8", ""], "41": ["1kqr3r/pPp1nn2/3p4/3Ppp2/1P6/2NB3P/P3Q1P1/2R2RK1", "c6b7", "cxb7", "x"], "42": ["1k1r3r/pqp1nn2/3p4/3Ppp2/1P6/2NB3P/P3Q1P1/2R2RK1", "c8b7", "Qxb7", "x"], "43": ["1k1r3r/pqp1nn2/B2p4/3Ppp2/1P6/2N4P/P3Q1P1/2R2RK1", "d3a6", "Ba6", ""], "44": ["1k1r3r/p1p1nn2/Bq1p4/3Ppp2/1P6/2N4P/P3Q1P1/2R2RK1", "b7b6", "Qb6+", "k"], "45": ["1k1r3r/p1p1nn2/Bq1p4/3Ppp2/1P6/2N4P/P3Q1PK/2R2R2", "g1h2", "Kh2", ""], "46": ["1k1r3r/p1p1n3/Bq1p4/3Pppn1/1P6/2N4P/P3Q1PK/2R2R2", "f7g5", "Ng5", ""], "47": ["1k1r3r/p1p1n3/Bq1p4/3Pppn1/NP6/7P/P3Q1PK/2R2R2", "c3a4", "Na4", ""], "48": ["1k1r3r/p1p1n3/B2p4/3Pppn1/NP1q4/7P/P3Q1PK/2R2R2", "b6d4", "Qd4", ""]};
+  }
+  clock(T) {
+    const START = 28, END = 48, PLY_SEC = 4;
+    const cycle = (END - START + 1) * PLY_SEC;
+    const tc = T % cycle;
+    return { ply: START + Math.floor(tc / PLY_SEC), tc, PLY_SEC, START };
+  }
+  markets(T) {
+    const P = this.plies();
+    const { ply, tc, PLY_SEC, START } = this.clock(T);
+    const out = [];
+    for (let p = START; p <= ply; p += 4) {
+      const spawnT = (p - START) * PLY_SEC;
+      const from = p + 5, to = p + 8;
+      const kinds = [['CHECK', 'k', 'Any check', 0.31], ['CAPTURE', 'x', 'Any capture', 0.62]];
+      if (p < 36) kinds.push(['CASTLE', 'B', 'Black castles', 0.47]);
+      kinds.forEach(([kind, flag, label, base]) => {
+        const end = kind === 'CASTLE' ? p + 12 : to;
+        const lockT = Math.min(spawnT + 15, (from - 1 - START) * PLY_SEC);
+        let hitPly = 0;
+        for (let q = from; q <= Math.min(end, ply); q++) { if (P[q] && P[q][3].indexOf(flag) >= 0) { hitPly = q; break; } }
+        let state = 'open';
+        if (tc >= lockT) state = 'locked';
+        let outcome = '';
+        let provT = 0;
+        if (hitPly) { outcome = 'Yes'; provT = (hitPly - START) * PLY_SEC; }
+        else if (ply >= end) { outcome = 'No'; provT = (end - START) * PLY_SEC; }
+        if (outcome && tc >= provT) state = tc >= provT + 6 ? 'final' : 'provisional';
+        const wobble = Math.sin((T + p) * 0.9) * 0.03;
+        const yes = Math.round(Math.min(0.9, Math.max(0.1, base + wobble + (p % 8 ? 0.03 : -0.02))) * 100);
+        out.push({ kind, label, from, to: end, spawnT, lockT, state, outcome, hitSan: hitPly ? P[hitPly][2] : '', hitPly, yes, left: Math.max(0, Math.ceil(lockT - tc)) });
+      });
+    }
+    return out;
+  }
+  sync() {
+    if (!this.scene) return;
+    const P = this.plies();
+    const { ply } = this.clock(this.state.T);
+    if (ply !== this.lastPly) {
+      const animate = this.lastPly >= 0 && ply === this.lastPly + 1;
+      this.scene.setPosition(P[ply][0], P[ply][1], animate);
+      this.lastPly = ply;
+    }
+    const focus = this.focus(this.markets(this.state.T));
+    if (focus) this.scene.setPool(focus.yes / 100);
+  }
+  focus(ms) {
+    const open = ms.filter((m) => m.state === 'open' && m.kind === 'CHECK');
+    if (open.length) return open[open.length - 1];
+    const anyOpen = ms.filter((m) => m.state === 'open');
+    if (anyOpen.length) return anyOpen[anyOpen.length - 1];
+    return ms[ms.length - 1];
+  }
+  mount3d(el) {
+    if (typeof window === 'undefined' || !window.THREE) { this.setState({ no3d: true }); return; }
+    try {
+      const narrow = this.isNarrow();
+      this.scene = this.scene3d(window.THREE, el, narrow ? { dist: 28.5, offsetNarrow: [0.03, -0.03], elev: 0.66, tray: false } : { dist: 21.5, offset: [0.19, -0.06], tray: false });
+      this.lastPly = -1;
+      this.sync();
+    } catch (e) {
+      this.setState({ no3d: true });
+    }
+  }
+  isNarrow() {
+    const l = this.props.layout;
+    if (l === 'narrow') return true;
+    if (l === 'wide') return false;
+    return (this.state.vw || 1440) < 760;
+  }
+  scene3d(THREE, canvas, opts) {
+    opts = opts || {};
+    if (THREE.ColorManagement) THREE.ColorManagement.legacyMode = false;
+    const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 0.95;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(28, 1, 0.1, 100);
+    const disposables = [];
+    const keep = (x) => { disposables.push(x); return x; };
+
+    /* studio environment for reflections: a dim teal room with two soft boxes */
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    const envScene = new THREE.Scene();
+    const room = new THREE.Mesh(new THREE.BoxGeometry(24, 12, 24), new THREE.MeshBasicMaterial({ color: 0x0f2f2b, side: THREE.BackSide }));
+    envScene.add(room);
+    const panel = (w, h, rgb, pos, rot) => {
+      const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }));
+      m.material.color.setRGB(rgb[0], rgb[1], rgb[2]);
+      m.position.set(pos[0], pos[1], pos[2]);
+      m.rotation.set(rot[0], rot[1], rot[2]);
+      envScene.add(m);
+    };
+    panel(10, 6, [2.2, 2.05, 1.8], [-4, 5.9, 3], [Math.PI / 2, 0, 0]);
+    panel(6, 4, [0.35, 1.1, 0.95], [11.9, 3, -4], [0, -Math.PI / 2, 0]);
+    panel(5, 3, [1.4, 1.1, 0.6], [-11.9, 2, 5], [0, Math.PI / 2, 0]);
+    const envTex = pmrem.fromScene(envScene, 0.035).texture;
+    scene.environment = envTex;
+    envScene.traverse((o) => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); });
+
+    scene.add(new THREE.HemisphereLight(0xd9efe9, 0x0d3a35, 0.25));
+    const key = new THREE.DirectionalLight(0xffe6bd, 2.1);
+    key.position.set(-5, 11, 6);
+    key.castShadow = true;
+    key.shadow.mapSize.set(2048, 2048);
+    key.shadow.camera.left = -9; key.shadow.camera.right = 9; key.shadow.camera.top = 9; key.shadow.camera.bottom = -9;
+    key.shadow.camera.near = 1; key.shadow.camera.far = 30;
+    key.shadow.bias = -0.0004; key.shadow.normalBias = 0.02; key.shadow.radius = 5;
+    scene.add(key);
+    const rim = new THREE.DirectionalLight(0x86e0cf, 0.8);
+    rim.position.set(7, 4, -8);
+    scene.add(rim);
+
+    const root = new THREE.Group();
+    scene.add(root);
+    const floor = new THREE.Mesh(keep(new THREE.PlaneGeometry(60, 60)), keep(new THREE.ShadowMaterial({ opacity: 0.34 })));
+    floor.rotation.x = -Math.PI / 2; floor.position.y = -0.64; floor.receiveShadow = true;
+    scene.add(floor);
+
+    const phys = (c, r, o) => keep(new THREE.MeshPhysicalMaterial(Object.assign({ color: c, roughness: r, envMapIntensity: 0.8 }, o || {})));
+    const rrect = (w, h, r) => {
+      const s = new THREE.Shape();
+      const x = -w / 2, y = -h / 2;
+      s.moveTo(x + r, y); s.lineTo(x + w - r, y); s.quadraticCurveTo(x + w, y, x + w, y + r);
+      s.lineTo(x + w, y + h - r); s.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      s.lineTo(x + r, y + h); s.quadraticCurveTo(x, y + h, x, y + h - r);
+      s.lineTo(x, y + r); s.quadraticCurveTo(x, y, x + r, y);
+      return s;
+    };
+    const flatExtrude = (shape, depth, bevel, segs) => {
+      const g = new THREE.ExtrudeGeometry(shape, { depth: depth, bevelEnabled: bevel > 0, bevelThickness: bevel, bevelSize: bevel, bevelSegments: segs || 3, curveSegments: 12 });
+      g.rotateX(-Math.PI / 2);
+      return keep(g);
+    };
+
+    /* board: plinth, lacquered frame with a gold inlay, bevelled squares */
+    const plinth = new THREE.Mesh(flatExtrude(rrect(10.3, 10.3, 0.3), 0.1, 0.03), phys(0x041613, 0.7, { envMapIntensity: 0.3 }));
+    plinth.position.y = -0.6; plinth.receiveShadow = true; plinth.castShadow = true; root.add(plinth);
+    const frameShape = rrect(9.9, 9.9, 0.22);
+    frameShape.holes.push(rrect(8.2, 8.2, 0.02));
+    const frame = new THREE.Mesh(flatExtrude(frameShape, 0.5, 0.06, 4), phys(0x0b3a33, 0.34, { clearcoat: 0.7, clearcoatRoughness: 0.2, envMapIntensity: 0.55 }));
+    frame.position.y = -0.48; frame.castShadow = true; frame.receiveShadow = true; root.add(frame);
+    const bed = new THREE.Mesh(keep(new THREE.BoxGeometry(8.24, 0.5, 8.24)), phys(0x041a17, 0.8));
+    bed.position.y = -0.26; bed.receiveShadow = true; root.add(bed);
+    const inlayShape = rrect(8.72, 8.72, 0.06);
+    inlayShape.holes.push(rrect(8.56, 8.56, 0.04));
+    const inlay = new THREE.Mesh(flatExtrude(inlayShape, 0.012, 0), phys(0xd6b04f, 0.28, { metalness: 0.85 }));
+    inlay.position.y = 0.082; root.add(inlay);
+    const mats = {
+      l: phys(0xe2dfc2, 0.6, { clearcoat: 0.15, clearcoatRoughness: 0.4, envMapIntensity: 0.4 }), d: phys(0x2f6e5e, 0.55, { clearcoat: 0.15, clearcoatRoughness: 0.4, envMapIntensity: 0.4 }),
+      hl: phys(0xf0e67a, 0.5, { clearcoat: 0.15, envMapIntensity: 0.4 }), hd: phys(0xa8b94e, 0.5, { clearcoat: 0.15, envMapIntensity: 0.4 })
+    };
+    const sqGeo = flatExtrude(rrect(0.96, 0.96, 0.03), 0.05, 0.018, 2);
+    const squares = {};
+    for (let f = 0; f < 8; f++) {
+      for (let r = 0; r < 8; r++) {
+        const dark = (f + r) % 2 === 0;
+        const m = new THREE.Mesh(sqGeo, dark ? mats.d : mats.l);
+        m.position.set(f - 3.5, 0.0, 3.5 - r);
+        m.receiveShadow = true;
+        m.userData.dark = dark;
+        root.add(m);
+        squares['abcdefgh'[f] + (r + 1)] = m;
+      }
+    }
+    const labelTex = (txt) => {
+      const c = document.createElement('canvas'); c.width = 64; c.height = 64;
+      const g = c.getContext('2d'); g.fillStyle = '#b8d3ce'; g.font = '700 40px Archivo, Arial, sans-serif';
+      g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(txt, 32, 34);
+      const t = keep(new THREE.CanvasTexture(c)); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4; return t;
+    };
+    const labelGeo = keep(new THREE.PlaneGeometry(0.32, 0.32));
+    for (let i = 0; i < 8; i++) {
+      const fm = new THREE.Mesh(labelGeo, keep(new THREE.MeshBasicMaterial({ map: labelTex('abcdefgh'[i]), transparent: true })));
+      fm.rotation.x = -Math.PI / 2; fm.position.set(i - 3.5, 0.09, 4.58); root.add(fm);
+      const rm = new THREE.Mesh(labelGeo, keep(new THREE.MeshBasicMaterial({ map: labelTex(String(i + 1)), transparent: true })));
+      rm.rotation.x = -Math.PI / 2; rm.position.set(-4.58, 0.09, 3.5 - i); root.add(rm);
+    }
+
+    /* pieces: turned profiles with collars, crowns and a sculpted knight */
+    const V = (pts) => pts.map((p) => new THREE.Vector2(p[0], p[1]));
+    const ball = (cy, r, from) => { const out = []; for (let a = from; a <= 90; a += 10) out.push([r * Math.cos(a * Math.PI / 180), cy + r * Math.sin(a * Math.PI / 180)]); return out; };
+    const base = [[0, 0], [0.35, 0], [0.36, 0.015], [0.36, 0.06], [0.34, 0.085], [0.3, 0.1], [0.3, 0.125], [0.27, 0.15], [0.24, 0.175], [0.21, 0.2]];
+    const profiles = {
+      p: base.concat([[0.17, 0.24], [0.13, 0.32], [0.11, 0.4], [0.18, 0.43], [0.19, 0.455], [0.17, 0.475], [0.1, 0.49]]).concat(ball(0.6, 0.14, -50)),
+      r: base.concat([[0.2, 0.28], [0.19, 0.5], [0.2, 0.56], [0.25, 0.6], [0.27, 0.63], [0.27, 0.66], [0.25, 0.68], [0.27, 0.7], [0.27, 0.8], [0.19, 0.8], [0.19, 0.74], [0, 0.74]]),
+      b: base.concat([[0.16, 0.3], [0.12, 0.46], [0.1, 0.58], [0.2, 0.62], [0.21, 0.645], [0.19, 0.665], [0.11, 0.68], [0.14, 0.74], [0.18, 0.84], [0.175, 0.93], [0.14, 1.0], [0.08, 1.06], [0.04, 1.09]]).concat(ball(1.135, 0.05, -40)),
+      q: base.concat([[0.17, 0.3], [0.13, 0.5], [0.11, 0.7], [0.23, 0.74], [0.24, 0.765], [0.22, 0.785], [0.12, 0.8], [0.14, 0.9], [0.2, 1.0], [0.25, 1.05], [0.25, 1.085], [0.19, 1.08], [0.1, 1.1], [0.06, 1.14]]).concat(ball(1.19, 0.06, -40)),
+      k: base.concat([[0.17, 0.32], [0.13, 0.55], [0.11, 0.74], [0.24, 0.78], [0.25, 0.805], [0.23, 0.825], [0.12, 0.84], [0.15, 0.96], [0.21, 1.08], [0.23, 1.11], [0.23, 1.14], [0.16, 1.15], [0.08, 1.17], [0, 1.175]]),
+      n: base.concat([[0.23, 0.22], [0.25, 0.24], [0.25, 0.28], [0, 0.28]])
+    };
+    const geos = {};
+    Object.keys(profiles).forEach((k) => { geos[k] = keep(new THREE.LatheGeometry(V(profiles[k]), 48)); });
+    const head = new THREE.Shape();
+    head.moveTo(-0.2, 0.26); head.lineTo(0.15, 0.26);
+    head.quadraticCurveTo(0.11, 0.42, 0.24, 0.5);
+    head.quadraticCurveTo(0.38, 0.56, 0.42, 0.62);
+    head.quadraticCurveTo(0.46, 0.68, 0.4, 0.73);
+    head.quadraticCurveTo(0.3, 0.77, 0.2, 0.78);
+    head.quadraticCurveTo(0.16, 0.9, 0.09, 0.97);
+    head.lineTo(0.07, 1.06); head.lineTo(0.0, 1.0);
+    head.quadraticCurveTo(-0.16, 0.93, -0.22, 0.74);
+    head.quadraticCurveTo(-0.29, 0.5, -0.2, 0.26);
+    const headGeo = keep(new THREE.ExtrudeGeometry(head, { depth: 0.2, bevelEnabled: true, bevelThickness: 0.05, bevelSize: 0.045, bevelSegments: 5, curveSegments: 18 }));
+    headGeo.translate(0, 0, -0.1);
+    const maneShape = new THREE.Shape();
+    maneShape.moveTo(-0.02, 0.98); maneShape.quadraticCurveTo(-0.2, 0.92, -0.26, 0.7); maneShape.quadraticCurveTo(-0.3, 0.5, -0.24, 0.3);
+    maneShape.lineTo(-0.2, 0.3); maneShape.quadraticCurveTo(-0.25, 0.52, -0.2, 0.72); maneShape.quadraticCurveTo(-0.14, 0.88, 0.0, 0.95);
+    const maneGeo = keep(new THREE.ExtrudeGeometry(maneShape, { depth: 0.1, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 3, curveSegments: 14 }));
+    maneGeo.translate(-0.01, 0, -0.05);
+    const eyeGeo = keep(new THREE.SphereGeometry(0.024, 12, 8));
+    const crossShape = new THREE.Shape();
+    [[-0.035, 0], [0.035, 0], [0.035, 0.11], [0.1, 0.11], [0.1, 0.165], [0.035, 0.165], [0.035, 0.26], [-0.035, 0.26], [-0.035, 0.165], [-0.1, 0.165], [-0.1, 0.11], [-0.035, 0.11]].forEach((p, i) => (i ? crossShape.lineTo(p[0], p[1]) : crossShape.moveTo(p[0], p[1])));
+    const crossGeo = keep(new THREE.ExtrudeGeometry(crossShape, { depth: 0.05, bevelEnabled: true, bevelThickness: 0.015, bevelSize: 0.012, bevelSegments: 2 }));
+    crossGeo.translate(0, 1.16, -0.025);
+    const merlonGeo = keep(new THREE.BoxGeometry(0.12, 0.1, 0.1));
+    const pearlGeo = keep(new THREE.SphereGeometry(0.036, 12, 8));
+    const slitGeo = keep(new THREE.BoxGeometry(0.03, 0.2, 0.3));
+    const feltGeo = keep(new THREE.CylinderGeometry(0.335, 0.335, 0.012, 40));
+    const pMat = {
+      w: phys(0xe9e2d2, 0.34, { clearcoat: 0.6, clearcoatRoughness: 0.22, envMapIntensity: 0.7 }),
+      b: phys(0x1a201f, 0.22, { metalness: 0.06, clearcoat: 1, clearcoatRoughness: 0.12 })
+    };
+    const darkMat = phys(0x0a0d0c, 0.5);
+    const feltMat = phys(0x0f3a33, 1);
+    const makePiece = (ch) => {
+      const color = ch === ch.toUpperCase() ? 'w' : 'b';
+      const t = ch.toLowerCase();
+      const g = new THREE.Group();
+      const add = (geo, mat) => { const m = new THREE.Mesh(geo, mat || pMat[color]); m.castShadow = true; m.receiveShadow = true; g.add(m); return m; };
+      add(geos[t]);
+      const felt = add(feltGeo, feltMat); felt.position.y = -0.004; felt.castShadow = false;
+      if (t === 'n') {
+        const face = color === 'w' ? Math.PI / 2 : -Math.PI / 2;
+        const h = add(headGeo); h.rotation.y = face;
+        const mane = add(maneGeo); mane.rotation.y = face;
+        [-1, 1].forEach((sd) => {
+          const e = add(eyeGeo, darkMat);
+          const lx = 0.2, lz = sd * 0.15;
+          e.position.set(Math.cos(face) * lx + Math.sin(face) * lz, 0.8, -Math.sin(face) * lx + Math.cos(face) * lz);
+        });
+      }
+      if (t === 'k') { add(crossGeo); }
+      if (t === 'r') {
+        for (let i = 0; i < 6; i++) { const m = add(merlonGeo); const a = (i / 6) * Math.PI * 2; m.position.set(Math.cos(a) * 0.23, 0.85, Math.sin(a) * 0.23); m.rotation.y = -a; }
+      }
+      if (t === 'q') {
+        for (let i = 0; i < 9; i++) { const m = add(pearlGeo); const a = (i / 9) * Math.PI * 2; m.position.set(Math.cos(a) * 0.235, 1.1, Math.sin(a) * 0.235); }
+      }
+      if (t === 'b') { const s = add(slitGeo, darkMat); s.position.set(0.09, 0.92, 0); s.rotation.z = -0.6; s.scale.set(1, 0.9, 0.55); s.castShadow = false; }
+      g.scale.setScalar(0.86);
+      g.userData = { type: ch };
+      return g;
+    };
+    const sqPos = (sq) => new THREE.Vector3('abcdefgh'.indexOf(sq[0]) - 3.5, 0.075, 3.5 - (Number(sq[1]) - 1));
+    const parse = (fen) => {
+      const map = {};
+      fen.split('/').forEach((row, ri) => {
+        let fi = 0;
+        for (const ch of row) {
+          const n = Number(ch);
+          if (n) { fi += n; continue; }
+          map['abcdefgh'[fi] + (8 - ri)] = ch; fi++;
+        }
+      });
+      return map;
+    };
+    const pieces = {};
+    const tweens = [];
+    const removeMesh = (m) => { root.remove(m); };
+    const removePiece = (sq) => { const m = pieces[sq]; if (m) { removeMesh(m); delete pieces[sq]; } };
+    const place = (sq, ch) => { const m = makePiece(ch); m.position.copy(sqPos(sq)); root.add(m); pieces[sq] = m; return m; };
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const tween = (mesh, from, to, dur) => { if (reduce) { mesh.position.copy(to); return; } tweens.push({ mesh, from: from.clone(), to: to.clone(), t0: performance.now(), dur }); };
+    const highlight = (a, b) => {
+      Object.keys(squares).forEach((k) => { const s = squares[k]; s.material = (k === a || k === b) ? (s.userData.dark ? mats.hd : mats.hl) : (s.userData.dark ? mats.d : mats.l); });
+    };
+
+    /* captured pieces wait beside the board */
+    let tray = [];
+    const layTray = (next) => {
+      tray.forEach(removeMesh); tray = [];
+      const start = { q: 1, r: 2, b: 2, n: 2, p: 8 };
+      const cnt = {};
+      Object.keys(next).forEach((k) => { cnt[next[k]] = (cnt[next[k]] || 0) + 1; });
+      if (opts.tray === false) return;
+      [['w', -3.4], ['b', 3.4]].forEach(([col, z0]) => {
+        let i = 0;
+        ['q', 'r', 'b', 'n', 'p'].forEach((t) => {
+          const ch = col === 'w' ? t.toUpperCase() : t;
+          const miss = Math.max(0, start[t] - (cnt[ch] || 0));
+          for (let k = 0; k < miss; k++) {
+            const m = makePiece(ch);
+            m.scale.setScalar(0.6);
+            const row = Math.floor(i / 2), c2 = i % 2;
+            m.position.set(-5.55 - c2 * 0.52, -0.63, z0 + (z0 < 0 ? 1 : -1) * row * 0.6);
+            root.add(m); tray.push(m); i++;
+          }
+        });
+      });
+    };
+    const setPosition = (fen, uci, animate) => {
+      const next = parse(fen);
+      const from = uci ? uci.slice(0, 2) : '', to = uci ? uci.slice(2, 4) : '';
+      if (animate && from && pieces[from]) {
+        const mover = pieces[from];
+        delete pieces[from];
+        removePiece(to);
+        pieces[to] = mover;
+        tween(mover, mover.position, sqPos(to), 650);
+      }
+      const gone = [], fresh = [];
+      Object.keys(pieces).forEach((sq) => { if (!next[sq] || next[sq] !== pieces[sq].userData.type) gone.push(sq); });
+      Object.keys(next).forEach((sq) => { if (!pieces[sq] || pieces[sq].userData.type !== next[sq]) fresh.push(sq); });
+      const pairs = [];
+      gone.slice().forEach((g) => {
+        const ty = pieces[g] && pieces[g].userData.type;
+        const i = fresh.findIndex((f) => next[f] === ty && !pieces[f]);
+        if (animate && ty && i >= 0) { pairs.push([g, fresh[i]]); fresh.splice(i, 1); gone.splice(gone.indexOf(g), 1); }
+      });
+      pairs.forEach(([g, f]) => { const m = pieces[g]; delete pieces[g]; pieces[f] = m; tween(m, m.position, sqPos(f), 650); });
+      gone.forEach(removePiece);
+      fresh.forEach((sq) => { removePiece(sq); place(sq, next[sq]); });
+      highlight(from, to);
+      layTray(next);
+    };
+
+    /* orbit: drag to rotate, arrow keys, double click to reset, pinch or ctrl+wheel to zoom */
+    const baseAng = opts.angle != null ? opts.angle : -0.62;
+    const baseElev = opts.elev != null ? opts.elev : 0.62;
+    let ang = baseAng, elev = baseElev, zoom = 1, vel = 0, dragging = false, touched = false, lastX = 0, lastY = 0, resetT = 0;
+    const clampElev = (e) => Math.max(0.22, Math.min(1.35, e));
+    const onDown = (e) => {
+      if (e.button != null && e.button !== 0) return;
+      dragging = true; touched = true; lastX = e.clientX; lastY = e.clientY; vel = 0; resetT = 0;
+      if (canvas.setPointerCapture && e.pointerId != null) { try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ } }
+      canvas.style.cursor = 'grabbing';
+    };
+    const onMove = (e) => {
+      if (!dragging) return;
+      const dx = e.clientX - lastX, dy = e.clientY - lastY;
+      lastX = e.clientX; lastY = e.clientY;
+      ang -= dx * 0.008; vel = -dx * 0.008;
+      if (e.pointerType !== 'touch') elev = clampElev(elev + dy * 0.006);
+    };
+    const onUp = () => { dragging = false; canvas.style.cursor = 'grab'; };
+    const onDbl = () => { resetT = performance.now(); vel = 0; };
+    const onKey = (e) => {
+      const k = e.key;
+      if (k === 'ArrowLeft') ang += 0.18; else if (k === 'ArrowRight') ang -= 0.18;
+      else if (k === 'ArrowUp') elev = clampElev(elev + 0.1); else if (k === 'ArrowDown') elev = clampElev(elev - 0.1);
+      else if (k === 'Home' || k === '0') resetT = performance.now();
+      else return;
+      touched = true; e.preventDefault();
+    };
+    const onWheel = (e) => { if (!e.ctrlKey) return; e.preventDefault(); zoom = Math.max(0.7, Math.min(1.45, zoom * (1 + e.deltaY * 0.004))); touched = true; };
+    canvas.style.cursor = 'grab';
+    canvas.style.touchAction = 'pan-y';
+    canvas.addEventListener('pointerdown', onDown);
+    canvas.addEventListener('pointermove', onMove);
+    canvas.addEventListener('pointerup', onUp);
+    canvas.addEventListener('pointercancel', onUp);
+    canvas.addEventListener('dblclick', onDbl);
+    canvas.addEventListener('keydown', onKey);
+    canvas.addEventListener('wheel', onWheel, { passive: false });
+
+    let w = 0, h = 0, raf = 0, alive = true;
+    const t0 = performance.now();
+    const resize = () => {
+      const parent = canvas.parentElement;
+      const nw = Math.max(1, parent.clientWidth), nh = Math.max(1, parent.clientHeight);
+      if (nw === w && nh === h) return;
+      w = nw; h = nh;
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      const off = (w / h >= 1.3 ? (opts.offset || [0, 0]) : (opts.offsetNarrow || [0, 0]));
+      camera.setViewOffset(w, h, -w * off[0], -h * off[1], w, h);
+      camera.updateProjectionMatrix();
+    };
+    const frameLoop = (now) => {
+      if (!alive) return;
+      resize();
+      const t = (now - t0) / 1000;
+      const aspect = w / h;
+      const dist = (opts.dist || (aspect < 0.9 ? 24 : (aspect < 1.3 ? 19 : 17))) * zoom;
+      if (!dragging && Math.abs(vel) > 0.0001) { ang += vel; vel *= 0.93; }
+      if (resetT) {
+        const k = Math.min(1, (now - resetT) / 600), e = 1 - Math.pow(1 - k, 3);
+        ang += (baseAng - ang) * e; elev += (baseElev - elev) * e; zoom += (1 - zoom) * e;
+        if (k >= 1) { resetT = 0; touched = false; }
+      }
+      const a = touched || reduce ? ang : baseAng + Math.sin(t * 0.12) * 0.07;
+      if (!touched) ang = a;
+      camera.position.set(Math.sin(a) * dist * Math.cos(elev), dist * Math.sin(elev), Math.cos(a) * dist * Math.cos(elev));
+      camera.lookAt(0.2, -0.4, 0.2);
+      for (let i = tweens.length - 1; i >= 0; i--) {
+        const tw = tweens[i];
+        const k = Math.min(1, (now - tw.t0) / tw.dur);
+        const e = 1 - Math.pow(1 - k, 3);
+        tw.mesh.position.lerpVectors(tw.from, tw.to, e);
+        tw.mesh.position.y = tw.to.y + Math.sin(Math.PI * k) * 0.5;
+        if (k >= 1) { tw.mesh.position.copy(tw.to); tweens.splice(i, 1); }
+      }
+      renderer.render(scene, camera);
+      raf = requestAnimationFrame(frameLoop);
+    };
+    raf = requestAnimationFrame(frameLoop);
+    return {
+      setPosition,
+      setPool: () => {},
+      dispose: () => {
+        alive = false; cancelAnimationFrame(raf);
+        canvas.removeEventListener('pointerdown', onDown);
+        canvas.removeEventListener('pointermove', onMove);
+        canvas.removeEventListener('pointerup', onUp);
+        canvas.removeEventListener('pointercancel', onUp);
+        canvas.removeEventListener('dblclick', onDbl);
+        canvas.removeEventListener('keydown', onKey);
+        canvas.removeEventListener('wheel', onWheel);
+        scene.traverse((o) => { if (o.geometry && disposables.indexOf(o.geometry) < 0) o.geometry.dispose(); });
+        disposables.forEach((d) => d.dispose && d.dispose());
+        envTex.dispose(); pmrem.dispose();
+        renderer.dispose();
+      }
+    };
+  }
+  board2d(fen, uci) {
+    const src = {
+      K: '/_blob/b8fb06ae020716114026dd05efe77cd2', Q: '/_blob/0556872e10df836fe74cf38d93fcc19d', R: '/_blob/63a03828d350581fe3563604ce207c9d',
+      B: '/_blob/4e4d1851dd2efcb49520c927f1e56435', N: '/_blob/87a799ed4078cd075f3945e0dd36045d', P: '/_blob/7ce769c22487b3fc1a9480b470f92b3c',
+      k: '/_blob/ff0a95e5936af6937b303666d460662a', q: '/_blob/2770b4f339815231da9b8c64702acf75', r: '/_blob/f02c39cb8aeafc05ddf7d781f157f13a',
+      b: '/_blob/f8e6d88a2815e74a21f97ccab184a80a', n: '/_blob/29c94df3d3759cb9cee1765f2521eb36', p: '/_blob/6c5483ec964165d9b4adb7b8c14ad64a'
+    };
+    const a = uci.slice(0, 2), b = uci.slice(2, 4);
+    const out = [];
+    fen.split('/').forEach((row, ri) => {
+      let fi = 0;
+      for (const ch of row) {
+        const n = Number(ch);
+        for (let k = 0; k < (n || 1); k++) {
+          const piece = n ? '' : ch;
+          const sq = 'abcdefgh'[fi] + (8 - ri);
+          const dark = (ri + fi) % 2 === 1;
+          const hl = sq === a || sq === b;
+          out.push({ bg: hl ? (dark ? '#b8c95c' : '#f5f08a') : (dark ? '#5f9f8f' : '#eeeed2'), has: !!piece, src: piece ? src[piece] : '' });
+          fi++;
+        }
+      }
+    });
+    return out;
+  }
+  renderVals() {
+    const s = this.state;
+    const P = this.plies();
+    const { ply, START } = this.clock(s.T);
+    const narrow = this.isNarrow();
+    const ms = this.markets(s.T);
+    const f = this.focus(ms);
+    const pad = (x) => String(x).padStart(2, '0');
+    const mv = (p) => Math.ceil(p / 2);
+    const range = (a, b) => 'plies ' + a + ' to ' + b + (mv(a) === mv(b) ? ' (move ' + mv(a) + ')' : ' (moves ' + mv(a) + ' to ' + mv(b) + ')');
+    const q = (m) => m.label + ' in plies ' + m.from + ' to ' + m.to + '?';
+    let lt;
+    if (f.state === 'open') lt = { tab: 'Predict now', sub: 'locks in 0:' + pad(f.left), tabBg: '#f2c14e', tabFg: '#082a26', line: range(f.from, f.to).replace('plies', 'Plies') + ' · ' + (420 + (s.T % 16) * 31).toLocaleString('en-US') + ' tUSDC pooled' };
+    else if (f.state === 'locked') lt = { tab: 'Locked', sub: 'stakes closed', tabBg: '#ffd27a', tabFg: '#082a26', line: 'No more stakes. Waiting for ply ' + f.to + '.' };
+    else if (f.state === 'provisional') lt = { tab: 'Provisional', sub: f.outcome, tabBg: '#082a26', tabFg: '#ffffff', line: f.outcome === 'Yes' ? f.hitSan + ' on ply ' + f.hitPly + '.' : 'Nothing happened in the window.' };
+    else lt = { tab: 'Final: ' + f.outcome, sub: 'Chainlink CRE', tabBg: '#082a26', tabFg: '#ffffff', line: 'Posted on Monad. Winners can claim.' };
+    lt.q = q(f);
+    lt.short = f.label.toLowerCase() + ' ' + f.from + '–' + f.to;
+    const settled = ms.filter((m) => m.state === 'provisional' || m.state === 'final').slice(-3).reverse();
+    const results = (settled.length ? settled : [{ state: 'open', label: 'Results appear here', from: 0, to: 0 }]).map((m) => ({
+      state: m.state === 'final' ? 'Final: ' + m.outcome : (m.state === 'provisional' ? 'Provisional: ' + m.outcome : 'Waiting'),
+      color: m.outcome === 'Yes' ? '#f2c14e' : (m.outcome === 'No' ? '#ff8a6b' : '#a9c7c2'),
+      q: m.from ? m.label + ' ' + m.from + '–' + m.to + (m.hitSan ? ' · ' + m.hitSan : '') : 'as soon as a window settles'
+    }));
+    const tower = [];
+    for (let p = Math.max(START, ply - 3); p <= ply; p++) {
+      const fl = P[p][3];
+      const tag = fl.indexOf('k') >= 0 ? 'check' : (fl.indexOf('x') >= 0 ? 'capture' : (fl === 'W' || fl === 'B' ? 'castle' : ''));
+      tower.push({ ply: p, san: P[p][2], side: p % 2 ? '#f1ecdf' : '#1c2322', tag, tagColor: tag ? '#f2c14e' : '#a9c7c2', bg: p === ply ? '#f2c14e' : 'rgba(6,31,28,0.82)', fg: p === ply ? '#082a26' : '#ffffff' });
+    }
+    tower.reverse();
+    const openNow = ms.filter((m) => m.state === 'open');
+    const others = [
+      { table: 'Table 3', q: 'Any capture in plies 41 to 44?', t: (s.T + 6) % 15 + 1, yes: 66 },
+      { table: 'Table 2', q: 'White castles in plies 21 to 28?', t: (s.T + 9) % 15 + 1, yes: 58 },
+      { table: 'Table 4', q: 'Any check in plies 25 to 28?', t: (s.T + 3) % 15 + 1, yes: 27 }
+    ];
+    const departures = openNow.map((m) => ({ table: 'Table 1', q: q(m), t: m.left, yes: m.yes })).concat(others)
+      .sort((a, b) => a.t - b.t).slice(0, 5)
+      .map((d) => ({ ...d, clock: pad(d.t), no: 100 - d.yes, clockColor: d.t <= 5 ? '#ff8a6b' : '#f2c14e' }));
+    const stations = [
+      { title: 'Open', text: 'Four plies, Yes or No, 15 seconds to stake.', dot: '#f2c14e', color: '#f2c14e' },
+      { title: 'Locked', text: 'Closes when the ply before the window is played, or when time runs out.', dot: '#ffffff', color: '#ffffff' },
+      { title: 'Provisional', text: 'The resolver shows the outcome the moment it is known.', dot: '#ffffff', color: '#ffffff' },
+      { title: 'Final', text: 'Chainlink CRE reads Lichess and posts the result on Monad.', dot: '#ffffff', color: '#ffffff' },
+      { title: 'Claim', text: 'Winners split the pool minus 2%. Voided markets are refunded.', dot: '#ff8a6b', color: '#ff8a6b' }
+    ];
+    const use3d = !s.no3d;
+    return {
+      start: (e) => { if (this.props.onStart) { if (e && e.preventDefault) e.preventDefault(); this.props.onStart(); } },
+      wide: !narrow, narrow, use3d, no3d: !!s.no3d, canvasRef: this.canvasRef,
+      squares: this.board2d(P[ply][0], P[ply][1]),
+      ply, lastSan: P[ply][2], tower, lt, results, departures, stations,
+      yesPct: f.yes, noPct: 100 - f.yes,
+      gutter: narrow ? '16px' : '28px', h2Size: narrow ? '34px' : '44px', ctaSize: narrow ? '36px' : '52px',
+      tableMin: narrow ? '560px' : '0px', stationCols: narrow ? 'repeat(1, minmax(0, 1fr))' : 'repeat(5, minmax(0, 1fr))'
+    };
+  }
+}
+</script>
+</body>
+</html>

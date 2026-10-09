@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MoveMarket · Components and states</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0d3a35}
+@keyframes mmspin{to{transform:rotate(360deg)}}
+.spin{animation:mmspin .9s linear infinite}
+</style>
+</helmet>
+<div style="width: 1440px; box-sizing: border-box; padding: 48px 56px 64px; background: #0d3a35; color: #ffffff; font-family: Archivo, system-ui, sans-serif; font-size: 16px; line-height: 1.45; font-variant-numeric: tabular-nums; display: flex; flex-direction: column; gap: 48px">
+
+<div style="display: flex; flex-direction: column; gap: 8px">
+<h1 style="margin: 0; font-weight: 900; font-stretch: 68%; text-transform: uppercase; font-size: 72px; line-height: 0.9">Components and states</h1>
+<p style="margin: 0; max-width: 760px; color: #d3e5e2; font-size: 18px">Every button, color and status used in the prototype. Gold means Yes and the main action. Coral means No. Amber means locked or a warning. Red only marks errors and the LIVE tag.</p>
+</div>
+
+<section style="display: flex; flex-direction: column; gap: 14px">
+<h2 style="margin: 0; font-weight: 900; font-stretch: 72%; text-transform: uppercase; font-size: 32px">Color</h2>
+<div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 12px">
+<sc-for list="{{colors}}" as="c" hint-placeholder-count="12">
+<div style="display: flex; flex-direction: column; border-radius: 6px; overflow: hidden; background: #12463f">
+<div style="height: 84px; background: {{c.hex}}; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08)"></div>
+<div style="padding: 10px 12px; display: flex; flex-direction: column; gap: 2px"><b>{{c.name}}</b><span style="font-size: 14px; color: #a9c7c2">{{c.hex}}</span><span style="font-size: 13px; color: #d3e5e2">{{c.use}}</span></div>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 14px">
+<h2 style="margin: 0; font-weight: 900; font-stretch: 72%; text-transform: uppercase; font-size: 32px">Buttons</h2>
+<div style="display: grid; grid-template-columns: 200px repeat(6, minmax(0, 1fr)); gap: 12px; align-items: center">
+<span></span>
+<sc-for list="{{stateNames}}" as="n" hint-placeholder-count="6"><span style="font-size: 13px; font-weight: 700; color: #a9c7c2; text-transform: uppercase">{{n.label}}</span></sc-for>
+</div>
+<sc-for list="{{buttons}}" as="b" hint-placeholder-count="8">
+<div style="display: grid; grid-template-columns: 200px repeat(6, minmax(0, 1fr)); gap: 12px; align-items: center; padding: 14px 0; border-top: 1px solid #1d5a51">
+<div style="display: flex; flex-direction: column"><b>{{b.name}}</b><span style="font-size: 13px; color: #a9c7c2">{{b.use}}</span></div>
+<sc-for list="{{b.states}}" as="s" hint-placeholder-count="6">
+<div style="padding: 12px; border-radius: 4px; background: {{b.stage}}; display: flex; align-items: center; justify-content: center; min-height: 70px">
+<span style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: {{b.h}}; padding: 0 {{b.px}}; border-radius: 4px; font-weight: 800; font-size: {{b.fs}}; background: {{s.bg}}; color: {{s.fg}}; box-shadow: {{s.shadow}}; opacity: {{s.op}}; transform: {{s.tf}}; outline: {{s.outline}}; outline-offset: 2px; text-decoration: {{b.td}}; text-underline-offset: 3px; white-space: nowrap"><sc-if value="{{s.loading}}" hint-placeholder-val="{{false}}"><svg class="spin" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" opacity=".25"></circle><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path></svg></sc-if>{{s.text}}</span>
+</div>
+</sc-for>
+</div>
+</sc-for>
+<p style="margin: 0; font-size: 14px; color: #a9c7c2">Focus ring: 3px gold, 2px offset, on every interactive element. Pressed moves 1px down. Disabled is 45% opacity with a not-allowed cursor. Loading keeps the label and adds a spinner. Minimum touch target 44px.</p>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 14px">
+<h2 style="margin: 0; font-weight: 900; font-stretch: 72%; text-transform: uppercase; font-size: 32px">Market status</h2>
+<div style="display: flex; flex-wrap: wrap; gap: 12px">
+<sc-for list="{{statuses}}" as="s" hint-placeholder-count="9">
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 6px; background: #12463f; width: 200px">
+<span style="align-self: flex-start; font-weight: 900; font-stretch: 75%; font-size: 15px; padding: 3px 8px; border-radius: 2px; background: {{s.bg}}; color: {{s.fg}}; box-shadow: inset 0 0 0 1px #2b5c55">{{s.label}}</span>
+<span style="font-size: 13px; color: #d3e5e2">{{s.action}}</span>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 14px">
+<h2 style="margin: 0; font-weight: 900; font-stretch: 72%; text-transform: uppercase; font-size: 32px">Market cards</h2>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; align-items: start">
+<sc-for list="{{cards}}" as="c" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; gap: 6px"><span style="font-size: 13px; font-weight: 700; color: #a9c7c2; text-transform: uppercase">{{c.caption}}</span>
+<article style="background: {{c.cardBg}}; border-radius: 6px; padding: 14px; display: flex; flex-direction: column; gap: 10px; box-shadow: {{c.ring}}">
+<div style="display: flex; justify-content: space-between; align-items: center; gap: 8px"><span style="font-weight: 900; font-stretch: 75%; font-size: 15px; padding: 3px 8px; border-radius: 2px; background: {{c.stBg}}; color: {{c.stFg}}">{{c.status}}</span><span style="font-size: 13px; color: #a9c7c2">{{c.meta}}</span></div>
+<b style="font-size: 17px; line-height: 1.3">{{c.q}}</b>
+<sc-if value="{{c.hasNote}}" hint-placeholder-val="{{false}}"><span style="font-size: 14px; color: #c3dad6">{{c.note}}</span></sc-if>
+<div aria-hidden="true" style="display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: #ff8a6b"><span style="width: {{c.yesW}}; background: #f2c14e"></span></div>
+<sc-if value="{{c.isOpen}}" hint-placeholder-val="{{false}}"><div style="display: flex; gap: 8px; opacity: {{c.btnOp}}"><span style="flex: 1 1 0; text-align: center; padding: 9px 0; border-radius: 4px; background: #f2c14e; color: #082a26; font-weight: 800">Yes {{c.yesPct}}%<br><small style="font-size: 12px">pays {{c.oy}}</small></span><span style="flex: 1 1 0; text-align: center; padding: 9px 0; border-radius: 4px; background: #ff8a6b; color: #2a0d05; font-weight: 800">No {{c.noPct}}%<br><small style="font-size: 12px">pays {{c.on}}</small></span></div></sc-if>
+<sc-if value="{{c.hasResult}}" hint-placeholder-val="{{false}}"><div style="display: flex; justify-content: space-between; align-items: center; gap: 8px"><b style="color: {{c.resultColor}}">{{c.result}}</b><sc-if value="{{c.hasAction}}" hint-placeholder-val="{{false}}"><span style="display: inline-flex; align-items: center; min-height: 38px; padding: 0 14px; border-radius: 4px; font-weight: 800; font-size: 14px; background: {{c.actBg}}; color: {{c.actFg}}; box-shadow: {{c.actShadow}}">{{c.action}}</span></sc-if></div></sc-if>
+</article></div>
+</sc-for>
+</div>
+</section>
+
+<section style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px">
+<div style="display: flex; flex-direction: column; gap: 14px">
+<h2 style="margin: 0; font-weight: 900; font-stretch: 72%; text-transform: uppercase; font-size: 32px">Stake input</h2>
+<sc-for list="{{inputs}}" as="i" hint-placeholder-count="3">
+<div style="background: #ffffff; color: #082a26; border-radius: 6px; padding: 14px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 13px; font-weight: 700; color: #3d5c58; text-transform: uppercase">{{i.caption}}</span>
+<div style="position: relative; min-height: 52px; border-radius: 4px; border: 2px solid {{i.border}}; outline: {{i.outline}}; outline-offset: 1px; display: flex; align-items: center; padding: 0 14px; font-weight: 800; font-size: 22px">{{i.value}}<span style="margin-left: auto; font-size: 16px; font-weight: 700; color: #3d5c58">tUSDC</span></div>
+<sc-if value="{{i.hasMsg}}" hint-placeholder-val="{{false}}"><span style="font-size: 14px; font-weight: 700; color: #b0261f">{{i.msg}}</span></sc-if>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; flex-direction: column; gap: 14px">
+<h2 style="margin: 0; font-weight: 900; font-stretch: 72%; text-transform: uppercase; font-size: 32px">Banners and toasts</h2>
+<div style="background: #ffd27a; color: #082a26; padding: 10px 14px; border-radius: 4px; font-weight: 700">Live data is temporarily unavailable.</div>
+<div style="background: #12463f; padding: 10px 14px; border-radius: 4px; font-weight: 700; display: flex; gap: 10px; align-items: center"><svg class="spin" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="3" opacity=".25"></circle><path d="M21 12a9 9 0 0 0-9-9" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path></svg>Reconnecting...</div>
+<div style="background: #ffffff; color: #082a26; padding: 10px 14px; border-radius: 4px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; gap: 10px">Your session ended. Unlock with your passkey again.<span style="display: inline-flex; align-items: center; min-height: 38px; padding: 0 14px; border-radius: 4px; background: #082a26; color: #ffffff; font-size: 14px; font-weight: 800">Unlock with passkey</span></div>
+<sc-for list="{{toasts}}" as="t" hint-placeholder-count="4">
+<div style="display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 6px; background: {{t.bg}}; color: {{t.fg}}; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,.25)"><span style="width: 10px; height: 10px; border-radius: 50%; background: {{t.dot}}; flex: none"></span><span style="flex: 1 1 auto">{{t.text}}</span><sc-if value="{{t.hasAction}}" hint-placeholder-val="{{false}}"><span style="display: inline-flex; align-items: center; min-height: 34px; padding: 0 12px; border-radius: 4px; background: #f2c14e; color: #082a26; font-size: 14px">Try again</span></sc-if></div>
+</sc-for>
+</div>
+</section>
+
+<section style="display: flex; flex-direction: column; gap: 14px">
+<h2 style="margin: 0; font-weight: 900; font-stretch: 72%; text-transform: uppercase; font-size: 32px">Error messages and where they show</h2>
+<div style="display: flex; flex-direction: column; gap: 3px">
+<sc-for list="{{errors}}" as="e" hint-placeholder-count="10">
+<div style="display: grid; grid-template-columns: 220px minmax(0, 1fr) 280px; gap: 16px; padding: 10px 14px; background: #12463f; border-radius: 3px; font-size: 15px"><b style="font-stretch: 85%">{{e.key}}</b><span>{{e.text}}</span><span style="color: #a9c7c2">{{e.where}}</span></div>
+</sc-for>
+</div>
+</section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3300}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const colors = [
+      ['Studio', '#0d3a35', 'Page background'], ['Control room', '#082a26', 'Header, dark buttons'], ['Panel', '#12463f', 'Cards and rows'], ['Panel deep', '#0a302b', 'Quiet or settled cards'],
+      ['Rule', '#2b5c55', 'Dividers, ghost outlines'], ['Muted', '#a9c7c2', 'Secondary text'], ['Gold', '#f2c14e', 'Yes, main action, focus'], ['Coral', '#ff8a6b', 'No'],
+      ['Amber', '#ffd27a', 'Locked, warning banner'], ['Live red', '#c8301f', 'LIVE tag only'], ['Error surface', '#3b1416', 'Error toast and panel on dark'], ['Error text', '#b0261f', 'Inline error on white']
+    ].map(([name, hex, use]) => ({ name, hex, use }));
+    const stateNames = ['Default', 'Hover', 'Focus', 'Pressed', 'Disabled', 'Loading'].map((label) => ({ label }));
+    const mk = (name, use, stage, def, hov, prs, text, opt) => {
+      const o = opt || {};
+      const states = [
+        { bg: def[0], fg: def[1], shadow: def[2] || 'none', op: 1, tf: 'none', outline: 'none', text, loading: false },
+        { bg: hov[0], fg: hov[1] || def[1], shadow: hov[2] || def[2] || 'none', op: 1, tf: 'none', outline: 'none', text, loading: false },
+        { bg: def[0], fg: def[1], shadow: def[2] || 'none', op: 1, tf: 'none', outline: '3px solid #f2c14e', text, loading: false },
+        { bg: prs[0], fg: prs[1] || def[1], shadow: def[2] || 'none', op: 1, tf: 'translateY(1px)', outline: 'none', text, loading: false },
+        { bg: def[0], fg: def[1], shadow: def[2] || 'none', op: 0.45, tf: 'none', outline: 'none', text, loading: false },
+        { bg: def[0], fg: def[1], shadow: def[2] || 'none', op: 1, tf: 'none', outline: 'none', text: o.loadText || text, loading: !o.noLoad }
+      ];
+      return { name, use, stage, states, h: o.h || '48px', px: o.px || '18px', fs: o.fs || '16px', td: o.td || 'none' };
+    };
+    const buttons = [
+      mk('Primary', 'Start, Stake, Claim', '#0d3a35', ['#f2c14e', '#082a26'], ['#f7d47f'], ['#dca937'], 'Stake 10 tUSDC', { loadText: 'Confirming' }),
+      mk('Dark', 'Actions on white or gold', '#ffffff', ['#082a26', '#ffffff'], ['#14463f'], ['#03201c'], 'Claim all', { loadText: 'Claiming' }),
+      mk('Ghost on dark', 'Refund, secondary', '#0d3a35', ['transparent', '#ffffff', 'inset 0 0 0 2px #2b5c55'], ['rgba(255,255,255,.04)', '#ffffff', 'inset 0 0 0 2px #a9c7c2'], ['rgba(255,255,255,.08)'], 'Refund', { loadText: 'Refunding' }),
+      mk('Ghost on light', 'Cancel in dialogs', '#ffffff', ['transparent', '#082a26', 'inset 0 0 0 2px #082a26'], ['#eef4f3'], ['#dfe8e6'], 'Cancel', { noLoad: true }),
+      mk('Yes', 'Pick Yes on a market', '#12463f', ['#f2c14e', '#082a26'], ['#f7d47f'], ['#dca937'], 'Yes 34%', { noLoad: true }),
+      mk('No', 'Pick No on a market', '#12463f', ['#ff8a6b', '#2a0d05'], ['#ffa68e'], ['#ea7556'], 'No 66%', { noLoad: true }),
+      mk('Amount chip', 'Quick amounts in the stake sheet', '#ffffff', ['#d6e4e2', '#082a26'], ['#c3d7d4'], ['#082a26', '#ffffff'], '10', { h: '44px', px: '16px', noLoad: true }),
+      mk('Text link', 'Details, Watch the game first', '#0d3a35', ['transparent', '#ffffff'], ['transparent', '#f2c14e'], ['transparent', '#dca937'], 'Details', { h: '24px', px: '0', fs: '15px', td: 'underline', noLoad: true })
+    ];
+    const statuses = [
+      ['Open · 0:12', '#f2c14e', '#082a26', 'Stake Yes or No'], ['Open · 0:04', '#ff8a6b', '#082a26', 'Under 5 seconds left'], ['Locked', '#ffd27a', '#082a26', 'No action'], ['Waiting for ply 36', '#d3e5e2', '#082a26', 'No action'],
+      ['Provisional: YES', '#ffffff', '#082a26', 'Wait for the final'], ['Final: YES', '#082a26', '#ffffff', 'Claim if you won'], ['Voided', '#3b4a48', '#ffffff', 'Refund'], ['Voided: no winning stakes', '#3b4a48', '#ffffff', 'Refund'],
+      ['Expired', '#3b4a48', '#ffffff', 'Refund'], ['No stakes', '#0a302b', '#a9c7c2', 'Never sent to the oracle']
+    ].map(([label, bg, fg, action]) => ({ label, bg, fg, action }));
+    const card = (o) => ({ cardBg: '#12463f', ring: 'none', hasNote: !!o.note, isOpen: false, hasResult: !!o.result, hasAction: !!o.action, btnOp: 1, yesW: (o.yesPct || 50) + '%', ...o });
+    const cards = [
+      card({ caption: 'Open', status: 'Open · 0:12', stBg: '#f2c14e', stFg: '#082a26', meta: '430 tUSDC pooled', q: 'Any check in plies 33 to 36 (moves 17 to 18)?', isOpen: true, yesPct: 34, noPct: 66, oy: 'x2.88', on: 'x1.48', ring: 'inset 0 0 0 2px #2b5c55' }),
+      card({ caption: 'Open, last second', status: 'Open · 0:01', stBg: '#ff8a6b', stFg: '#082a26', meta: '512 tUSDC pooled', q: 'Any capture in plies 33 to 36 (moves 17 to 18)?', isOpen: true, yesPct: 71, noPct: 29, oy: 'x1.38', on: 'x3.38', btnOp: 0.45, note: 'Buttons turn off 1 second before lock.' }),
+      card({ caption: 'Locked', status: 'Locked', stBg: '#ffd27a', stFg: '#082a26', meta: 'Details', q: 'Black castles in plies 33 to 40 (moves 17 to 20)?', note: 'No more stakes. The window starts at ply 33.', yesPct: 52 }),
+      card({ caption: 'Provisional', status: 'Provisional: YES', stBg: '#ffffff', stFg: '#082a26', meta: 'Details', q: 'Any check in plies 33 to 36 (moves 17 to 18)?', note: 'Qh5+ on ply 33. Chainlink CRE confirms in about 2 minutes.', yesPct: 35, result: 'You: Yes 10.00', resultColor: '#f2c14e' }),
+      card({ caption: 'Final, you won', status: 'Final: YES', stBg: '#082a26', stFg: '#ffffff', meta: 'Details', q: 'Any check · 33–36', note: 'Qh5+ on ply 33. Confirmed by Chainlink CRE.', yesPct: 35, result: 'You won 26.60 tUSDC', resultColor: '#f2c14e', action: 'Claim', actBg: '#f2c14e', actFg: '#082a26', actShadow: 'none' }),
+      card({ caption: 'Final, you lost', status: 'Final: NO', stBg: '#082a26', stFg: '#ffffff', meta: 'Details', q: 'Any check · 29–32', note: 'No check in the window. Confirmed by Chainlink CRE.', yesPct: 28, result: 'Your call was wrong', resultColor: '#a9c7c2' }),
+      card({ caption: 'Voided, game ended', status: 'Voided', stBg: '#3b4a48', stFg: '#ffffff', meta: 'Details', q: 'Any capture · 61–64', note: 'The game ended before ply 64. Stakes are refunded.', yesPct: 62, cardBg: '#0a302b', result: 'Refund 5.00 tUSDC', resultColor: '#ffffff', action: 'Refund', actBg: 'transparent', actFg: '#ffffff', actShadow: 'inset 0 0 0 2px #2b5c55' }),
+      card({ caption: 'No stakes', status: 'No stakes', stBg: '#0a302b', stFg: '#a9c7c2', meta: 'Details', q: 'White castles · 29–36', note: 'Nobody staked. This market is never sent to the oracle.', yesPct: 50, cardBg: '#0a302b' })
+    ];
+    const inputs = [
+      { caption: 'Default', value: '10', border: '#9fb9b5', outline: 'none', msg: '' },
+      { caption: 'Focus', value: '25', border: '#082a26', outline: '3px solid #f2c14e', msg: '' },
+      { caption: 'Error', value: '0.5', border: '#c4302b', outline: 'none', msg: 'Minimum stake is 1 tUSDC.' }
+    ].map((x) => ({ ...x, hasMsg: !!x.msg }));
+    const toasts = [
+      { text: 'Staked 10.00 tUSDC on Yes.', bg: '#ffffff', fg: '#082a26', dot: '#f2c14e' },
+      { text: 'Out of gas funds. Refilling from the faucet.', bg: '#12463f', fg: '#ffffff', dot: '#a9c7c2' },
+      { text: 'This market is locked.', bg: '#3b1416', fg: '#ffd2cf', dot: '#ff9c94' },
+      { text: 'Test tokens were not sent yet. Please try again in a moment.', bg: '#3b1416', fg: '#ffd2cf', dot: '#ff9c94', hasAction: true }
+    ].map((t) => ({ hasAction: false, ...t }));
+    const errors = [
+      ['PASSKEY_CANCELLED', 'Account creation was cancelled.', 'Onboarding panel'], ['PRF_UNAVAILABLE', 'This passkey provider is not supported yet. Try saving the passkey in iCloud Keychain, Google Password Manager, or 1Password.', 'Onboarding panel'],
+      ['CRYPTO_UNAVAILABLE', 'This browser cannot create passkey accounts. Try a recent Chrome or Safari.', 'Onboarding panel'], ['FAUCET_FAILED', 'Test tokens were not sent yet. Please try again in a moment.', 'Onboarding step, toast with Try again'],
+      ['UNLOCK_CANCELLED', 'Unlock was cancelled.', 'Toast'], ['ACCOUNT_MISMATCH', 'This passkey belongs to a different account.', 'Alert dialog'], ['SESSION_ENDED', 'Your session ended. Unlock with your passkey again.', 'Banner and toast'],
+      ['BettingClosed', 'This market is locked.', 'Stake sheet and toast, pool rolls back'], ['AmountTooSmall', 'Minimum stake is 1 tUSDC.', 'Under the amount input'], ['StakeCapExceeded', 'Maximum 100 tUSDC per market.', 'Under the amount input'],
+      ['INSUFFICIENT_USDC', 'Not enough tUSDC.', 'Stake sheet, with Get test tokens'], ['INSUFFICIENT_GAS', 'Out of gas funds. Refilling from the faucet.', 'Toast, then the stake continues'], ['GAS_TOPUP_LIMIT', 'Gas refill limit reached. Please try again tomorrow.', 'Toast'],
+      ['RESOLVER_OFFLINE', 'Live data is temporarily unavailable.', 'Amber banner, board paused'], ['SSE_RECONNECTING', 'Reconnecting...', 'Banner'], ['FINAL_PENDING', 'Waiting for oracle confirmation.', 'Provisional card note'],
+      ['NothingToClaim', 'Nothing to claim.', 'Toast'], ['NotRefundable', 'Not refundable yet.', 'Toast']
+    ].map(([key, text, where]) => ({ key, text, where }));
+    return { colors, stateNames, buttons, statuses, cards, inputs, toasts, errors };
+  }
+}
+</script>
+</body>
+</html>
