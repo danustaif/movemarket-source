@@ -378,7 +378,7 @@ Sumber: monskills v0.7.2 (`concepts/references/*`, `gas/SKILL.md`).
 
 ## 14. Teks UI
 
-UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.en.json`. Dokumen tetap berbahasa Indonesia. Di UI hindari kata *gamble* dan *bet*; pakai *predict*, *stake*, *pool*.
+UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.en.json`. Dokumen tetap berbahasa Indonesia. Di UI hindari kata *gamble* dan *bet*; pakai *predict*, *stake*, *pool*. Label struktural layar (navigasi, judul bagian, teks onboarding, state kosong) ada di bagian `ui` (ditambahkan 10 Oktober, copy 2.1.0).
 
 ## 15. Keputusan desain
 
