@@ -1,0 +1,86 @@
+{
+  "_meta": {
+    "name": "MoveMarket source of truth: UI copy (English)",
+    "version": "2.0.0",
+    "updated": "2026-10-05",
+    "rule": "UI memakai bahasa Inggris karena juri global. Semua teks yang tampil ke pengguna diambil dari file ini lewat key. Hindari kata gamble dan bet di UI; pakai predict, stake, pool."
+  },
+  "brand": {
+    "name": "MoveMarket",
+    "tagline": "Every move is a market.",
+    "testnetBadge": "Monad Testnet"
+  },
+  "market": {
+    "question": {
+      "CHECK.ANY": "Any check in {range}?",
+      "CHECK.WHITE": "White gives check in {range}?",
+      "CHECK.BLACK": "Black gives check in {range}?",
+      "CAPTURE.ANY": "Any capture in {range}?",
+      "CAPTURE.WHITE": "White captures in {range}?",
+      "CAPTURE.BLACK": "Black captures in {range}?",
+      "CASTLE.WHITE": "White castles in {range}?",
+      "CASTLE.BLACK": "Black castles in {range}?"
+    },
+    "range": {
+      "multi": "plies {fromPly} to {toPly} (moves {fromMove} to {toMove})",
+      "multiSameMove": "plies {fromPly} to {toPly} (move {fromMove})",
+      "single": "ply {fromPly} (move {fromMove})"
+    },
+    "status": {
+      "open": "Open · {countdown}",
+      "locked": "Locked",
+      "waiting": "Waiting for ply {toPly}",
+      "provisional": "Provisional: {outcome}",
+      "final": "Final: {outcome}",
+      "voided": "Voided",
+      "expired": "Expired",
+      "noStakes": "No stakes",
+      "voidedNoWinners": "Voided: no winning stakes"
+    },
+    "outcome": {
+      "YES": "YES",
+      "NO": "NO",
+      "VOID": "VOID"
+    },
+    "replayBadge": "REPLAY",
+    "liveBadge": "LIVE"
+  },
+  "actions": {
+    "start": "Start",
+    "createAccount": "Create account",
+    "unlock": "Unlock with passkey",
+    "stake": "Stake",
+    "claim": "Claim",
+    "claimAll": "Claim all",
+    "refund": "Refund",
+    "retry": "Try again",
+    "getTestTokens": "Get test tokens"
+  },
+  "errors": {
+    "PRF_UNAVAILABLE": "This passkey provider is not supported yet. Try saving the passkey in iCloud Keychain, Google Password Manager, or 1Password.",
+    "PASSKEY_CANCELLED": "Account creation was cancelled.",
+    "FAUCET_FAILED": "Test tokens were not sent yet. Please try again in a moment.",
+    "INSUFFICIENT_USDC": "Not enough tUSDC.",
+    "INSUFFICIENT_GAS": "Out of gas funds. Refilling from the faucet.",
+    "BettingClosed": "This market is locked.",
+    "AmountTooSmall": "Minimum stake is 1 tUSDC.",
+    "StakeCapExceeded": "Maximum 100 tUSDC per market.",
+    "MarketNotOpen": "This market no longer accepts predictions.",
+    "NothingToClaim": "Nothing to claim.",
+    "NotClaimable": "Nothing to claim.",
+    "AlreadySettled": "Already claimed.",
+    "NotRefundable": "Not refundable yet.",
+    "SSE_RECONNECTING": "Reconnecting...",
+    "RESOLVER_OFFLINE": "Live data is temporarily unavailable.",
+    "FINAL_PENDING": "Waiting for oracle confirmation.",
+    "CRYPTO_UNAVAILABLE": "This browser cannot create passkey accounts. Try a recent Chrome or Safari.",
+    "SESSION_ENDED": "Your session ended. Unlock with your passkey again.",
+    "ACCOUNT_MISMATCH": "This passkey belongs to a different account.",
+    "UNLOCK_CANCELLED": "Unlock was cancelled.",
+    "GAS_TOPUP_LIMIT": "Gas refill limit reached. Please try again tomorrow."
+  },
+  "home": {
+    "replayStarting": "Starting a replay...",
+    "noGames": "No live games right now."
+  }
+}

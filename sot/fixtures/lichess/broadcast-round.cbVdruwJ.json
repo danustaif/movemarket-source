@@ -1,0 +1,96 @@
+{
+  "round": {
+    "id": "cbVdruwJ",
+    "name": "Round 9",
+    "slug": "round-9",
+    "ongoing": true,
+    "startsAt": 1791171900000,
+    "url": "https://lichess.org/broadcast/bihar-state-junior-fide-rating-chess-championship-2026-open/round-9/cbVdruwJ",
+    "delay": 900
+  },
+  "tour": {
+    "id": "n7QNtSrb",
+    "name": "Bihar State Junior FIDE Rating Chess Championship 2026 |  Open",
+    "info": {
+      "format": "9-round Swiss",
+      "tc": "90 min + 30 sec / move",
+      "fideTC": "standard",
+      "location": "Muzaffarpur, Bihar, India",
+      "timeZone": "Asia/Kolkata",
+      "standings": "https://s3.chess-results.com/tnr1494650.aspx?art=1"
+    }
+  },
+  "games": [
+    {
+      "id": "fGXnnaOp",
+      "name": "Parthavah - Prem Kumar",
+      "fen": "r1b2rk1/pp3pp1/2q1n2p/1N2p3/2P1P3/1P2QB2/P5PP/R4R1K b - - 5 21",
+      "players": [
+        {
+          "name": "Parthavah",
+          "rating": 1574,
+          "fideId": 88145697,
+          "fed": "IND",
+          "clock": 486700
+        },
+        {
+          "name": "Prem Kumar",
+          "rating": 1790,
+          "fideId": 25151436,
+          "fed": "IND",
+          "clock": 351000
+        }
+      ],
+      "lastMove": "e2e3",
+      "status": "\u00bd-\u00bd"
+    },
+    {
+      "id": "L4AeZzmC",
+      "name": "Tejas Shandilya - Aniket Ranjan",
+      "fen": "3r2k1/p1q2p1p/1p1p2p1/5r2/4N2Q/1P4P1/P4PKP/4R3 b - - 4 26",
+      "players": [
+        {
+          "name": "Tejas Shandilya",
+          "rating": 1656,
+          "fideId": 33478988,
+          "fed": "IND",
+          "clock": 200400
+        },
+        {
+          "name": "Aniket Ranjan",
+          "rating": 1897,
+          "fideId": 25985582,
+          "fed": "IND",
+          "clock": 278700
+        }
+      ],
+      "lastMove": "f4h4",
+      "thinkTime": 26,
+      "status": "*"
+    },
+    {
+      "id": "yM0bK46p",
+      "name": "Shivansh Baranwal - Kartik Kumar",
+      "fen": "4rrk1/p1q2pp1/2pbb2p/3p2n1/5N2/3BQ1BP/PPP2PP1/R3R1K1 w - - 12 19",
+      "players": [
+        {
+          "name": "Shivansh Baranwal",
+          "rating": 1604,
+          "fideId": 537031546,
+          "fed": "IND",
+          "clock": 288600
+        },
+        {
+          "name": "Kartik Kumar",
+          "rating": 1702,
+          "fideId": 33312370,
+          "fed": "IND",
+          "clock": 192900
+        }
+      ],
+      "lastMove": "a8e8",
+      "thinkTime": 535,
+      "status": "*"
+    }
+  ]
+}

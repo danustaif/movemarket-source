@@ -1,0 +1,5 @@
+{"t":"featured","d":{"id":"e9SJcXpJ","orientation":"black","players":[{"color":"white","user":{"name":"chessasuke","title":"GM","id":"chessasuke"},"rating":2826,"seconds":42},{"color":"black","user":{"name":"qdxds","id":"qdxds"},"rating":2959,"seconds":42}],"fen":"1k1r3r/p1p1nn2/Bq1p4/3Ppp2/1P6/2N4P/P3Q1PK/2R2R2 b - - 3 23"}}
+{"t":"fen","d":{"fen":"1k1r3r/p1p1n3/Bq1p4/3Pppn1/1P6/2N4P/P3Q1PK/2R2R2 w - - 4 24","lm":"f7g5","wc":21,"bc":36}}
+{"t":"fen","d":{"fen":"1k1r3r/p1p1n3/Bq1p4/3Pppn1/NP6/7P/P3Q1PK/2R2R2 b - - 5 24","lm":"c3a4","wc":18,"bc":36}}
+{"t":"fen","d":{"fen":"1k1r3r/p1p1n3/B2p4/3Pppn1/NP1q4/7P/P3Q1PK/2R2R2 w - - 6 25","lm":"b6d4","wc":18,"bc":34}}
+{"t":"fen","d":{"fen":"1k1r3r/p1p1n3/B2p4/3Pppn1/NPRq4/7P/P3Q1PK/5R2 b - - 7 25","lm":"c1c4","wc":15,"bc":34}}

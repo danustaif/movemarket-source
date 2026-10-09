@@ -1,0 +1,458 @@
+{
+  "_meta": {
+    "name": "MoveMarket source of truth: constants",
+    "version": "2.1.0",
+    "updated": "2026-10-05",
+    "rule": "Nilai di file ini menang atas dokumen mana pun. Ubah di sini dulu, jalankan `node sot/check.mjs`, lalu sesuaikan kode dan dokumen yang gagal dicek."
+  },
+  "network": {
+    "name": "Monad Testnet",
+    "chainId": 10143,
+    "rpcPublic": "https://testnet-rpc.monad.xyz",
+    "explorer": "https://testnet.monadscan.com",
+    "envioHypersync": "https://10143.hypersync.xyz",
+    "creChainSelectorName": "monad-testnet",
+    "notes": [
+      "Monad menagih gas limit, bukan gas terpakai. Selalu set `gas` eksplisit per fungsi (lihat gas.limits).",
+      "block.timestamp beresolusi 1 detik, beberapa blok bisa berbagi timestamp yang sama.",
+      "Log dipublikasikan pada state Proposed. Aksi yang tidak bisa dibatalkan (menjalankan CRE, SSE finalized, membuka claim di UI) menunggu blok event sudah finalized.",
+      "Reserve balance: transaksi revert kalau saldo akhir (sebelum refund gas) di bawah min(saldo awal, 10 MON). Akun di bawah 10 MON hanya bisa mengirim 1 transaksi per 3 blok (~1,2 detik).",
+      "Async execution: akun yang baru didanai baru bisa mengirim transaksi setelah transfer dananya berumur 3 blok (~1,2 detik).",
+      "Akses akun dingin 10.100 gas dan storage dingin 8.100 gas (Ethereum 2.600 dan 2.100). Estimasi gas dari Ethereum terlalu rendah.",
+      "Mendukung eth_sendRawTransactionSync. viem 2.57 punya writeContractSync."
+    ],
+    "viemChain": "import { monadTestnet } from 'viem/chains' (jangan definisikan chain manual)",
+    "blockTimeMs": 400,
+    "finalityMs": 800,
+    "_source": "monskills v0.7.2 (therealharpaljadeja/monskills): concepts/references/reserve-balance.md, async-execution.md, block-states.md, realtime-data.md, gas/SKILL.md, why-monad/SKILL.md"
+  },
+  "addresses": {
+    "creMockKeystoneForwarder": "0xB9F79d863261869B234c481D1f9A7af84AeAd192",
+    "creKeystoneForwarder": "0xF8344CFd5c43616a4366C34E3EEE75af79a74482",
+    "liveMarket": null,
+    "mockUsdc": null,
+    "resolver": null,
+    "deployBlock": null,
+    "_source": "Chainlink CRE Forwarder Directory (docs.chain.link/cre/guides/workflow/using-evm-client/forwarder-directory-ts), dicek 2026-10-05. Konfirmasi ulang dengan `cre workflow supported-chains` karena daftar per tenant bisa berbeda. Nilai null diisi oleh script deploy.",
+    "_conflict": "chainlink-cre-skill v0.0.24 tidak punya baris Monad Testnet, dan memakai 0xB9F79d... sebagai KeystoneForwarder produksi Mantle Sepolia. Halaman Forwarder Directory (dicek 5 Okt) menaruh 0xB9F79d... di tabel Simulation Testnets untuk monad-testnet dan 0xF8344CFd... di tabel produksi. Alamat yang sama dipakai di chain berbeda. Pakai halaman dokumentasi, lalu konfirmasi mock forwarder dengan `cre workflow supported-chains --target <t> --output json`."
+  },
+  "token": {
+    "name": "Test USDC",
+    "symbol": "tUSDC",
+    "decimals": 6
+  },
+  "enums": {
+    "MarketType": [
+      "CHECK",
+      "CAPTURE",
+      "CASTLE"
+    ],
+    "Side": [
+      "ANY",
+      "WHITE",
+      "BLACK"
+    ],
+    "Status": [
+      "OPEN",
+      "RESOLVED",
+      "VOIDED"
+    ],
+    "Outcome": [
+      "NONE",
+      "YES",
+      "NO",
+      "VOID"
+    ],
+    "VoidReason": {
+      "1": "ORACLE",
+      "2": "NO_WINNERS",
+      "3": "ADMIN",
+      "4": "EXPIRED"
+    },
+    "SkipReason": {
+      "1": "MARKET_NOT_FOUND",
+      "2": "GAME_MISMATCH",
+      "3": "NOT_OPEN",
+      "4": "NOT_LOCKED",
+      "5": "BAD_OUTCOME"
+    },
+    "_rule": "Urutan array = nilai uint8 di kontrak (indeks 0, 1, 2, ...). Jangan mengubah urutan."
+  },
+  "outcomeCode": {
+    "YES": 1,
+    "NO": 2,
+    "VOID": 3
+  },
+  "contract": {
+    "solidity": "^0.8.24",
+    "MAX_CREATE_BATCH": 20,
+    "MAX_RESOLVE_BATCH": 40,
+    "MAX_LOCK_BATCH": 40,
+    "MAX_WINDOW_PLIES": 40,
+    "MAX_BET_WINDOW_SEC": 600,
+    "MAX_RESOLVE_DELAY_SEC": 43200,
+    "MAX_FEE_BPS": 500,
+    "MAX_GAMEREF_BYTES": 96,
+    "defaults": {
+      "feeBps": 200,
+      "minBet": "1000000",
+      "maxStakePerUser": "100000000"
+    },
+    "rules": [
+      "CASTLE wajib side != ANY",
+      "bet ditolak saat block.timestamp >= lockTime",
+      "lockMarkets hanya bisa memajukan lockTime, tidak pernah memundurkan",
+      "owner tidak punya fungsi untuk menetapkan YES atau NO"
+    ]
+  },
+  "gameRef": {
+    "maxBytes": 96,
+    "gameKey": "keccak256(utf8Bytes(gameRef))",
+    "formats": [
+      {
+        "kind": "game",
+        "pattern": "lichess:game:{gameId}",
+        "regex": "^lichess:game:[A-Za-z0-9]{8}$",
+        "usedFor": [
+          "replay",
+          "tv"
+        ],
+        "fetch": {
+          "url": "https://lichess.org/game/export/{gameId}?moves=true&clocks=false&evals=false&opening=false",
+          "headers": {
+            "Accept": "application/json"
+          },
+          "format": "json"
+        }
+      },
+      {
+        "kind": "study",
+        "pattern": "lichess:study:{roundId}:{chapterId}",
+        "regex": "^lichess:study:[A-Za-z0-9]{8}:[A-Za-z0-9]{8}$",
+        "usedFor": [
+          "broadcast"
+        ],
+        "fetch": {
+          "url": "https://lichess.org/api/study/{roundId}/{chapterId}.pgn?clocks=false&comments=false&variations=false",
+          "headers": {},
+          "format": "pgn"
+        }
+      }
+    ]
+  },
+  "lichess": {
+    "exportJson": {
+      "movesField": "moves",
+      "movesFormat": "SAN dipisah satu spasi",
+      "statusField": "status",
+      "speedField": "speed",
+      "notEndedStatuses": [
+        "created",
+        "started"
+      ],
+      "observedStatuses": [
+        "started",
+        "mate"
+      ],
+      "verified": "2026-10-05"
+    },
+    "pgn": {
+      "resultTokens": [
+        "1-0",
+        "0-1",
+        "1/2-1/2",
+        "*"
+      ],
+      "ongoingToken": "*",
+      "chapterIdFrom": "segmen terakhir tag GameURL",
+      "verified": "2026-10-05"
+    },
+    "sources": {
+      "broadcastRoundStream": "GET https://lichess.org/api/stream/broadcast/round/{roundId}.pgn",
+      "broadcastRoundInfo": "GET https://lichess.org/api/broadcast/-/-/{roundId}",
+      "broadcastTop": "GET https://lichess.org/api/broadcast/top",
+      "tvChannels": "GET https://lichess.org/api/tv/channels",
+      "tvChannelFeed": "GET https://lichess.org/api/tv/{channel}/feed",
+      "gameStream": "GET https://lichess.org/api/stream/game/{gameId}",
+      "gameExport": "GET https://lichess.org/game/export/{gameId}"
+    },
+    "facts": [
+      "TV feed hanya mengirim FEN dan langkah terakhir dalam UCI (field lm), tanpa SAN.",
+      "Stream per game mengirim baris meta (berisi speed) lalu SELURUH posisi dari awal dengan lm UCI, lalu lanjut live.",
+      "Broadcast round punya field delay (contoh 900 detik). Data stream sudah tertunda sama seperti yang dilihat penonton di Lichess.",
+      "tour.info.fideTC bernilai standard, rapid, atau blitz (bisa tidak ada)."
+    ],
+    "rateLimit": "Satu koneksi stream per sumber, jangan polling endpoint stream. HTTP 429: tunggu 60 detik."
+  },
+  "speed": {
+    "supported": [
+      "classical",
+      "rapid"
+    ],
+    "fromFideTC": {
+      "standard": "classical",
+      "rapid": "rapid",
+      "blitz": "blitz"
+    },
+    "fromSeconds": {
+      "formula": "estimatedSec = baseSec + 40 * incrementSec",
+      "classicalMinSec": 1500,
+      "rapidMinSec": 480,
+      "blitzMinSec": 180
+    },
+    "priority": [
+      "field speed dari Lichess (game)",
+      "tour.info.fideTC (broadcast)",
+      "formula fromSeconds",
+      "unknown = tidak didukung"
+    ]
+  },
+  "planner": {
+    "SPAWN_EVERY_PLIES": 4,
+    "WINDOW_PLIES": 4,
+    "CASTLE_WINDOW_PLIES": 8,
+    "CASTLE_MAX_CURRENT_PLY": 40,
+    "PLY_GAP": {
+      "classical": 2,
+      "rapid": 4
+    },
+    "LOCK_LEAD_PLIES": 1,
+    "BET_WINDOW_SEC": 15,
+    "RESOLVE_DEADLINE_SEC": 21600,
+    "MAX_OPEN_MARKETS_PER_GAME": 12,
+    "formulas": {
+      "fromPly": "currentPly + plyGap + 1",
+      "toPly": "fromPly + windowPlies - 1",
+      "lockTime": "nowSec + BET_WINDOW_SEC",
+      "resolveDeadline": "lockTime + RESOLVE_DEADLINE_SEC",
+      "lockByPly": "resolver memanggil lockMarkets saat ply teramati >= fromPly - LOCK_LEAD_PLIES"
+    },
+    "openMarketDefinition": "pasar partai ini dengan lockTime > now (masih bisa dipasang)"
+  },
+  "resolver": {
+    "PORT": 8787,
+    "REQUEST_FLUSH_SEC": 3,
+    "FINAL_WAIT_SEC": 120,
+    "RETRY_BACKOFF_SEC": [
+      30,
+      60,
+      120
+    ],
+    "MAX_RETRIES": 3,
+    "REPLAY_PLY_INTERVAL_SEC": 20,
+    "REPLAY_START_PLY": 20,
+    "AUTO_REPLAY_IDLE_MIN": 10,
+    "AUTO_REPLAY_REQUIRES_VIEWER": true,
+    "VIEWER_GRACE_SEC": 120,
+    "SSE_PING_SEC": 15,
+    "CRE_RUN_TIMEOUT_SEC": 120,
+    "CRE_RUN_CONCURRENCY": 1,
+    "REQUEST_MAX_BATCH": 8,
+    "SKIP_REQUEST_IF_NO_STAKES": true,
+    "REPLAY_FINISH_OPEN_MARKETS_WITHOUT_VIEWERS": true,
+    "EXPORT_PRECHECK": true,
+    "ACT_ON": "finalized",
+    "EVENT_SOURCE": "WebSocket eth_subscribe logs (MONAD_TESTNET_WS), fallback polling getLogs"
+  },
+  "faucet": {
+    "usdcAmount": "50000000",
+    "monAmountWei": "500000000000000000",
+    "perAddressPer24h": 1,
+    "perIpPer24h": 5,
+    "minResolverMonWei": "20000000000000000000",
+    "gasTopUpWei": "500000000000000000",
+    "gasTopUpPerAddressPer24h": 3,
+    "gasTopUpThresholdWei": "50000000000000000",
+    "onboardingQuotaCountsOnlyIfMonSent": true,
+    "separateWallet": true,
+    "resolverHardFloorWei": "10000000000000000000",
+    "faucetWalletMinWei": "10500000000000000000",
+    "faucetWalletRule": "Kirim MON hanya kalau saldo wallet faucet >= 10 MON + jumlah kirim. Di bawah itu transfer akan revert karena reserve balance.",
+    "monadAgentFaucet": "POST https://agents.devnads.com/v1/faucet {\"chainId\":10143,\"address\":\"0x...\"} untuk mengisi wallet operasional"
+  },
+  "gas": {
+    "observedGasPriceGwei": 102,
+    "observedAt": "2026-10-05",
+    "limits": {
+      "approve": 80000,
+      "bet": 200000,
+      "claim": 150000,
+      "claimMany": 1500000,
+      "refund": 150000,
+      "createMarketsBase": null,
+      "createMarketsPerMarket": null,
+      "lockMarketsBase": null,
+      "lockMarketsPerMarket": null,
+      "requestResolutionBase": null,
+      "requestResolutionPerMarket": null,
+      "mint": null,
+      "nativeTransfer": 21000,
+      "adminVoid": null,
+      "setForwarder": null
+    },
+    "_rule": "Ukur dengan eth_estimateGas terhadap kontrak yang sudah di-deploy di Monad Testnet (bukan forge gas report, karena biaya akses dingin Monad lebih tinggi), lalu tambah buffer maksimal 10%. Fungsi batch memakai base + perMarket x n. Semua angka null diisi setelah deploy.",
+    "budget": {
+      "estimateMonPerReplayGame": 1.5,
+      "walletFloorMon": 10,
+      "wallets": {
+        "resolver": "lock, create, request; dijaga di atas 20 MON",
+        "faucet": "wallet terpisah, harus punya minimal 10 MON + jumlah kirim",
+        "creCli": "wallet CRE_ETH_PRIVATE_KEY untuk simulate --broadcast, dijaga di atas 10 MON"
+      },
+      "targetMonBeforeJudging": 100,
+      "idealMon": 160,
+      "assumption": "125 MON konsumsi 14 hari penjurian + 3 wallet x 10 MON floor"
+    },
+    "bufferPct": 10,
+    "priorityFeeForLockMarkets": "lockMarkets dikirim dengan priority fee lebih tinggi supaya diurutkan sebelum bet di blok yang sama (Monad mengurutkan berdasarkan total gas price menurun)"
+  },
+  "cre": {
+    "cliMin": "1.30.0",
+    "tsSdkMin": "1.19.0",
+    "workflowName": "resolver-workflow",
+    "trigger": "EVM log, event ResolutionRequested, --evm-event-index 0",
+    "gasLimit": "1000000",
+    "maxMarketsPerReport": 8,
+    "reportAbi": "bytes32 gameKey, uint256[] ids, uint8[] outcomes",
+    "consensusPayload": "string `id:code` dipisah koma, id urut naik, hanya outcome bukan PENDING",
+    "aggregation": "identical, aman karena resolver baru me-request setelah export Lichess sendiri sudah memastikan outcome (D17)",
+    "quotas": {
+      "logTriggerEvents": "10 per 6 detik",
+      "httpPerExecution": 5,
+      "evmReadPerExecution": 15,
+      "httpResponseBytes": 102400,
+      "reportBytes": 5120,
+      "writeGas": 5000000,
+      "executionTimeoutSec": 300
+    },
+    "gasLimitNote": "Sementara. Monad menagih gas limit, jadi 3.000.000 berarti ~0,3 MON per report. Ganti dengan gas onReport batch REQUEST_MAX_BATCH hasil ukur + 30%.",
+    "skill": "chainlink-cre-skill v0.0.24 (smartcontractkit/chainlink-agent-skills)",
+    "init": "cre init --non-interactive --project-name movemarket-cre --deployment-registry <ID dari `cre registry list`> --workflow-name resolver-workflow --template hello-world-ts --rpc-url monad-testnet=<RPC>",
+    "postInit": [
+      "bun install",
+      "bunx cre-setup",
+      "hapus README, handler, config, dan secrets contoh dari template"
+    ],
+    "targets": "Baca nama target dari workflow.yaml hasil cre init (template membuat staging-settings dan production). Jangan menebak.",
+    "localSimulationTarget": "local-simulation: deployment-registry \"private\", secrets-path \"\", config mode \"local-simulation\" yang berhenti sebelum report/writeReport. Tidak pernah dipakai dengan --broadcast.",
+    "broadcastKeyEnv": "CRE_ETH_PRIVATE_KEY (dibaca CLI dari .env proyek, jangan dibuka)",
+    "logTriggerConfidence": "finalized",
+    "handlerReturns": "string JSON { gameRef, resolved, skipped, txHash }",
+    "lifecycle": "init -> simulate -> deploy (paused) -> activate",
+    "deployPrereqs": [
+      "Early Access (cre account access)",
+      "cre login",
+      "cre account link-key --target <t> dengan wallet yang punya dana (maks 2 key per organisasi)",
+      "simulasi lulus"
+    ],
+    "simulationCaveat": "Simulasi memakai simulator lokal, bukan konsensus multi-node. Risiko agregasi identik (D17) tidak teruji di simulate."
+  },
+  "account": {
+    "library": "@category-labs/mera@0.2.0",
+    "derivation": [
+      "prfOutput (32 byte) dari createPasskeyWithPrfOutput / getPasskeyPrfOutput, salt default Mera",
+      "mnemonic = bip39.entropyToMnemonic(prfOutput, english)",
+      "seed = bip39.mnemonicToSeedSync(mnemonic)",
+      "privateKey = bip32.HDKey.fromMasterSeed(seed).derive(\"m/44'/60'/0'/0/0\").privateKey",
+      "session = createSecp256k1SigningSession({ privateKey })",
+      "account = toViemAccount(session, { nonceManager })"
+    ],
+    "derivationPath": "m/44'/60'/0'/0/0",
+    "storageKey": "movemarket.account.v1",
+    "stored": [
+      "rpId",
+      "address",
+      "credentialId"
+    ],
+    "neverStored": [
+      "prfOutput",
+      "mnemonic",
+      "seed",
+      "privateKey"
+    ],
+    "recommendedAuthenticators": [
+      "iCloud Keychain",
+      "1Password",
+      "Google Password Manager"
+    ]
+  },
+  "frontend": {
+    "language": "en",
+    "betChipsUsdc": [
+      1,
+      5,
+      10
+    ],
+    "lockMarginSec": 1,
+    "chainTimeRefreshSec": 60,
+    "sseBackoffSec": [
+      1,
+      2,
+      4,
+      8,
+      16,
+      30
+    ],
+    "postFundingWaitBlocks": 3,
+    "minTxGapMs": 1200,
+    "approveDuringOnboarding": true,
+    "sendMode": "writeContractSync (eth_sendRawTransactionSync), fallback writeContract + waitForTransactionReceipt",
+    "readTags": {
+      "liveDisplay": "latest",
+      "claimGating": "finalized"
+    }
+  },
+  "sse": {
+    "events": [
+      "ply",
+      "game_end",
+      "market_created",
+      "market_locked",
+      "pool",
+      "provisional",
+      "finalized",
+      "replay_starting",
+      "ping"
+    ],
+    "outcomeEncoding": "string YES | NO | VOID",
+    "numberEncoding": "id dan nominal uang dikirim sebagai string desimal",
+    "payloads": {
+      "pool": "{ gameRef, marketId, poolYes, poolNo }",
+      "replay_starting": "{ gameRef }"
+    }
+  },
+  "hackathon": {
+    "name": "Monad Metropolis",
+    "track": "03 Social, Attention & Culture",
+    "submissionDeadline": "2026-10-13",
+    "judging": "2026-10-14 sampai 2026-10-27",
+    "winnersAnnounced": "2026-11-03",
+    "bounties": [
+      "Chainlink Best workflow with CRE ($3.000)",
+      "Monad Foundation Best Mera-Powered UX ($2.500)",
+      "Envio Best Use of Envio ($1.000)"
+    ]
+  },
+  "replay": {
+    "poolSpeeds": [
+      "classical",
+      "rapid"
+    ],
+    "validateOnStart": true
+  },
+  "indexer": {
+    "platform": "Envio Cloud lewat CLI envio-cloud",
+    "init": "pnpx envio@3.0.0-alpha.21 init contract-import explorer -b monad-testnet -c <LIVE_MARKET_ADDRESS> -n LiveMarket -l typescript -d ./ -o ./ --all-events --single-contract --api-token \"\"",
+    "prereq": "kontrak sudah terverifikasi",
+    "fieldSelection": "field_selection: transaction_fields: [hash]",
+    "firstDeploy": "deploy dari GitHub, push commit kosong setelah build pertama, cek _meta isReady dan progressBlock, lalu deployment promote"
+  },
+  "verification": {
+    "primary": "POST https://agents.devnads.com/v1/verify (MonadVision, Socialscan, Monadscan sekaligus) dengan foundryMetadata dari out/<Contract>.sol/<Contract>.json",
+    "fallback": "forge verify-contract <ADDR> <CONTRACT> --chain 10143 --verifier sourcify --verifier-url https://sourcify-api-monad.blockvision.org/"
+  },
+  "skills": {
+    "chainlink": "npx skills add smartcontractkit/chainlink-agent-skills --skill chainlink-cre-skill",
+    "monad": "npx skills add therealharpaljadeja/monskills (Claude Code: /plugin marketplace add therealharpaljadeja/monskills lalu /plugin install monskills@monskills)"
+  }
+}

@@ -1,0 +1,702 @@
+{
+  "_meta": {
+    "name": "MoveMarket source of truth: test vectors",
+    "version": "2.0.0",
+    "updated": "2026-10-05",
+    "rule": "Setiap implementasi resolve (source/shared, workflow CRE) wajib lulus semua vektor. Vektor R* dibekukan dari data Lichess nyata di sot/fixtures/lichess/. Jangan mengubah expected tanpa mengubah aturan di docs/SOT.md.",
+    "marketEncoding": "marketType 0 CHECK, 1 CAPTURE, 2 CASTLE; side 0 ANY, 1 WHITE, 2 BLACK"
+  },
+  "base": {
+    "BASE": [
+      "e4",
+      "e5",
+      "Nf3",
+      "Nc6",
+      "Bc4",
+      "Bc5",
+      "c3",
+      "Nf6",
+      "d4",
+      "exd4",
+      "cxd4",
+      "Bb4+",
+      "Bd2",
+      "Bxd2+",
+      "Nbxd2",
+      "d5",
+      "exd5",
+      "Nxd5",
+      "Qb3",
+      "Nce7",
+      "O-O",
+      "O-O"
+    ]
+  },
+  "resolution": [
+    {
+      "id": "V1",
+      "game": {
+        "source": "BASE",
+        "plies": 22,
+        "ended": false
+      },
+      "market": {
+        "marketType": 0,
+        "side": 0,
+        "fromPly": 12,
+        "toPly": 15
+      },
+      "expected": "YES",
+      "why": "Skak di ply 12"
+    },
+    {
+      "id": "V2",
+      "game": {
+        "source": "BASE",
+        "plies": 22,
+        "ended": false
+      },
+      "market": {
+        "marketType": 0,
+        "side": 1,
+        "fromPly": 11,
+        "toPly": 16
+      },
+      "expected": "NO",
+      "why": "Ply 11, 13, 15 tanpa skak, rentang lengkap"
+    },
+    {
+      "id": "V3",
+      "game": {
+        "source": "BASE",
+        "plies": 22,
+        "ended": false
+      },
+      "market": {
+        "marketType": 0,
+        "side": 2,
+        "fromPly": 11,
+        "toPly": 16
+      },
+      "expected": "YES",
+      "why": "Ply 12"
+    },
+    {
+      "id": "V4",
+      "game": {
+        "source": "BASE",
+        "plies": 22,
+        "ended": false
+      },
+      "market": {
+        "marketType": 1,
+        "side": 0,
+        "fromPly": 1,
+        "toPly": 9
+      },
+      "expected": "NO",
+      "why": "Tidak ada x di ply 1 sampai 9"
+    },
+    {
+      "id": "V5",
+      "game": {
+        "source": "BASE",
+        "plies": 22,
+        "ended": false
+      },
+      "market": {
+        "marketType": 1,
+        "side": 0,
+        "fromPly": 16,
+        "toPly": 19
+      },
+      "expected": "YES",
+      "why": "Ply 17 exd5"
+    },
+    {
+      "id": "V6",
+      "game": {
+        "source": "BASE",
+        "plies": 22,
+        "ended": false
+      },
+      "market": {
+        "marketType": 2,
+        "side": 1,
+        "fromPly": 19,
+        "toPly": 22
+      },
+      "expected": "YES",
+      "why": "Ply 21"
+    },
+    {
+      "id": "V7",
+      "game": {
+        "source": "BASE",
+        "plies": 22,
+        "ended": false
+      },
+      "market": {
+        "marketType": 2,
+        "side": 2,
+        "fromPly": 15,
+        "toPly": 20
+      },
+      "expected": "NO",
+      "why": "Rokade Hitam di ply 22, di luar rentang"
+    },
+    {
+      "id": "V8",
+      "game": {
+        "source": "BASE",
+        "plies": 22,
+        "ended": false
+      },
+      "market": {
+        "marketType": 0,
+        "side": 0,
+        "fromPly": 19,
+        "toPly": 26
+      },
+      "expected": "PENDING",
+      "why": "Ply 19 sampai 22 tanpa skak, rentang belum selesai"
+    },
+    {
+      "id": "V9",
+      "game": {
+        "source": "BASE",
+        "plies": 22,
+        "ended": true
+      },
+      "market": {
+        "marketType": 0,
+        "side": 0,
+        "fromPly": 19,
+        "toPly": 26
+      },
+      "expected": "VOID",
+      "why": "Partai selesai sebelum ply 26"
+    },
+    {
+      "id": "V10",
+      "game": {
+        "source": "BASE",
+        "plies": 22,
+        "ended": false
+      },
+      "market": {
+        "marketType": 1,
+        "side": 0,
+        "fromPly": 21,
+        "toPly": 30
+      },
+      "expected": "PENDING",
+      "why": "Ply 21, 22 tanpa x"
+    },
+    {
+      "id": "V11",
+      "game": {
+        "source": "BASE",
+        "plies": 22,
+        "ended": false
+      },
+      "market": {
+        "marketType": 2,
+        "side": 1,
+        "fromPly": 19,
+        "toPly": 30
+      },
+      "expected": "YES",
+      "why": "YES lebih awal walau rentang belum selesai"
+    },
+    {
+      "id": "V12",
+      "game": {
+        "source": "BASE",
+        "plies": 12,
+        "ended": false
+      },
+      "market": {
+        "marketType": 0,
+        "side": 0,
+        "fromPly": 12,
+        "toPly": 12
+      },
+      "expected": "YES",
+      "why": "Rentang satu ply"
+    },
+    {
+      "id": "V13",
+      "game": {
+        "source": "BASE",
+        "plies": 11,
+        "ended": false
+      },
+      "market": {
+        "marketType": 0,
+        "side": 0,
+        "fromPly": 12,
+        "toPly": 12
+      },
+      "expected": "PENDING",
+      "why": "Ply 12 belum dimainkan"
+    },
+    {
+      "id": "V14",
+      "game": {
+        "source": "BASE",
+        "plies": 11,
+        "ended": true
+      },
+      "market": {
+        "marketType": 0,
+        "side": 0,
+        "fromPly": 12,
+        "toPly": 12
+      },
+      "expected": "VOID",
+      "why": "Partai berakhir di ply 11"
+    },
+    {
+      "id": "R1",
+      "game": {
+        "source": "fixture",
+        "file": "game-export.finished-mate.json",
+        "kind": "json"
+      },
+      "market": {
+        "marketType": 0,
+        "side": 0,
+        "fromPly": 30,
+        "toPly": 34
+      },
+      "expected": "YES",
+      "why": "Qh5+ di ply 33"
+    },
+    {
+      "id": "R2",
+      "game": {
+        "source": "fixture",
+        "file": "game-export.finished-mate.json",
+        "kind": "json"
+      },
+      "market": {
+        "marketType": 2,
+        "side": 1,
+        "fromPly": 25,
+        "toPly": 30
+      },
+      "expected": "YES",
+      "why": "O-O Putih di ply 27"
+    },
+    {
+      "id": "R3",
+      "game": {
+        "source": "fixture",
+        "file": "game-export.finished-mate.json",
+        "kind": "json"
+      },
+      "market": {
+        "marketType": 2,
+        "side": 2,
+        "fromPly": 25,
+        "toPly": 34
+      },
+      "expected": "NO",
+      "why": "O-O-O Hitam di ply 36, di luar rentang"
+    },
+    {
+      "id": "R4",
+      "game": {
+        "source": "fixture",
+        "file": "game-export.finished-mate.json",
+        "kind": "json"
+      },
+      "market": {
+        "marketType": 0,
+        "side": 0,
+        "fromPly": 58,
+        "toPly": 62
+      },
+      "expected": "YES",
+      "why": "Qxb7# di ply 59 (mat dihitung skak)"
+    },
+    {
+      "id": "R5",
+      "game": {
+        "source": "fixture",
+        "file": "game-export.finished-mate.json",
+        "kind": "json"
+      },
+      "market": {
+        "marketType": 1,
+        "side": 2,
+        "fromPly": 60,
+        "toPly": 63
+      },
+      "expected": "VOID",
+      "why": "Partai berakhir di ply 59"
+    },
+    {
+      "id": "R6",
+      "game": {
+        "source": "fixture",
+        "file": "game-export.ongoing-rapid.json",
+        "kind": "json"
+      },
+      "market": {
+        "marketType": 0,
+        "side": 0,
+        "fromPly": 41,
+        "toPly": 48
+      },
+      "expected": "PENDING",
+      "why": "Status started, 44 ply, belum ada skak"
+    },
+    {
+      "id": "R7",
+      "game": {
+        "source": "fixture",
+        "file": "game-export.ongoing-rapid.json",
+        "kind": "json"
+      },
+      "market": {
+        "marketType": 2,
+        "side": 2,
+        "fromPly": 13,
+        "toPly": 20
+      },
+      "expected": "YES",
+      "why": "O-O Hitam di ply 14"
+    },
+    {
+      "id": "R8",
+      "game": {
+        "source": "fixture",
+        "file": "study-chapter.cbVdruwJ.fGXnnaOp.pgn",
+        "kind": "pgn"
+      },
+      "market": {
+        "marketType": 0,
+        "side": 0,
+        "fromPly": 1,
+        "toPly": 41
+      },
+      "expected": "NO",
+      "why": "Remis 41 ply tanpa skak"
+    },
+    {
+      "id": "R9",
+      "game": {
+        "source": "fixture",
+        "file": "study-chapter.cbVdruwJ.fGXnnaOp.pgn",
+        "kind": "pgn"
+      },
+      "market": {
+        "marketType": 1,
+        "side": 1,
+        "fromPly": 19,
+        "toPly": 24
+      },
+      "expected": "YES",
+      "why": "Nxe4 Putih di ply 19"
+    },
+    {
+      "id": "R10",
+      "game": {
+        "source": "fixture",
+        "file": "study-chapter.cbVdruwJ.fGXnnaOp.pgn",
+        "kind": "pgn"
+      },
+      "market": {
+        "marketType": 2,
+        "side": 2,
+        "fromPly": 40,
+        "toPly": 47
+      },
+      "expected": "VOID",
+      "why": "Partai berakhir di ply 41"
+    }
+  ],
+  "normalize": [
+    {
+      "input": "Bb4+!?",
+      "expected": "Bb4+"
+    },
+    {
+      "input": "Qh7#!!",
+      "expected": "Qh7#"
+    },
+    {
+      "input": "0-0",
+      "expected": "O-O"
+    },
+    {
+      "input": "0-0-0+",
+      "expected": "O-O-O+"
+    },
+    {
+      "input": "exd6 e.p.",
+      "expected": "exd6"
+    },
+    {
+      "input": " Nf3 ",
+      "expected": "Nf3"
+    },
+    {
+      "input": "e8=Q+",
+      "expected": "e8=Q+"
+    }
+  ],
+  "pgn": [
+    {
+      "id": "P1",
+      "input": "[Event \"Test\"]\n[White \"A\"]\n[Black \"B\"]\n[Result \"1-0\"]\n\n1. e4 {[%clk 1:30:00]} e5 2. Nf3 $1 Nc6 (2... d6 3. d4) 3. Bb5 a6 1-0\n",
+      "expected": {
+        "sans": [
+          "e4",
+          "e5",
+          "Nf3",
+          "Nc6",
+          "Bb5",
+          "a6"
+        ],
+        "ended": true
+      }
+    },
+    {
+      "id": "P2",
+      "input": "[Event \"Ongoing\"]\n\n1.e4 e5 2.Nf3 *\n",
+      "expected": {
+        "sans": [
+          "e4",
+          "e5",
+          "Nf3"
+        ],
+        "ended": false
+      }
+    }
+  ],
+  "fixtures": [
+    {
+      "file": "game-export.finished-mate.json",
+      "kind": "json",
+      "expected": {
+        "plies": 59,
+        "ended": true,
+        "first": [
+          "d4",
+          "Nc6",
+          "d5"
+        ],
+        "last": [
+          "Qb5+",
+          "Qb7",
+          "Qxb7#"
+        ]
+      }
+    },
+    {
+      "file": "game-export.ongoing-rapid.json",
+      "kind": "json",
+      "expected": {
+        "plies": 44,
+        "ended": false,
+        "first": [
+          "Nf3",
+          "d5",
+          "d4"
+        ],
+        "last": [
+          "Bd7",
+          "Rh1",
+          "Qg7"
+        ]
+      }
+    },
+    {
+      "file": "study-chapter.cbVdruwJ.fGXnnaOp.pgn",
+      "kind": "pgn",
+      "expected": {
+        "plies": 41,
+        "ended": true,
+        "first": [
+          "d4",
+          "d5",
+          "c4"
+        ],
+        "last": [
+          "Qe2",
+          "Ne6",
+          "Qe3"
+        ]
+      }
+    }
+  ],
+  "split": {
+    "file": "broadcast-round-stream.ZFuAnYX6.pgn",
+    "expected": {
+      "games": 10,
+      "chapterIds": [
+        "qY9Qw2nr",
+        "xtIrMlML",
+        "2axmg6Bs",
+        "Mrrnpvuw",
+        "qe3gmD1f",
+        "Y0QO9rWJ",
+        "IWNvVydT",
+        "d83ArLSC",
+        "HqLwKxVY",
+        "04DQnyZn"
+      ],
+      "plies": [
+        49,
+        58,
+        52,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  },
+  "gameKey": [
+    {
+      "gameRef": "lichess:game:e9SJcXpJ",
+      "expected": "0xf7d3f3f6514378c5b767be2d036c18b0aa5bba84ae50a0bfdaad7591841aef1f"
+    },
+    {
+      "gameRef": "lichess:study:cbVdruwJ:fGXnnaOp",
+      "expected": "0x9e5cf27ca7c000e67a963d02feb436212ff6cdf565343681092b75ef60c042a5"
+    }
+  ],
+  "consensus": [
+    {
+      "input": [
+        {
+          "id": "12",
+          "outcome": "YES"
+        },
+        {
+          "id": "3",
+          "outcome": "NO"
+        },
+        {
+          "id": "7",
+          "outcome": "PENDING"
+        },
+        {
+          "id": "10",
+          "outcome": "VOID"
+        }
+      ],
+      "expected": "3:2,10:3,12:1"
+    }
+  ],
+  "describe": [
+    {
+      "market": {
+        "marketType": 0,
+        "side": 0,
+        "fromPly": 31,
+        "toPly": 34
+      },
+      "expected": "Any check in plies 31 to 34 (moves 16 to 17)?"
+    },
+    {
+      "market": {
+        "marketType": 2,
+        "side": 2,
+        "fromPly": 18,
+        "toPly": 25
+      },
+      "expected": "Black castles in plies 18 to 25 (moves 9 to 13)?"
+    },
+    {
+      "market": {
+        "marketType": 0,
+        "side": 0,
+        "fromPly": 12,
+        "toPly": 12
+      },
+      "expected": "Any check in ply 12 (move 6)?"
+    },
+    {
+      "market": {
+        "marketType": 1,
+        "side": 1,
+        "fromPly": 31,
+        "toPly": 32
+      },
+      "expected": "White captures in plies 31 to 32 (move 16)?"
+    }
+  ],
+  "speed": [
+    {
+      "baseSec": 5400,
+      "incSec": 30,
+      "expected": "classical"
+    },
+    {
+      "baseSec": 1500,
+      "incSec": 0,
+      "expected": "classical"
+    },
+    {
+      "baseSec": 600,
+      "incSec": 0,
+      "expected": "rapid"
+    },
+    {
+      "baseSec": 900,
+      "incSec": 10,
+      "expected": "rapid"
+    },
+    {
+      "baseSec": 479,
+      "incSec": 0,
+      "expected": "blitz"
+    },
+    {
+      "baseSec": 180,
+      "incSec": 2,
+      "expected": "blitz"
+    },
+    {
+      "baseSec": 60,
+      "incSec": 0,
+      "expected": "bullet"
+    }
+  ],
+  "sourceRequest": [
+    {
+      "gameRef": "lichess:game:e9SJcXpJ",
+      "expected": {
+        "url": "https://lichess.org/game/export/e9SJcXpJ?moves=true&clocks=false&evals=false&opening=false",
+        "headers": {
+          "Accept": "application/json"
+        },
+        "format": "json"
+      }
+    },
+    {
+      "gameRef": "lichess:study:cbVdruwJ:fGXnnaOp",
+      "expected": {
+        "url": "https://lichess.org/api/study/cbVdruwJ/fGXnnaOp.pgn?clocks=false&comments=false&variations=false",
+        "headers": {},
+        "format": "pgn"
+      }
+    },
+    {
+      "gameRef": "lichess:game:short",
+      "expected": "throws"
+    },
+    {
+      "gameRef": "lichess:study:cbVdruwJ",
+      "expected": "throws"
+    }
+  ]
+}

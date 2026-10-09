@@ -1,0 +1,165 @@
+{
+  "_meta": {
+    "name": "MoveMarket source of truth: ABI LiveMarket dan MockUSDC",
+    "version": "2.0.0",
+    "updated": "2026-10-05",
+    "rule": "Human-readable ABI (format viem parseAbi) di bawah adalah kontrak antarmuka. Solidity, indexer, workflow CRE, resolver, dan frontend wajib cocok. Bagian computed dihitung ulang oleh sot/check.mjs; jangan diedit tangan."
+  },
+  "liveMarket": {
+    "structs": [
+      "struct MarketParams { string gameRef; uint8 marketType; uint8 side; uint16 fromPly; uint16 toPly; uint64 lockTime; uint64 resolveDeadline; }",
+      "struct Market { bytes32 gameKey; uint8 marketType; uint8 side; uint16 fromPly; uint16 toPly; uint64 lockTime; uint64 resolveDeadline; uint8 status; uint8 outcome; bool resolutionRequested; uint128 poolYes; uint128 poolNo; uint128 fee; }",
+      "struct MarketView { uint256 id; bytes32 gameKey; uint8 marketType; uint8 side; uint16 fromPly; uint16 toPly; uint64 lockTime; uint8 status; }",
+      "struct Position { uint128 yes; uint128 no; bool settled; }"
+    ],
+    "functions": {
+      "resolver": [
+        "function createMarkets(MarketParams[] p) returns (uint256 firstId)",
+        "function lockMarkets(uint256[] ids)",
+        "function requestResolution(string gameRef, uint256[] ids)"
+      ],
+      "user": [
+        "function bet(uint256 id, bool yes, uint128 amount)",
+        "function claim(uint256 id) returns (uint256 payout)",
+        "function claimMany(uint256[] ids) returns (uint256 totalPayout)",
+        "function refund(uint256 id) returns (uint256 amount)"
+      ],
+      "cre": [
+        "function onReport(bytes metadata, bytes report)",
+        "function supportsInterface(bytes4 interfaceId) view returns (bool)"
+      ],
+      "owner": [
+        "function adminVoid(uint256[] ids)",
+        "function setForwarder(address forwarder)",
+        "function setResolver(address resolver)",
+        "function setFeeBps(uint16 feeBps)",
+        "function setLimits(uint128 minBet, uint128 maxStakePerUser)",
+        "function withdrawFees(address to)",
+        "function pause()",
+        "function unpause()"
+      ],
+      "view": [
+        "function getMarket(uint256 id) view returns (Market)",
+        "function getMarkets(uint256[] ids) view returns (MarketView[])",
+        "function getPosition(uint256 id, address user) view returns (Position)",
+        "function claimable(uint256 id, address user) view returns (uint256)",
+        "function refundable(uint256 id, address user) view returns (uint256)",
+        "function token() view returns (address)",
+        "function forwarder() view returns (address)",
+        "function resolver() view returns (address)",
+        "function feeBps() view returns (uint16)",
+        "function minBet() view returns (uint128)",
+        "function maxStakePerUser() view returns (uint128)",
+        "function nextMarketId() view returns (uint256)",
+        "function feesAccrued() view returns (uint256)",
+        "function gameRefOf(bytes32 gameKey) view returns (string)"
+      ]
+    },
+    "events": [
+      "event MarketCreated(uint256 indexed id, bytes32 indexed gameKey, string gameRef, uint8 marketType, uint8 side, uint16 fromPly, uint16 toPly, uint64 lockTime, uint64 resolveDeadline)",
+      "event MarketLocked(uint256 indexed id, uint64 lockTime)",
+      "event BetPlaced(uint256 indexed id, address indexed user, bool yes, uint128 amount, uint128 poolYes, uint128 poolNo)",
+      "event ResolutionRequested(bytes32 indexed gameKey, string gameRef, uint256[] ids)",
+      "event MarketResolved(uint256 indexed id, uint8 outcome)",
+      "event MarketVoided(uint256 indexed id, uint8 reason)",
+      "event ResolutionSkipped(uint256 indexed id, uint8 reason)",
+      "event Claimed(uint256 indexed id, address indexed user, uint256 payout)",
+      "event Refunded(uint256 indexed id, address indexed user, uint256 amount)",
+      "event ForwarderUpdated(address forwarder)",
+      "event ResolverUpdated(address resolver)",
+      "event FeesWithdrawn(address to, uint256 amount)"
+    ],
+    "errors": [
+      "error NotResolver()",
+      "error UnauthorizedForwarder(address caller)",
+      "error InvalidParams(uint256 index)",
+      "error InvalidMarket(uint256 id)",
+      "error MarketNotOpen(uint256 id)",
+      "error BettingClosed(uint256 id)",
+      "error AmountTooSmall()",
+      "error StakeCapExceeded()",
+      "error NotClaimable(uint256 id)",
+      "error NothingToClaim(uint256 id)",
+      "error AlreadySettled(uint256 id)",
+      "error NotRefundable(uint256 id)",
+      "error BadReport()",
+      "error BadBatch()",
+      "error FeeTooHigh()"
+    ]
+  },
+  "mockUsdc": {
+    "functions": [
+      "function setMinter(address minter, bool ok)",
+      "function mint(address to, uint256 amount)",
+      "function minters(address) view returns (bool)",
+      "function decimals() pure returns (uint8)"
+    ],
+    "note": "Ditambah fungsi standar ERC20 OpenZeppelin."
+  },
+  "computed": {
+    "functions": {
+      "createMarkets((string,uint8,uint8,uint16,uint16,uint64,uint64)[])": "0xc26dd2bf",
+      "lockMarkets(uint256[])": "0xef3872c4",
+      "requestResolution(string,uint256[])": "0x93df788e",
+      "bet(uint256,bool,uint128)": "0xa36ba32d",
+      "claim(uint256)": "0x379607f5",
+      "claimMany(uint256[])": "0x925489a8",
+      "refund(uint256)": "0x278ecde1",
+      "onReport(bytes,bytes)": "0x805f2132",
+      "supportsInterface(bytes4)": "0x01ffc9a7",
+      "adminVoid(uint256[])": "0xb61f48c0",
+      "setForwarder(address)": "0xb9998a24",
+      "setResolver(address)": "0x4e543b26",
+      "setFeeBps(uint16)": "0x023b1fc9",
+      "setLimits(uint128,uint128)": "0x9f1c5069",
+      "withdrawFees(address)": "0x164e68de",
+      "pause()": "0x8456cb59",
+      "unpause()": "0x3f4ba83a",
+      "getMarket(uint256)": "0xeb44fdd3",
+      "getMarkets(uint256[])": "0xa9a75e28",
+      "getPosition(uint256,address)": "0xd29f541d",
+      "claimable(uint256,address)": "0xa0c7f71c",
+      "refundable(uint256,address)": "0x7bf41254",
+      "token()": "0xfc0c546a",
+      "forwarder()": "0xf645d4f9",
+      "resolver()": "0x04f3bcec",
+      "feeBps()": "0x24a9d853",
+      "minBet()": "0x9619367d",
+      "maxStakePerUser()": "0x0717d032",
+      "nextMarketId()": "0x406ef2ef",
+      "feesAccrued()": "0x94db0595",
+      "gameRefOf(bytes32)": "0xf66e7a50"
+    },
+    "events": {
+      "MarketCreated(uint256,bytes32,string,uint8,uint8,uint16,uint16,uint64,uint64)": "0xefda945aa6077f513f60872217ae31eafbe0cfb19f29de7772ea74c2a40b4233",
+      "MarketLocked(uint256,uint64)": "0xef03d6993056aee244f999a9186319d8c3560bce3d85e45ee778a4a84fc8fb93",
+      "BetPlaced(uint256,address,bool,uint128,uint128,uint128)": "0x037d393aba4a8ec6d7c5708d3a6c2f520e8ed36b67d5a3b47f86731cd5830ce2",
+      "ResolutionRequested(bytes32,string,uint256[])": "0xee0a59e1d791944ec08c9b8362a29a47dea1e8b5c268d11762fbbd929632a586",
+      "MarketResolved(uint256,uint8)": "0x739f283563fb51ab6b89ee95d937b2e63a6cfcb83c385dbebb629f9d97bd43e6",
+      "MarketVoided(uint256,uint8)": "0x6cf3c0ff01856bb189f2a23604ce3764986c5f81732d8611556fb440b2e8dfae",
+      "ResolutionSkipped(uint256,uint8)": "0x82b3dafcca510ef8ba1014522e2cb09d1b1272172c86100e89dcf9fb312c6d56",
+      "Claimed(uint256,address,uint256)": "0x4ec90e965519d92681267467f775ada5bd214aa92c0dc93d90a5e880ce9ed026",
+      "Refunded(uint256,address,uint256)": "0x7ca5472b7ea78c2c0141c5a12ee6d170cf4ce8ed06be3d22c8252ddfc7a6a2c4",
+      "ForwarderUpdated(address)": "0x9d90a82ec1d038d4e13317a0eb136f9c65b7ed42156fc204ec4b7c4731e73950",
+      "ResolverUpdated(address)": "0x15cd6d20bba01b3fcb790c73829dd07412cbdf689ef818c96a2505889f3736a2",
+      "FeesWithdrawn(address,uint256)": "0xc0819c13be868895eb93e40eaceb96de976442fa1d404e5c55f14bb65a8c489a"
+    },
+    "errors": {
+      "NotResolver()": "0xba2a9fc2",
+      "UnauthorizedForwarder(address)": "0x74c068c2",
+      "InvalidParams(uint256)": "0x25e7c6d9",
+      "InvalidMarket(uint256)": "0x3d8c6230",
+      "MarketNotOpen(uint256)": "0x5542e3d7",
+      "BettingClosed(uint256)": "0xeb7ecc3a",
+      "AmountTooSmall()": "0xc2f5625a",
+      "StakeCapExceeded()": "0xc430941e",
+      "NotClaimable(uint256)": "0xe24ac1bb",
+      "NothingToClaim(uint256)": "0xf9489585",
+      "AlreadySettled(uint256)": "0x8fec535e",
+      "NotRefundable(uint256)": "0xfda10c42",
+      "BadReport()": "0x8433a266",
+      "BadBatch()": "0x86bdc25c",
+      "FeeTooHigh()": "0xcd4e6167"
+    }
+  }
+}
