@@ -301,11 +301,12 @@ Posisi alamat itu, disusun dari event `BetPlaced`, `Claimed`, `Refunded`, dan st
 {
   "positions": [
     { "marketId": "123", "gameRef": "lichess:game:e9SJcXpJ", "stakeYes": "5000000", "stakeNo": "0",
-      "status": 1, "outcome": 1, "resolveDeadline": 1790021600, "settled": false, "claimable": "9800000" }
+      "status": 1, "outcome": 1, "resolveDeadline": 1790021600, "settled": false, "claimable": "9800000",
+      "voidReason": null }
   ]
 }
 ```
-`claimable` dibaca dari kontrak (`claimable(id, user)`) saat request, jadi angka itu tidak bergantung pada memori resolver. Setelah restart, posisi dibangun ulang dari log sejak `DEPLOY_BLOCK`.
+`voidReason` berisi kode `VoidReason` (SOT bagian 4) kalau pasar VOIDED, selain itu `null`; `/me` memakainya untuk label "Voided: no winning stakes". `claimable` dibaca dari kontrak (`claimable(id, user)`) saat request, jadi angka itu tidak bergantung pada memori resolver. Setelah restart, posisi dibangun ulang dari log sejak `DEPLOY_BLOCK`.
 
 #### `POST /faucet`
 Request: `{ "address": "0x..." }`
