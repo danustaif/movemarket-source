@@ -33,7 +33,7 @@ Konteks proyek untuk Claude Code. Baca file ini dulu, lalu `docs/SOT.md`, lalu d
 
 ## Struktur repo
 
-Empat repo terpisah (private, akun `danustaif`) yang **wajib di-clone berdampingan** dalam satu folder kerja, karena `fe` dan `backend` mengimpor `source/shared` lewat path relatif:
+Empat repo terpisah (publik sejak 10 Oktober, akun `danustaif`) yang **wajib di-clone berdampingan** dalam satu folder kerja, karena `fe` dan `backend` mengimpor `source/shared` lewat path relatif:
 
 ```
 movemarket/                 folder kerja (bukan repo)
