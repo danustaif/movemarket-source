@@ -191,6 +191,7 @@ for await (const ev of resolutionRequestedQueue) {   // konkurensi 1
     - IP: 5 mint tUSDC baru per IP (`perIpPer24h`).
   - Kuota direservasi secara sinkron sebelum `await` pertama dan dilepas lagi kalau langkahnya gagal, supaya request paralel tidak bisa melewati batas. Request kedua untuk alamat yang sedang diproses langsung `429`.
   - MON dikirim dari wallet faucet hanya kalau saldonya minimal 10 MON + jumlah kirim (`faucetWalletMinWei`, 10,5 MON). Di bawah itu transfer akan revert karena reserve balance. Dalam kondisi itu: log alert, kirim tUSDC saja, dan **jangan** menghitung kuota alamat (supaya pengguna bisa mencoba lagi untuk MON).
+  - Kalau `FAUCET_PRIVATE_KEY` sama dengan `RESOLVER_PRIVATE_KEY` (satu wallet untuk semua peran), lantainya naik ke `minResolverMonWei` (20 MON) + jumlah kirim, supaya faucet tidak menurunkan wallet resolver di bawah ambang alert D19. Aturan yang sama berlaku untuk `POST /faucet/gas`.
   - Respons dikirim setelah receipt. Akun yang baru didanai baru bisa mengirim transaksi setelah dana berumur 3 blok (sekitar 1,2 detik); frontend yang menunggu, bukan resolver.
   - Isi ulang wallet operasional di testnet: `POST https://agents.devnads.com/v1/faucet` dengan `{"chainId":10143,"address":"0x..."}`.
 - `POST /faucet/gas { address }` (isi ulang gas)
