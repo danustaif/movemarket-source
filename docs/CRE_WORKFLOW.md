@@ -239,6 +239,11 @@ Mode `CRE_MODE=simulate`: resolver menjalankan perintah nomor 2 untuk setiap eve
 
 Mode `CRE_MODE=don`: resolver tidak menjalankan apa pun. Workflow di DON dipicu otomatis.
 
+Mode `CRE_MODE=mock` (SOT D23, hanya testnet sambil menunggu Early Access): resolver tidak memanggil CLI `cre`. Untuk event `ResolutionRequested` yang sudah finalized, `backend/resolver/src/cre/mockRunner.ts` menjalankan langkah 1 sampai 8 bagian 4 dengan fungsi yang sama dari `source/shared` (`batchProblem`, `openViews`, `consensusPayload`, `parseConsensusPayload`, `encodeReport`), lalu memanggil `report(LiveMarket, rawReport, 0x, [])` di MockKeystoneForwarder dengan gas `cre.gasLimit` lewat antrian wallet resolver. `rawReport` = metadata 109 byte (layout sama dengan report CLI) + report.
+- Bukan konsensus: satu proses, satu fetch export. Hasilnya dipercaya seperti resolver. Bukti bounty CRE tetap dari `simulate --broadcast`.
+- MockKeystoneForwarder tidak revert kalau `onReport` revert; runner membaca `ReportProcessed.result` dan melempar error kalau `false`.
+- Setelah `setForwarder(KeystoneForwarder)` mode ini berhenti bekerja (`onReport` menolak pengirim), jadi pindah ke `CRE_MODE=don` bersamaan.
+
 ## 10. Deploy (setelah Early Access disetujui)
 
 Lifecycle menurut skill: init, simulate, deploy (terdaftar dalam keadaan **paused**), activate. Hanya testnet. Minta konfirmasi kedua sebelum deploy dan sebelum activate.

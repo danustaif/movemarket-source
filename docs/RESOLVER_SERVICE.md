@@ -35,7 +35,8 @@ backend/resolver/
 │   │   ├── provisional.ts    # resolve() tiap ply
 │   │   └── requester.ts      # batch requestResolution + retry
 │   ├── cre/
-│   │   └── runner.ts         # CRE_MODE=simulate: spawn cre CLI per event
+│   │   ├── runner.ts         # CRE_MODE=simulate: spawn cre CLI per event
+│   │   └── mockRunner.ts     # CRE_MODE=mock: report langsung ke MockKeystoneForwarder (SOT D23)
 │   ├── replay/
 │   │   └── replayer.ts
 │   ├── faucet/
@@ -159,7 +160,7 @@ Di Monad, log dipublikasikan saat blok masih **Proposed** dan bisa saja tidak me
 
 ### 2.7 Runner CRE
 
-Aktif hanya kalau `CRE_MODE=simulate`.
+Aktif hanya kalau `CRE_MODE=simulate`. Untuk `CRE_MODE=mock` lihat 2.7a.
 
 ```ts
 // pseudo
@@ -180,13 +181,24 @@ for await (const ev of resolutionRequestedQueue) {   // konkurensi 1
 - Jangan meneruskan secret lewat argumen. CLI membaca `CRE_ETH_PRIVATE_KEY` dari `.env` proyek CRE.
 - Container resolver harus berisi binary `cre` dan proyek `backend/cre/` yang sudah di-build.
 
+#### 2.7a Runner CRE mock (`CRE_MODE=mock`, SOT D23)
+
+Antarmuka sama (`CreRunner.run(requestTxHash)`), dipanggil di titik yang sama (event `ResolutionRequested` finalized). Tanpa CLI `cre` dan tanpa kredensialnya. Langkah:
+
+1. Receipt tx request, decode `ResolutionRequested` pertama dari `LiveMarket`.
+2. `batchProblem` (gameKey, kosong, `cre.maxMarketsPerReport`): ada masalah -> `{ resolved: 0, note }` tanpa transaksi.
+3. `getMarkets` di blok `finalized`, `openViews` membuang pasar bukan OPEN atau gameKey beda.
+4. `fetchSnapshot` (export resmi, sama dengan CRE), `consensusPayload` -> `parseConsensusPayload`. Kosong -> `note: "nothing to resolve"` tanpa transaksi.
+5. `rawReport` = metadata 109 byte (execution id = keccak256(tx request, percobaan ke-n)) + `encodeReport`. Dikirim lewat `txQueue` sebagai `{ kind: "creReport" }`: `report(LiveMarket, rawReport, 0x, [])` di `addresses.creMockKeystoneForwarder`, gas `cre.gasLimit`.
+6. Receipt harus sukses dan `ReportProcessed.result` harus `true` (mock forwarder tidak revert saat `onReport` revert). `resolved` = jumlah `MarketResolved` + `MarketVoided`, `skipped` = sisanya, `note: "mock-cre"`.
+
 ### 2.8 Transaksi
 
 - Wallet resolver (`RESOLVER_PRIVATE_KEY`): role resolver di `LiveMarket` dan minter di `MockUSDC`. Mengirim `lockMarkets`, `createMarkets`, `requestResolution`, mint tUSDC faucet, dan `adminVoid` (`POST /admin/void`, hanya berhasil kalau wallet resolver juga owner `LiveMarket`; kalau bukan, kontrak revert).
 - Wallet faucet terpisah (`FAUCET_PRIVATE_KEY`): hanya mengirim MON ke pengguna. Dipisah supaya nonce dan reserve balance-nya tidak mengganggu antrian resolver (SOT D19).
 - **Reserve balance Monad:** akun di bawah 10 MON hanya bisa mengirim 1 transaksi per 3 blok, dan transfer yang membuat saldo turun di bawah `min(saldo awal, 10 MON)` akan revert. Jaga wallet resolver di atas 20 MON (alert) dan jangan pernah di bawah 10 MON, karena throttle bisa menunda `lockMarkets`.
 - `lockMarkets` dikirim dengan priority fee lebih tinggi dari biasanya, supaya diurutkan sebelum `bet` yang masuk ke blok yang sama (Monad mengurutkan transaksi berdasarkan total gas price menurun). Implementasi (`chain/clients.ts`): `maxPriorityFeePerGas = 2 × estimasi + 1 gwei`, `maxFeePerGas = estimasi maxFee + tip`. Angka ini belum ada di SOT.
-- Semua transaksi lewat `txQueue` tunggal dengan `nonceManager` viem, satu transaksi berjalan pada satu waktu. Urutan prioritas: `lockMarkets`, lalu `adminVoid`, lalu `createMarkets`, lalu `requestResolution`, lalu mint faucet. FIFO di dalam jenis yang sama.
+- Semua transaksi lewat `txQueue` tunggal dengan `nonceManager` viem, satu transaksi berjalan pada satu waktu. Urutan prioritas: `lockMarkets`, lalu `adminVoid`, lalu `createMarkets`, lalu `requestResolution`, lalu report CRE mock (`creReport`, SOT D23), lalu mint faucet. FIFO di dalam jenis yang sama.
 - Setiap transaksi memakai `gas` eksplisit dari `sot/constants.json` (`gas.limits`). Monad menagih gas limit, jadi jangan memakai estimasi berlebih.
 - Retry sekali untuk error nonce atau underpriced.
 
