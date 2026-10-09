@@ -41,9 +41,9 @@ Prinsip:
 
 ## Hari 3 (Rab 7 Okt): Deploy dan CRE end-to-end
 
-- [ ] Deploy ke Monad Testnet dengan forwarder `MockKeystoneForwarder`, verifikasi lewat API `agents.devnads.com/v1/verify`
+- [x] Deploy ke Monad Testnet dengan forwarder `MockKeystoneForwarder` (10 Okt, blok 69649821-69649838, sekitar 0,84 MON), terverifikasi perfect match di MonadVision dan Monadscan lewat API `agents.devnads.com/v1/verify`. LiveMarket `0xA40F0D8f2e70bfd8F52B4d08089bD083cBdDB9a9`, MockUSDC `0x3670C61f0179dAEF70574C5f6cdC20b7d9986561`
 - [ ] Ukur gas semua fungsi dengan `eth_estimateGas` di testnet + 10%, isi `gas.limits` di `sot/constants.json`
-- [ ] `node script/sync-sot.mjs` (smart-contract) mengisi alamat di `sot/constants.json` dan config CRE (script siap 10 Okt; runbook `smart-contract/DEPLOY.md`)
+- [x] `node script/sync-sot.mjs` (smart-contract) mengisi alamat di `sot/constants.json` dan config CRE (10 Okt)
 - [x] `cre init --non-interactive` (template `hello-world-ts`, `resolver-workflow`), `bun install`, `bunx cre-setup`, hapus file contoh, baca nama target dari `workflow.yaml`
 - [ ] Target `local-simulation` lulus sebelum target onchain (10 Okt: build WASM dan run di QuickJS sampai validasi trigger; butuh tx `requestResolution` nyata)
 - [ ] Uji `resolve` di dalam workflow (QuickJS menerima `source/shared`)
