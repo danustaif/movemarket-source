@@ -23,6 +23,16 @@ colors:
   board-dark: "#5f9f8f"
   board-last-light: "#f5f08a"
   board-last-dark: "#b8c95c"
+  divider-teal: "#1d5a51"
+  error-surface: "#3b1416"
+  error-text: "#ffd2cf"
+  error-icon: "#ff9c94"
+  error-on-light: "#b0261f"
+  error-wash-light: "#fde7e5"
+  error-ink-light: "#6b1410"
+  piece-white: "#f1ecdf"
+  piece-black: "#1c2322"
+  piece-edge: "#5d8580"
 typography:
   broadcast-display:
     fontFamily: "Archivo, system-ui, sans-serif"
@@ -184,7 +194,7 @@ Sumber: artboard `Components.dc.html` dan `Prototype.dc.html` di canvas desain.
 - **Passkey sheet**: tiruan dialog sistem (warna sistem, bukan token MoveMarket) dengan label "Shown by your device, not by MoveMarket".
 - **Banner**: Resolver offline (amber, papan dijeda), Reconnecting (panel dengan spinner), Session ended (putih dengan tombol Unlock).
 - **Toast**: sukses (putih, ikon gold), error (#3b1416, teks #ffd2cf, bisa punya tombol Try again), pending (panel, spinner), info (panel).
-- **Error colors**: error surface #3b1416 di atas teal, error text #b0261f di atas putih. Live red tetap hanya untuk tag LIVE.
+- **Error colors**: error surface #3b1416 di atas teal (teks #ffd2cf, ikon #ff9c94), error text #b0261f di atas putih, panel error di lembar putih (BettingClosed) #fde7e5 dengan teks #6b1410. Live red tetap hanya untuk tag LIVE. Garis pemisah baris di panel teal: divider-teal #1d5a51.
 - **Prototype controls**: panel abu bergaris putus-putus di kiri bawah. Bukan bagian produk.
 
 ## Do's and Don'ts
