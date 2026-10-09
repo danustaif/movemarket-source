@@ -16,13 +16,13 @@ Konteks proyek untuk Claude Code. Baca file ini dulu, lalu `docs/SOT.md`, lalu d
 
 | Dokumen | Isi | Baca saat |
 |---|---|---|
-| `docs/SOT.md` | Nilai kanonik, keputusan desain D1 sampai D16, status verifikasi | Selalu, sebelum task apa pun |
+| `docs/SOT.md` | Nilai kanonik, keputusan desain D1 sampai D22, status verifikasi | Selalu, sebelum task apa pun |
 | `docs/PRD.md` | Masalah, scope MVP, fitur, acceptance criteria | Memulai fitur apa pun |
 | `docs/USER_FLOW.md` | Alur pengguna, layar, state error | Mengerjakan frontend |
 | `docs/ARCHITECTURE.md` | Komponen, trust boundary, env vars, keputusan desain | Menyentuh lebih dari satu paket |
 | `docs/SEQUENCES.md` | Sequence diagram semua alur utama | Mengerjakan integrasi antar komponen |
 | `docs/CONTRACTS.md` | Spesifikasi `LiveMarket.sol` dan `MockUSDC.sol` | Mengerjakan `smart-contract/` |
-| `docs/RESOLUTION_SPEC.md` | Aturan resolusi deterministik dan test vector | Mengerjakan `source/shared/resolve.ts` |
+| `docs/RESOLUTION_SPEC.md` | Aturan resolusi deterministik dan test vector | Mengerjakan `source/shared/src/resolve.ts` |
 | `docs/CRE_WORKFLOW.md` | Spesifikasi workflow Chainlink CRE | Mengerjakan `backend/cre/` |
 | `docs/RESOLVER_SERVICE.md` | API dan modul resolver service | Mengerjakan `backend/resolver/` |
 | `docs/INDEXER.md` | Skema dan handler Envio | Mengerjakan `backend/indexer/` |
@@ -59,7 +59,7 @@ Urutan perubahan lintas repo: `source` dulu (SOT + `shared`), lalu `smart-contra
 
 - **Kontrak:** Solidity ^0.8.24, Foundry, OpenZeppelin (SafeERC20, ReentrancyGuard, Pausable, Ownable)
 - **Oracle:** Chainlink CRE, workflow TypeScript, EVM log trigger
-- **Backend:** Bun + Hono, viem, chess.js (hanya di resolver, untuk sumber TV)
+- **Backend:** Bun + Hono, viem, chess.js (hanya di resolver: FEN di registry partai dan konversi UCI ke SAN untuk sumber TV)
 - **Indexer:** Envio HyperIndex (HyperSync mendukung Monad Testnet)
 - **Frontend:** Vite, React, TypeScript, Tailwind CSS, TanStack Router, TanStack Query, Zustand, viem, Mera (`@category-labs/mera@0.2.0`), `@scure/bip39`, `@scure/bip32`, react-chessboard
 - **Tanpa wagmi.** Akun pengguna adalah akun lokal viem dari Mera, jadi pakai viem langsung dibungkus hook TanStack Query.
@@ -118,7 +118,7 @@ bun run dev
 
 ## Nilai yang wajib diverifikasi sebelum dipakai
 
-Sebagian besar sudah diverifikasi 5 Oktober 2026 (field Lichess, format TV dan broadcast, alamat forwarder, chain selector, API Mera 0.2.0). Status lengkap dan sisa yang belum ada di `docs/SOT.md` bagian 16. Jangan menebak nilai yang masih berstatus "Belum". Setelah diverifikasi, catat di `sot/constants.json` beserta sumbernya dan perbarui tabel status.
+Sebagian besar sudah diverifikasi 5 sampai 10 Oktober 2026 (field Lichess, format TV dan broadcast, alamat forwarder untuk organisasi CRE, chain selector, interface `IReceiver`, API Mera 0.2.0). Status lengkap dan sisa yang belum ada di `docs/SOT.md` bagian 16. Jangan menebak nilai yang masih berstatus "Belum". Setelah diverifikasi, catat di `sot/constants.json` beserta sumbernya dan perbarui tabel status.
 
 ## Konvensi
 

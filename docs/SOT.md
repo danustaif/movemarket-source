@@ -421,7 +421,7 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | Alamat forwarder CRE dan chain selector | Terverifikasi dari dokumentasi | 5 Okt | Forwarder Directory |
 | Signature fungsi Mera 0.2.0 | Terverifikasi | 5 Okt | File `.d.ts` paket npm |
 | Alamat forwarder untuk organisasimu | Terverifikasi: org `My Org`, `monad-testnet` selector `2183018362218727504`, mock `0xB9F79d...`, produksi `0xF8344CFd...`, sama dengan SOT | 10 Okt | `cre workflow supported-chains --output json` (CLI 1.33.0) |
-| `resolve.ts` berjalan di QuickJS | Belum | | Simulasi workflow |
+| `resolve.ts` berjalan di QuickJS | Sebagian: WASM ter-build (bundle `@movemarket/shared`) dan berjalan di simulator sampai validasi trigger; `resolve` belum dieksekusi atas data nyata | 10 Okt | `cre workflow build`, `simulate --target local-simulation` |
 | Log trigger CRE di Monad Testnet | Belum | | Simulasi dengan tx nyata |
 | Latensi request sampai final | Belum | | Ukur di simulasi `--broadcast` |
 | Gas nyata semua fungsi | Belum | | `eth_estimateGas` di Monad Testnet setelah deploy |
@@ -430,7 +430,7 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | Monad Testnet di daftar `chainlink-cre-skill` | Tidak ada di skill | 5 Okt | Pakai halaman dokumentasi CRE |
 | URL HyperSync Monad Testnet | Belum | | Saat `envio init` |
 | PRF passkey di Chrome dan Safari | Belum | | Uji manual |
-| Status Early Access CRE | Belum | | `cre account access` |
+| Status Early Access CRE | Belum aktif (Deploy Access "Not enabled"); pengajuan menunggu user | 10 Okt | `cre whoami` |
 | `simulate --broadcast` diterima untuk bounty | Belum | | Tanya mentor Chainlink |
 | Interface `IReceiver` dan ID interface yang dicek forwarder | Terverifikasi: `IReceiver is IERC165`, interfaceId = selector `onReport` (`0x805f2132`) | 9 Okt | Halaman "Building Consumer Contracts" dokumentasi CRE, disalin ke `smart-contract/src/interfaces/` |
 | Sumber MON testnet dalam jumlah besar | Sebagian | 5 Okt | Faucet agen Monad `agents.devnads.com/v1/faucet` (dari monskills), batasnya belum diketahui |
