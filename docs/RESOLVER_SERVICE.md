@@ -97,6 +97,8 @@ interface GameState {
 
 Implementasi `planMarkets` mengikuti `docs/RESOLUTION_SPEC.md` bagian 9. Output dikirim lewat `txQueue` sebagai satu panggilan `createMarkets`.
 
+Engine tidak mengirim SSE `market_created` sendiri. `txQueue` dibungkus di `index.ts`: setiap receipt transaksi resolver (`createMarkets`, `lockMarkets`, `requestResolution`, `adminVoid`) diteruskan ke `watcher.receipt()`, yang men-decode log `LiveMarket` di receipt (`parseEventLogs`) dan mengirimnya sebagai event **proposed** seketika. Dari situ store diisi (pasar baru langsung muncul di `GET /games/:gameRef`, `lockTime` pasti dari `MarketLocked`) dan SSE `market_created` terkirim sekitar 1 detik setelah `createMarkets` (receipt `eth_sendRawTransactionSync`), jauh sebelum `lockTime` (`BET_WINDOW_SEC` 15). Sebelumnya, tanpa WebSocket, event ini baru terlihat dari `getLogs` blok finalized, 40 sampai 50 detik kemudian di Monad Testnet, dan semua stake revert `BettingClosed`. Event yang sama dari WebSocket, polling, atau jalur finalized tidak dikirim proposed lagi (2.6), jadi `market_created` tetap sekali per pasar. SSE `market_locked` tetap dikirim engine setelah receipt `lockMarkets`.
+
 **Risiko terbuka (anggaran gas):** `POST /admin/track` dengan `source: "broadcast"` melacak semua partai di round itu, dan planner membuat pasar untuk setiap partai yang sedang berjalan. Pada uji nyata, satu round besar berisi 64 partai, jadi `createMarkets` dan `lockMarkets` dikirim untuk 64 partai sekaligus dan menghabiskan gas wallet resolver jauh lebih cepat dari perkiraan di SOT bagian 13. Perilaku ini belum diubah. Operator sebaiknya melacak round kecil atau hanya partai terpilih, dan memakai `POST /admin/untrack` untuk partai yang tidak perlu dibuatkan pasar.
 
 ### 2.3a Locker (kunci ply)
@@ -138,7 +140,14 @@ Stream broadcast bisa mengirim ulang PGN dengan langkah yang dikoreksi (misalnya
 
 Memantau event `LiveMarket`: `MarketCreated`, `MarketLocked`, `BetPlaced`, `ResolutionRequested`, `MarketResolved`, `MarketVoided`.
 
-Sumber event: WebSocket `eth_subscribe` logs lewat `MONAD_TESTNET_WS` (saran monskills, polling dianggap tidak praktis), dengan cadangan `getLogs` berkala kalau WebSocket putus.
+Sumber event proposed (untuk tampilan), urut dari yang tercepat:
+- **Receipt sendiri** (`watcher.receipt()`): log transaksi resolver, terutama `MarketCreated` dan `MarketLocked` (lihat 2.3).
+- **WebSocket** `eth_subscribe` logs lewat `MONAD_TESTNET_WS` (saran monskills).
+- **Polling tanpa WebSocket**: kalau `MONAD_TESTNET_WS` kosong, saat start resolver mencatat satu baris `watcher_polling` lalu memanggil `getBlockNumber` + `getLogs` atas blok `latest` setiap `network.blockTimeMs` (400 ms), hanya untuk rentang sejak blok terakhir yang sudah dilihat (mulai dari head saat start; kalau tertinggal lebih dari batas range, blok lama diserahkan ke jalur finalized). Saat error, interval digandakan sampai `resolver.WATCHER_POLL_MAX_BACKOFF_SEC` (8 detik) dan kembali ke 400 ms setelah berhasil. Dengan ini `BetPlaced` pengguna lain (SSE `pool`) juga tidak terlambat. Beban: sekitar 5 request/detik ditambah jalur finalized.
+
+Jalur finalized: `getLogs` berkala (`network.finalityMs`) atas rentang blok yang sudah finalized. Ini juga cadangan kalau sumber proposed gagal (event yang belum pernah terlihat dikirim proposed lalu finalized) dan pemulihan sejak `DEPLOY_BLOCK`.
+
+Dedupe: setiap log dikenali dengan `txHash:logIndex`. Event proposed hanya dikirim sekali, dari sumber mana pun yang lebih dulu; log di blok yang sudah diproses jalur finalized diabaikan. Store juga idempoten.
 
 Di Monad, log dipublikasikan saat blok masih **Proposed** dan bisa saja tidak menjadi kanonik. Aturan watcher (SOT D20):
 - Event untuk tampilan (`BetPlaced` untuk SSE `pool`, `MarketCreated`, `MarketLocked`) boleh diteruskan langsung.
