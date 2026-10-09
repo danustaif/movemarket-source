@@ -1,7 +1,7 @@
 {
   "_meta": {
     "name": "MoveMarket source of truth: constants",
-    "version": "2.6.0",
+    "version": "2.10.0",
     "updated": "2026-10-10",
     "rule": "Nilai di file ini menang atas dokumen mana pun. Ubah di sini dulu, jalankan `node sot/check.mjs`, lalu sesuaikan kode dan dokumen yang gagal dicek."
   },
@@ -474,10 +474,13 @@
   },
   "indexer": {
     "platform": "Envio Cloud lewat CLI envio-cloud",
+    "version": "3.0.0-alpha.21",
     "init": "pnpx envio@3.0.0-alpha.21 init contract-import explorer -b monad-testnet -c <LIVE_MARKET_ADDRESS> -n LiveMarket -l typescript -d ./ -o ./ --all-events --single-contract --api-token \"\"",
     "prereq": "kontrak sudah terverifikasi",
     "fieldSelection": "field_selection: transaction_fields: [hash]",
-    "firstDeploy": "deploy dari GitHub, push commit kosong setelah build pertama, cek _meta isReady dan progressBlock, lalu deployment promote"
+    "firstDeploy": "deploy dari GitHub, push commit kosong setelah build pertama, cek _meta isReady dan progressBlock, lalu deployment promote",
+    "commands": "pnpm codegen | pnpm dev (lokal, butuh Docker) | pnpm test | pnpm typecheck",
+    "localToken": "HyperSync /query wajib ENVIO_API_TOKEN di luar Envio Cloud; tanpa token pakai rpc: for: sync di config lokal yang tidak di-commit"
   },
   "verification": {
     "apiUrl": "https://agents.devnads.com/v1/verify",
