@@ -110,6 +110,8 @@ export interface PositionDto {
   settled: boolean;
   /** Dibaca dari LiveMarket.claimable(id, user) saat request. */
   claimable: DecimalString;
+  /** Alasan void kalau status VOIDED (2 = NO_WINNERS untuk label "Voided: no winning stakes"), selain itu null. */
+  voidReason: VoidReasonCode | null;
 }
 
 export interface HealthResponse {
