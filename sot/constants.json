@@ -1,8 +1,8 @@
 {
   "_meta": {
     "name": "MoveMarket source of truth: constants",
-    "version": "2.1.0",
-    "updated": "2026-10-05",
+    "version": "2.2.0",
+    "updated": "2026-10-10",
     "rule": "Nilai di file ini menang atas dokumen mana pun. Ubah di sini dulu, jalankan `node sot/check.mjs`, lalu sesuaikan kode dan dokumen yang gagal dicek."
   },
   "network": {
@@ -33,8 +33,8 @@
     "mockUsdc": null,
     "resolver": null,
     "deployBlock": null,
-    "_source": "Chainlink CRE Forwarder Directory (docs.chain.link/cre/guides/workflow/using-evm-client/forwarder-directory-ts), dicek 2026-10-05. Konfirmasi ulang dengan `cre workflow supported-chains` karena daftar per tenant bisa berbeda. Nilai null diisi oleh script deploy.",
-    "_conflict": "chainlink-cre-skill v0.0.24 tidak punya baris Monad Testnet, dan memakai 0xB9F79d... sebagai KeystoneForwarder produksi Mantle Sepolia. Halaman Forwarder Directory (dicek 5 Okt) menaruh 0xB9F79d... di tabel Simulation Testnets untuk monad-testnet dan 0xF8344CFd... di tabel produksi. Alamat yang sama dipakai di chain berbeda. Pakai halaman dokumentasi, lalu konfirmasi mock forwarder dengan `cre workflow supported-chains --target <t> --output json`."
+    "_source": "Chainlink CRE Forwarder Directory (docs.chain.link/cre/guides/workflow/using-evm-client/forwarder-directory-ts), dicek 2026-10-05. Dikonfirmasi 2026-10-10 dengan `cre workflow supported-chains --output json` (CLI v1.33.0, org `My Org`): monad-testnet selector 2183018362218727504, mock 0xB9F79d863261869B234c481D1f9A7af84AeAd192, produksi 0xF8344CFd5c43616a4366C34E3EEE75af79a74482. Nilai null diisi oleh script deploy.",
+    "_conflict": "Selesai 2026-10-10. chainlink-cre-skill v0.0.24 tidak punya baris Monad Testnet dan memakai 0xB9F79d... sebagai KeystoneForwarder produksi Mantle Sepolia. Alamat yang sama dipakai di chain berbeda; untuk monad-testnet, output supported-chains organisasi kita sama dengan Forwarder Directory."
   },
   "token": {
     "name": "Test USDC",
@@ -327,14 +327,32 @@
     },
     "gasLimitNote": "Sementara. Monad menagih gas limit, jadi 3.000.000 berarti ~0,3 MON per report. Ganti dengan gas onReport batch REQUEST_MAX_BATCH hasil ukur + 30%.",
     "skill": "chainlink-cre-skill v0.0.24 (smartcontractkit/chainlink-agent-skills)",
-    "init": "cre init --non-interactive --project-name movemarket-cre --deployment-registry <ID dari `cre registry list`> --workflow-name resolver-workflow --template hello-world-ts --rpc-url monad-testnet=<RPC>",
+    "init": "cre init --non-interactive --project-name movemarket-cre --deployment-registry <ID dari `cre registry list`> --workflow-name resolver-workflow --template hello-world-ts. CLI v1.33.0: proyek selalu dibuat di folder baru <project-name> di direktori kerja (tidak bisa memilih direktori, isinya dipindah ke backend/cre/), dan --rpc-url monad-testnet=<RPC> diabaikan template (project.yaml berisi Sepolia), jadi RPC Monad diisi manual di project.yaml untuk semua target.",
     "postInit": [
       "bun install",
       "bunx cre-setup",
-      "hapus README, handler, config, dan secrets contoh dari template"
+      "hapus README, handler, config, dan secrets contoh dari template",
+      "isi rpcs monad-testnet di project.yaml untuk staging-settings, production-settings, dan local-simulation"
     ],
-    "targets": "Baca nama target dari workflow.yaml hasil cre init (template membuat staging-settings dan production). Jangan menebak.",
-    "localSimulationTarget": "local-simulation: deployment-registry \"private\", secrets-path \"\", config mode \"local-simulation\" yang berhenti sebelum report/writeReport. Tidak pernah dipakai dengan --broadcast.",
+    "targets": {
+      "staging-settings": {
+        "config": "config.staging.json",
+        "mode": "onchain",
+        "use": "simulate, --broadcast lewat MockKeystoneForwarder"
+      },
+      "production-settings": {
+        "config": "config.production.json",
+        "mode": "onchain",
+        "use": "deploy DON setelah Early Access"
+      },
+      "local-simulation": {
+        "config": "config.local-simulation.json",
+        "mode": "local-simulation",
+        "use": "tanpa receiver, berhenti sebelum report. Tetap butuh RPC Monad karena trigger dan getMarkets membaca chain. Tidak pernah dengan --broadcast"
+      },
+      "_source": "workflow.yaml hasil cre init (CLI v1.33.0) membuat staging-settings dan production-settings; local-simulation ditambahkan manual"
+    },
+    "localSimulationTarget": "local-simulation: deployment-registry \"private\", secrets-path \"\", config mode \"local-simulation\" yang berhenti sebelum report/writeReport, RPC monad-testnet tetap diisi di project.yaml. Tidak pernah dipakai dengan --broadcast.",
     "broadcastKeyEnv": "CRE_ETH_PRIVATE_KEY (dibaca CLI dari .env proyek, jangan dibuka)",
     "logTriggerConfidence": "finalized",
     "handlerReturns": "string JSON { gameRef, resolved, skipped, txHash }",

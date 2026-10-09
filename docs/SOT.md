@@ -102,7 +102,7 @@ Scope MVP yang dibekukan per 5 Oktober:
 | CRE KeystoneForwarder (DON) | `0xF8344CFd5c43616a4366C34E3EEE75af79a74482` |
 | `LiveMarket`, `MockUSDC`, wallet resolver, blok deploy | Diisi script deploy ke `sot/constants.json` |
 
-Sumber alamat forwarder: halaman Forwarder Directory dokumentasi CRE, dicek 5 Oktober 2026. `chainlink-cre-skill` v0.0.24 belum memuat Monad Testnet, dan di tabel skill alamat `0xB9F79d...` tercatat sebagai forwarder produksi Mantle Sepolia. Alamat yang sama memang dipakai di chain berbeda, tetapi konfirmasi dulu: mock forwarder dengan `cre workflow supported-chains --target <target> --output json` (perintah ini hanya mengembalikan mock forwarder), forwarder produksi dengan membuka ulang halaman dokumentasi sebelum `setForwarder`.
+Sumber alamat forwarder: halaman Forwarder Directory dokumentasi CRE, dicek 5 Oktober 2026, lalu dikonfirmasi 10 Oktober 2026 dengan `cre workflow supported-chains --output json` (CLI v1.33.0, org `My Org`): `monad-testnet` selector `2183018362218727504`, mock `0xB9F79d...`, produksi `0xF8344CFd...`. `chainlink-cre-skill` v0.0.24 belum memuat Monad Testnet, dan di tabel skill alamat `0xB9F79d...` tercatat sebagai forwarder produksi Mantle Sepolia; alamat yang sama dipakai di chain berbeda. Tetap buka ulang halaman dokumentasi sebelum `setForwarder` ke forwarder produksi.
 
 Chain di kode memakai `monadTestnet` dari `viem/chains`, bukan definisi manual. Blok sekitar 400 ms, finality sekitar 800 ms.
 
@@ -290,12 +290,12 @@ Isi batch: `CHECK ANY`, `CAPTURE ANY`, `CASTLE WHITE` dan `CASTLE BLACK` (rentan
 | Pasar tanpa stake | Tidak pernah di-request (D18) |
 | Void karena pool pemenang kosong | Dihitung cocok dengan hasil sementara YES/NO |
 | `gasLimit` write | `1000000` sementara, ganti dengan hasil ukur + 30% |
-| Versi minimum | CRE CLI 1.30.0, TS SDK 1.19.0 |
+| Versi minimum | CRE CLI 1.30.0, TS SDK 1.19.0. Terpasang 10 Okt: CLI 1.33.0, TS SDK 1.23.0 |
 | Confidence log trigger | finalized |
 | Agregator | `consensusIdenticalAggregation<string>()` lewat `HTTPClient.sendRequest` |
 | Pembacaan kontrak | `callContract` dengan `LAST_FINALIZED_BLOCK_NUMBER` |
 | Nilai kembali handler | string JSON `{ gameRef, resolved, skipped, txHash }` |
-| Target | Dibaca dari `workflow.yaml` hasil `cre init`, plus target `local-simulation` tanpa receiver |
+| Target | `staging-settings` dan `production-settings` dari `cre init` (CLI 1.33.0), plus `local-simulation` tanpa receiver. Config `config.staging.json`, `config.production.json`, `config.local-simulation.json` |
 | Key untuk `--broadcast` | `CRE_ETH_PRIVATE_KEY` di `.env` proyek CRE |
 | Lifecycle | init, simulate, deploy (paused), activate |
 
@@ -420,7 +420,7 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | Harga gas dan penagihan gas limit | Terverifikasi | 5 Okt | `eth_gasPrice` 102 gwei, Monad Pulse #018 |
 | Alamat forwarder CRE dan chain selector | Terverifikasi dari dokumentasi | 5 Okt | Forwarder Directory |
 | Signature fungsi Mera 0.2.0 | Terverifikasi | 5 Okt | File `.d.ts` paket npm |
-| Alamat forwarder untuk organisasimu | Belum | | `cre workflow supported-chains` |
+| Alamat forwarder untuk organisasimu | Terverifikasi: org `My Org`, `monad-testnet` selector `2183018362218727504`, mock `0xB9F79d...`, produksi `0xF8344CFd...`, sama dengan SOT | 10 Okt | `cre workflow supported-chains --output json` (CLI 1.33.0) |
 | `resolve.ts` berjalan di QuickJS | Belum | | Simulasi workflow |
 | Log trigger CRE di Monad Testnet | Belum | | Simulasi dengan tx nyata |
 | Latensi request sampai final | Belum | | Ukur di simulasi `--broadcast` |
@@ -439,6 +439,7 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 
 ### v2.2.0 (10 Oktober 2026)
 - Diselaraskan dengan implementasi `smart-contract/`: `supportsInterface` di `sot/abi.json` menjadi `pure` (selector `0x01ffc9a7` tidak berubah). `abi.json` versi 2.2.0.
+- CRE diselaraskan dengan `backend/cre/`: target `staging-settings`, `production-settings`, `local-simulation` (`cre.targets` di `constants.json` menjadi objek), catatan `cre init` (folder dan `--rpc-url`), alamat forwarder dikonfirmasi dengan `supported-chains`. `constants.json` versi 2.2.0.
 - Bagian 11 diselaraskan dengan `backend/resolver/`: `at` di SSE `ply` dalam milidetik dan hanya ply terakhir per update, `lockTime` di `market_locked` adalah perkiraan resolver.
 
 ### v2.1.0 (5 Oktober 2026)
