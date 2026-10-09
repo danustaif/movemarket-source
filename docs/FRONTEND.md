@@ -24,11 +24,10 @@ fe/src/
 │   ├── me.tsx                 # /me
 │   └── leaderboard.tsx        # /leaderboard
 ├── lib/
-│   ├── chain.ts               # monadTestnet dari viem/chains (jangan definisi manual), publicClient
+│   ├── chain.ts               # monadTestnet dari viem/chains (jangan definisi manual), publicClient, alamat kontrak dari env
 │   ├── account/
 │   │   ├── mera.ts            # buat / buka passkey, bentuk akun viem
 │   │   └── session.ts         # walletClient dari akun aktif
-│   ├── contracts.ts           # alamat + ABI dari @movemarket/shared
 │   ├── resolver.ts            # fetch REST resolver
 │   ├── envio.ts               # client GraphQL
 │   ├── sse.ts                 # EventSource + reconnect
@@ -49,6 +48,8 @@ fe/src/
 └── styles/
 ```
 
+Catatan implementasi `fe/`: alamat kontrak ada di `src/lib/chain.ts` (tidak ada `lib/contracts.ts`), dan factory query key `qk` ada di `src/contracts/data.ts` (diekspor ulang oleh `src/queries/index.ts`, tidak ada `queries/keys.ts`). Kontrak tipe lapisan data, akun, dan UI ada di `src/contracts/*.ts`.
+
 ## 2. Route
 
 | Route | Loader (`ensureQueryData`) | Komponen utama |
@@ -56,7 +57,7 @@ fe/src/
 | `/` | `games` | Daftar partai live di atas, replay di bawah dengan label REPLAY |
 | `/onboarding` | | Penjelasan, tombol buat akun, status faucet |
 | `/game/$gameRef` | `game(gameRef)` | `GameHeader`, `LiveBoard`, daftar `MarketCard` terbuka, terkunci, selesai |
-| `/me` | `positions(address)`, `balance(address)` | Saldo, tombol "Claim all", daftar posisi |
+| `/me` | `positions(address)`, `balance(address)` | Saldo dengan tombol "Get test tokens" (faucet ulang, idempoten), total siap klaim dan tombol "Claim all", daftar posisi |
 | `/leaderboard` | `leaderboard` | Tabel peringkat |
 
 `gameRef` di URL di-encode dengan `encodeURIComponent`.
@@ -82,13 +83,18 @@ import { wordlist } from "@scure/bip39/wordlists/english.js";
 import { HDKey } from "@scure/bip32";
 
 function deriveEvmPrivateKey(prfOutput: Uint8Array): Uint8Array {
-  const mnemonic = entropyToMnemonic(prfOutput, wordlist);          // 24 kata
-  const seed = mnemonicToSeedSync(mnemonic);
-  const key = HDKey.fromMasterSeed(seed).derive("m/44'/60'/0'/0/0").privateKey!;
-  seed.fill(0);
-  return key;
+  let seed, master, child;
+  try {
+    seed = mnemonicToSeedSync(entropyToMnemonic(prfOutput, wordlist)); // 24 kata
+    master = HDKey.fromMasterSeed(seed);
+    child = master.derive("m/44'/60'/0'/0/0");
+    if (!child.privateKey) throw new Error("HD derivation returned no private key");
+    return child.privateKey.slice();
+  } finally {
+    child?.wipePrivateData(); master?.wipePrivateData(); seed?.fill(0);  // juga saat melempar
+  }
 }
-// session = createSecp256k1SigningSession({ privateKey }); lalu privateKey.fill(0) dan prfOutput.fill(0)
+// session = createSecp256k1SigningSession({ privateKey }) di dalam try; finally: privateKey.fill(0) dan prfOutput.fill(0)
 // account = toViemAccount(session, { nonceManager })
 ```
 
@@ -96,7 +102,7 @@ Aturan:
 - `rp.id` selalu `import.meta.env.VITE_RP_ID`. Jangan memakai `location.hostname` langsung, supaya preview deploy tidak membuat passkey di domain lain.
 - Path derivasi tetap `m/44'/60'/0'/0/0`. Mengubahnya berarti semua pengguna mendapat alamat baru.
 - Simpan hanya `{ rpId, address, credentialId }` di `localStorage` key `movemarket.account.v1`. `credentialId` dikirim ke `getPasskeyPrfOutput` supaya browser langsung memilih passkey yang benar.
-- Setelah unlock, cocokkan alamat hasil derivasi dengan penanda. Kalau beda, tampilkan error dan jangan memakai akun itu.
+- Setelah unlock, cocokkan alamat hasil derivasi dengan penanda. Kalau beda, tampilkan error (`ACCOUNT_MISMATCH`) dan jangan memakai akun itu. Toast error memberi aksi "Create account", dan `/onboarding` saat terkunci menampilkan pesan yang sama dengan tombol "Create account": keduanya menghapus penanda (`clearMarker`) lalu memulai jalur buat akun.
 - Tangani `MeraError` berdasarkan `code`: `PRF_UNAVAILABLE`, `PASSKEY_OPERATION_FAILED` (termasuk pembatalan), `CRYPTO_UNAVAILABLE`, `SESSION_ENDED`. Pesan dari `sot/copy.en.json`.
 
 State akun di Zustand (`stores/account.ts`):
@@ -113,7 +119,7 @@ interface AccountState {
 
 ## 4. Query key
 
-Semua key dibuat lewat factory di `queries/keys.ts`:
+Semua key dibuat lewat factory `qk` (di `fe/` berada di `src/contracts/data.ts`):
 
 ```ts
 export const qk = {
@@ -207,7 +213,7 @@ Pool di respons resolver berupa string desimal. Konversi ke `bigint` di boundary
 |---|---|
 | `ply` | `setQueryData(qk.game(gameRef))`: tambah san, ganti fen, ply. Juga update ringkasan di `qk.games()` |
 | `market_created` | Tambah pasar ke `qk.game(gameRef)` |
-| `market_locked` | Set `lockTime` pasar ke nilai baru. Hitung mundur langsung habis, tombol stake nonaktif |
+| `market_locked` | Set `lockTime` pasar ke `min(lockTime lama, lockTime baru)`: kontrak hanya memajukan `lockTime`, jadi event terlambat tidak boleh memundurkannya. Hitung mundur langsung habis, tombol stake nonaktif |
 | `pool` | Update pool pasar di `qk.game(gameRef)` (payload membawa `gameRef`) |
 | `provisional` | Set `provisional` pasar |
 | `finalized` | Set `final`, lalu invalidate `positions` pengguna aktif |
@@ -262,7 +268,8 @@ Pesan diambil dari `sot/copy.en.json` bagian `errors` dengan key nama error.
 | `NothingToClaim` / `NotClaimable` | "Nothing to claim." |
 | `AlreadySettled` | "Already claimed." |
 | `NotRefundable` | "Not refundable yet." |
-| saldo gas kurang | "Out of gas funds. Refilling from the faucet." lalu panggil `POST /faucet/gas` |
+| saldo gas kurang | "Out of gas funds. Refilling from the faucet." ditampilkan saat isi ulang dimulai. Hanya `TxSender` (`lib/account/session.ts`) yang memanggil `POST /faucet/gas`: sekali per transaksi, lalu retry sekali, supaya satu kegagalan memakai satu kuota |
+| gas `claimMany` belum diukur (SOT `gas.limits` null) | `errors.GAS_NOT_MEASURED`. Tombol "Claim all" nonaktif dengan teks ini; klaim per pasar tetap bisa |
 
 ## 10. Desain visual
 
