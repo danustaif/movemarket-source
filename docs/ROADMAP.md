@@ -81,6 +81,7 @@ Prinsip:
 - [x] Ingest broadcast round (sumber live utama)
 - [x] Replay otomatis hanya saat ada penonton
 - [ ] Deploy resolver ke server 24 jam (container berisi CLI `cre` dan proyek `backend/cre/`)
+  - 10 Okt: Dockerfile + docker-compose siap (`backend/README.md`); uji live lokal dengan wallet nyata di Monad Testnet lulus memakai `CRE_MODE=mock` (D23): create, stake, provisional, request, report, claimable. Ditemukan dan diperbaiki: `market_created` terlambat 40-50 detik tanpa WS.
 
 **DoD:** link demo publik bisa dibuka siapa saja, alur daftar sampai klaim jalan dari UI.
 
