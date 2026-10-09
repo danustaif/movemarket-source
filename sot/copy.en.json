@@ -1,7 +1,7 @@
 {
   "_meta": {
     "name": "MoveMarket source of truth: UI copy (English)",
-    "version": "2.6.0",
+    "version": "2.7.0",
     "updated": "2026-10-10",
     "rule": "UI memakai bahasa Inggris karena juri global. Semua teks yang tampil ke pengguna diambil dari file ini lewat key. Hindari kata gamble dan bet di UI; pakai predict, stake, pool."
   },
@@ -62,6 +62,7 @@
     "FAUCET_FAILED": "Test tokens were not sent yet. Please try again in a moment.",
     "INSUFFICIENT_USDC": "Not enough tUSDC.",
     "INSUFFICIENT_GAS": "Out of gas funds. Refilling from the faucet.",
+    "GAS_REFILL_FAILED": "Out of gas funds and the refill did not arrive. Try again in a moment.",
     "BettingClosed": "This market is locked.",
     "AmountTooSmall": "Minimum stake is 1 tUSDC.",
     "StakeCapExceeded": "Maximum 100 tUSDC per market.",
