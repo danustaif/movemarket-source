@@ -19,7 +19,7 @@ Prinsip:
 - [x] Verifikasi data Lichess, alamat forwarder CRE, RPC dan gas Monad, API Mera
 - [x] Buat SOT (`docs/SOT.md`, `sot/`) dan sesuaikan semua dokumen
 - [x] `git init` dan push (10 Okt): empat repo di akun `danustaif`. keempat repo publik sejak 10 Okt (screenshot referensi pihak ketiga di `design/refs/landing` dan `raw` dihapus dari riwayat, hanya disimpan lokal)
-- [ ] Pasang skill: `chainlink-cre-skill` dan monskills (perintah di SOT bagian 0.5)
+- [x] Pasang skill: `chainlink-cre-skill` dan monskills (perintah di SOT bagian 0.5; monskills terpasang global 10 Okt)
 - [x] `cre login`, `cre registry list` (hanya `private` dan `onchain:ethereum-mainnet`), `cre workflow supported-chains` (forwarder cocok SOT), 10 Okt
 - [ ] **Ajukan Early Access** (`cre account access`, interaktif, dijalankan user). Status 10 Okt: Deploy Access belum aktif
 - [ ] Kumpulkan MON testnet untuk wallet resolver dan wallet CLI CRE untuk tiga wallet: resolver, faucet, dan CLI CRE (target minimal 100 MON sebelum 14 Oktober, idealnya 160; perhitungan di `docs/SOT.md` bagian 13). Pakai faucet agen Monad `agents.devnads.com/v1/faucet` dan tanyakan ke tim Monad di Discord
