@@ -85,20 +85,25 @@ Urutan perubahan lintas repo: `source` dulu (SOT + `shared`), lalu `smart-contra
 # source/
 node sot/check.mjs                              # wajib lulus sebelum commit
 bun sot/check.mjs --impl shared/src/resolve.ts  # port TypeScript
-cd shared && bun test && bunx tsc --noEmit
+cd shared && bun run gen && bun run typecheck && bun test   # gen setelah sot/*.json berubah
 
 # smart-contract/
 forge build && forge test -vvv
 node script/check-abi.mjs                       # selector dan topic0 hasil compile == sot/abi.json
-forge script script/Deploy.s.sol --rpc-url $MONAD_TESTNET_RPC --broadcast
+RESOLVER_ADDRESS=0x... forge script script/Deploy.s.sol \
+  --rpc-url $MONAD_TESTNET_RPC --account <keystore> --broadcast   # FORWARDER_ADDRESS opsional, default mock dari SOT
 
 # backend/
 cd resolver && bun run dev
 cd indexer && bun run codegen && bun run dev
-# CRE (dari backend/cre/)
+# CRE: target staging-settings, production-settings, local-simulation (sot/constants.json cre.targets)
+cd cre/resolver-workflow && bun test && bun run typecheck && bun run build
+# dari backend/cre/: local-simulation dulu (tanpa receiver), lalu staging-settings
+cre workflow simulate resolver-workflow --target local-simulation \
+  --non-interactive --trigger-index 0 --evm-tx-hash <hash> --evm-event-index 0
 cre workflow simulate resolver-workflow --target staging-settings \
   --non-interactive --trigger-index 0 --evm-tx-hash <hash> --evm-event-index 0
-# tambah --broadcast untuk menulis ke Monad Testnet lewat MockKeystoneForwarder
+# tambah --broadcast (hanya staging-settings) untuk menulis ke Monad Testnet lewat MockKeystoneForwarder
 
 # fe/
 bun run dev

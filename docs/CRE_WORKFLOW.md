@@ -34,31 +34,34 @@ cre account access               # cek dan ajukan Early Access deploy
 cre registry list                # ambil ID registry, jangan dikarang
 ```
 
-Buat proyek tanpa prompt (dari folder `backend/cre/`):
+Buat proyek tanpa prompt:
 
 ```bash
 cre init --non-interactive \
   --project-name movemarket-cre \
   --deployment-registry <ID dari cre registry list> \
   --workflow-name resolver-workflow \
-  --template hello-world-ts \
-  --rpc-url monad-testnet=<RPC Monad Testnet>
+  --template hello-world-ts
 
 cd resolver-workflow && bun install && bunx cre-setup    # Bun 1.2.21 atau lebih baru
 ```
 
+Perilaku CLI v1.33.0 yang ditemukan saat membuat `backend/cre/`:
+- `cre init` selalu membuat folder baru `<project-name>` di direktori kerja dan tidak bisa diarahkan ke folder lain. Isinya dipindah ke `backend/cre/` supaya cocok dengan `CRE_PROJECT_DIR=../cre` di resolver.
+- `--rpc-url monad-testnet=...` diabaikan template `hello-world-ts`; `project.yaml` yang dihasilkan berisi RPC Sepolia. RPC Monad Testnet (`network.rpcPublic` di SOT) diisi manual di `project.yaml` untuk setiap target.
+
 Setelah `cre init`:
 - Hapus README, handler, config, dan secrets contoh dari template sebelum simulasi.
-- **Baca nama target dari `workflow.yaml`.** Template membuat `staging-settings` dan `production` dengan config masing-masing (`config.staging.json`, `config.production.json`). Jangan menebak nama target. Dokumen ini memakai `staging-settings` sebagai contoh.
-- Isi field config yang sama di kedua file config.
-- Konfirmasi chain dan mock forwarder: `cre workflow supported-chains --target staging-settings --output json`. Perintah ini hanya mengembalikan chain tenant dan **mock** forwarder.
+- Target hasil `cre init` adalah `staging-settings` dan `production-settings`, dengan config `config.staging.json` dan `config.production.json`. Target `local-simulation` ditambahkan manual dengan `config.local-simulation.json`. Daftar ini juga ada di `sot/constants.json` (`cre.targets`).
+- Isi field config yang sama di ketiga file config.
+- Konfirmasi chain dan forwarder: `cre workflow supported-chains --output json`. Hasil 10 Oktober 2026 (org `My Org`): `monad-testnet` selector `2183018362218727504`, mock `0xB9F79d863261869B234c481D1f9A7af84AeAd192`, produksi `0xF8344CFd5c43616a4366C34E3EEE75af79a74482`, sama dengan SOT.
 
-Versi minimum untuk Monad Testnet: CRE CLI v1.30.0, TS SDK v1.19.0 (dari halaman Supported Networks dokumentasi CRE; skill tidak mencantumkan Monad).
+Versi minimum untuk Monad Testnet: CRE CLI v1.30.0, TS SDK v1.19.0 (dari halaman Supported Networks dokumentasi CRE; skill tidak mencantumkan Monad). Versi terpasang di `backend/cre/` per 10 Oktober: CLI v1.33.0, `@chainlink/cre-sdk` 1.23.0.
 
 ### Target `local-simulation` (wajib menurut skill)
 
 Target tanpa receiver untuk menguji fetch, parsing, dan konsensus tanpa menulis apa pun:
-- `project.yaml`: `local-simulation: {}`
+- `project.yaml`: `local-simulation` dengan `rpcs` `monad-testnet` yang sama dengan target lain. Target ini tetap butuh RPC Monad karena log trigger dan `getMarkets` membaca chain walaupun tidak ada report.
 - `workflow.yaml`: target `local-simulation` dengan `deployment-registry: "private"` dan `secrets-path: ""`
 - Config: `"mode": "local-simulation"`. Handler menjalankan fetch, `resolve`, dan konsensus yang sama, lalu mengembalikan hasil berlabel `local-simulation` **sebelum** membuat report atau `writeReport`.
 - Target ini tidak pernah dipakai dengan `--broadcast`, deploy, atau activate. Config produksi menolak `mode` yang tidak dikenal.
@@ -98,6 +101,8 @@ export async function main() {
   await runner.run(initWorkflow);
 }
 ```
+
+Jangan memakai `z.url()` di `configSchema`: validator URL zod gagal di QuickJS (terlihat saat simulate). `lichessBaseUrl` divalidasi dengan regex `^https://[^\s/]+$`.
 
 Langkah `onResolutionRequested(runtime, log)`:
 
@@ -154,11 +159,11 @@ Sebelum mengintegrasikan, jalankan `bun sot/check.mjs --impl shared/src/resolve.
 
 Workflow TS berjalan di QuickJS/WASM. Karena itu:
 - `source/shared` tidak boleh memakai API Node. `resolve.ts` tanpa dependensi sama sekali. `abi.ts` memakai `viem` (encode/decode ABI, keccak); viem dan zod aman menurut skill.
-- Coba impor lewat workspace (`"@movemarket/shared": "workspace:*"`). Kalau build CRE gagal me-resolve workspace, pakai script `bun run sync:shared` yang menyalin `source/shared/src/*.ts` ke `backend/cre/resolver-workflow/shared/` sebelum build. Jangan mengedit salinan secara manual.
+- Impor lewat dependensi file: `"@movemarket/shared": "file:../../../source/shared"` di `backend/cre/resolver-workflow/package.json`, sama seperti resolver. `cre workflow build` me-resolve paket itu dan mem-bundle JSON SOT yang diimpornya, jadi script `sync:shared` tidak diperlukan. Kalau file baru di `source/shared` tidak terlihat, jalankan `bun install --force` di `resolver-workflow/`.
 
 ## 6. Config
 
-`config.staging.json` dan `config.production.json` (nama mengikuti hasil `cre init`):
+`config.staging.json`, `config.production.json`, dan `config.local-simulation.json` (dua yang pertama dari `cre init`):
 
 ```json
 {
@@ -195,9 +200,7 @@ Forwarder:
 | Simulasi `--broadcast` | `MockKeystoneForwarder` | `0xB9F79d863261869B234c481D1f9A7af84AeAd192` |
 | Deploy DON | `KeystoneForwarder` | `0xF8344CFd5c43616a4366C34E3EEE75af79a74482` |
 
-Sumber: halaman Forwarder Directory dokumentasi CRE, dicek 5 Oktober 2026. **Perhatikan:** tabel di `chainlink-cre-skill` v0.0.24 belum memuat Monad Testnet, dan alamat `0xB9F79d...` di sana tercatat sebagai KeystoneForwarder produksi untuk Mantle Sepolia. Alamat yang sama dipakai di chain berbeda, jadi ini belum tentu salah, tetapi wajib dikonfirmasi:
-1. Mock forwarder: bandingkan dengan output `cre workflow supported-chains --target staging-settings --output json`.
-2. Forwarder produksi: buka ulang halaman Forwarder Directory tepat sebelum `setForwarder`.
+Sumber: halaman Forwarder Directory dokumentasi CRE, dicek 5 Oktober 2026, dan dikonfirmasi 10 Oktober 2026 dengan `cre workflow supported-chains --output json` untuk organisasi kita (lihat bagian 2). Tabel di `chainlink-cre-skill` v0.0.24 belum memuat Monad Testnet, dan alamat `0xB9F79d...` di sana tercatat sebagai KeystoneForwarder produksi untuk Mantle Sepolia; alamat yang sama dipakai di chain berbeda. Buka ulang halaman Forwarder Directory tepat sebelum `setForwarder` ke forwarder produksi.
 
 ## 8. Simulasi
 
@@ -273,9 +276,10 @@ Angka dari halaman service quotas dokumentasi CRE. Skill menyarankan membaca ula
 
 ## 12. Checklist selesai
 
-- [ ] `cre init --non-interactive` sukses, `bunx cre-setup` jalan, file contoh template dihapus
+- [x] `cre init --non-interactive` sukses, `bunx cre-setup` jalan, file contoh template dihapus
+- [x] `cre workflow build` sukses dengan `@movemarket/shared` ter-bundle
 - [ ] Target `local-simulation` lulus dengan tx `requestResolution` nyata
-- [ ] Mock forwarder di output `supported-chains` sama dengan `sot/constants.json`
+- [x] Mock forwarder di output `supported-chains` sama dengan `sot/constants.json` (10 Okt)
 - [ ] Log trigger (confidence finalized) membaca event dari tx nyata di Monad Testnet
 - [ ] `getMarkets` terbaca dan ter-decode benar
 - [ ] Fetch Lichess sukses untuk kedua format `gameRef`
