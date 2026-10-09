@@ -1,6 +1,6 @@
 # Source of Truth: MoveMarket
 
-Versi 2.7.0 · 10 Oktober 2026 · Pemilik: Danu
+Versi 2.8.0 · 10 Oktober 2026 · Pemilik: Danu
 
 Dokumen ini adalah acuan tunggal untuk semua nilai yang dipakai lebih dari satu komponen. Kontrak, workflow CRE, resolver, indexer, dan frontend harus cocok dengan dokumen ini dan folder `sot/`.
 
@@ -446,6 +446,9 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | Sumber MON testnet dalam jumlah besar | Sebagian | 5 Okt | Faucet agen Monad `agents.devnads.com/v1/faucet` (dari monskills), batasnya belum diketahui |
 
 ## 17. Riwayat perubahan
+
+### v2.8.0 (10 Oktober 2026)
+- `copy.en.json` 2.8.0: `errors.INDEXER_OFFLINE` untuk kegagalan indexer Envio (leaderboard), terpisah dari `RESOLVER_OFFLINE`.
 
 ### v2.7.0 (10 Oktober 2026)
 - `copy.en.json` 2.7.0: `errors.GAS_REFILL_FAILED` untuk transaksi yang tetap kehabisan gas setelah satu kali isi ulang otomatis (sebelumnya memakai `INSUFFICIENT_GAS` yang berbunyi "Refilling from the faucet").

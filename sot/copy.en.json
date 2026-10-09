@@ -1,7 +1,7 @@
 {
   "_meta": {
     "name": "MoveMarket source of truth: UI copy (English)",
-    "version": "2.7.0",
+    "version": "2.8.0",
     "updated": "2026-10-10",
     "rule": "UI memakai bahasa Inggris karena juri global. Semua teks yang tampil ke pengguna diambil dari file ini lewat key. Hindari kata gamble dan bet di UI; pakai predict, stake, pool."
   },
@@ -73,6 +73,7 @@
     "NotRefundable": "Not refundable yet.",
     "SSE_RECONNECTING": "Reconnecting...",
     "RESOLVER_OFFLINE": "Live data is temporarily unavailable.",
+    "INDEXER_OFFLINE": "Rankings and history are temporarily unavailable.",
     "FINAL_PENDING": "Waiting for oracle confirmation.",
     "CRYPTO_UNAVAILABLE": "This browser cannot create passkey accounts. Try a recent Chrome or Safari.",
     "SESSION_ENDED": "Your session ended. Unlock with your passkey again.",
