@@ -1,7 +1,7 @@
 {
   "_meta": {
     "name": "MoveMarket source of truth: constants",
-    "version": "2.5.0",
+    "version": "2.6.0",
     "updated": "2026-10-10",
     "rule": "Nilai di file ini menang atas dokumen mana pun. Ubah di sini dulu, jalankan `node sot/check.mjs`, lalu sesuaikan kode dan dokumen yang gagal dicek."
   },
@@ -415,6 +415,7 @@
       10
     ],
     "lockMarginSec": 1,
+    "closingSoonSec": 5,
     "chainTimeRefreshSec": 60,
     "sseBackoffSec": [
       1,

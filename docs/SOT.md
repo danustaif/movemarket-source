@@ -1,6 +1,6 @@
 # Source of Truth: MoveMarket
 
-Versi 2.5.0 · 10 Oktober 2026 · Pemilik: Danu
+Versi 2.6.0 · 10 Oktober 2026 · Pemilik: Danu
 
 Dokumen ini adalah acuan tunggal untuk semua nilai yang dipakai lebih dari satu komponen. Kontrak, workflow CRE, resolver, indexer, dan frontend harus cocok dengan dokumen ini dan folder `sot/`.
 
@@ -446,6 +446,12 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | Sumber MON testnet dalam jumlah besar | Sebagian | 5 Okt | Faucet agen Monad `agents.devnads.com/v1/faucet` (dari monskills), batasnya belum diketahui |
 
 ## 17. Riwayat perubahan
+
+### v2.6.0 (10 Oktober 2026)
+- `copy.en.json` `errors.GAS_NOT_MEASURED`: alasan tombol Claim all nonaktif selama `gas.limits.claimManyBase`/`claimManyPerMarket` masih null (v2.3.0). Klaim per pasar tetap bisa.
+- `copy.en.json` `ui.nav.label` (label aksesibel navigasi utama), `ui.leaderboard.rank` (kepala kolom peringkat), `ui.generic.noValue` (pengganti angka yang belum termuat, mis. saldo).
+- `constants.json` `frontend.closingSoonSec` 5: di bawah sisa detik ini chip Open dan hitung mundur lembar stake berubah coral (DESIGN.md "Status chip").
+- `constants.json` dan `copy.en.json` versi 2.6.0.
 
 ### v2.5.0 (10 Oktober 2026)
 - `faucet.resolverHardFloorWei` diganti nama menjadi `faucet.monadReserveWei` (nilai tetap 10 MON), karena dipakai sebagai reserve balance semua wallet, bukan khusus resolver. `check.mjs` memeriksa `faucetWalletMinWei = monadReserveWei + monAmountWei`.
