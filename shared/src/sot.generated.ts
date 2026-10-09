@@ -13,7 +13,7 @@ export const LIVE_MARKET_ABI_HR = [
   "function claimMany(uint256[] ids) returns (uint256 totalPayout)",
   "function refund(uint256 id) returns (uint256 amount)",
   "function onReport(bytes metadata, bytes report)",
-  "function supportsInterface(bytes4 interfaceId) view returns (bool)",
+  "function supportsInterface(bytes4 interfaceId) pure returns (bool)",
   "function adminVoid(uint256[] ids)",
   "function setForwarder(address forwarder)",
   "function setResolver(address resolver)",

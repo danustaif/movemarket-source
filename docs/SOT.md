@@ -1,6 +1,6 @@
 # Source of Truth: MoveMarket
 
-Versi 2.1.0 · 5 Oktober 2026 · Pemilik: Danu
+Versi 2.2.0 · 10 Oktober 2026 · Pemilik: Danu
 
 Dokumen ini adalah acuan tunggal untuk semua nilai yang dipakai lebih dari satu komponen. Kontrak, workflow CRE, resolver, indexer, dan frontend harus cocok dengan dokumen ini dan folder `sot/`.
 
@@ -434,6 +434,9 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | Sumber MON testnet dalam jumlah besar | Sebagian | 5 Okt | Faucet agen Monad `agents.devnads.com/v1/faucet` (dari monskills), batasnya belum diketahui |
 
 ## 17. Riwayat perubahan
+
+### v2.2.0 (10 Oktober 2026)
+- Diselaraskan dengan implementasi `smart-contract/`: `supportsInterface` di `sot/abi.json` menjadi `pure` (selector `0x01ffc9a7` tidak berubah). `abi.json` versi 2.2.0.
 
 ### v2.1.0 (5 Oktober 2026)
 - Dicocokkan dengan `chainlink-cre-skill` v0.0.24: `cre init --non-interactive` dengan ID registry asli, target dibaca dari `workflow.yaml`, target `local-simulation`, confidence finalized, bentuk API (`logTrigger`, `callContract`, `HTTPClient.sendRequest`, `consensusIdenticalAggregation`, `.result()`), handler mengembalikan string, `CRE_ETH_PRIVATE_KEY`, lifecycle deploy lalu activate, catatan alamat forwarder.

@@ -1,8 +1,8 @@
 {
   "_meta": {
     "name": "MoveMarket source of truth: ABI LiveMarket dan MockUSDC",
-    "version": "2.0.0",
-    "updated": "2026-10-05",
+    "version": "2.2.0",
+    "updated": "2026-10-10",
     "rule": "Human-readable ABI (format viem parseAbi) di bawah adalah kontrak antarmuka. Solidity, indexer, workflow CRE, resolver, dan frontend wajib cocok. Bagian computed dihitung ulang oleh sot/check.mjs; jangan diedit tangan."
   },
   "liveMarket": {
@@ -26,7 +26,7 @@
       ],
       "cre": [
         "function onReport(bytes metadata, bytes report)",
-        "function supportsInterface(bytes4 interfaceId) view returns (bool)"
+        "function supportsInterface(bytes4 interfaceId) pure returns (bool)"
       ],
       "owner": [
         "function adminVoid(uint256[] ids)",
