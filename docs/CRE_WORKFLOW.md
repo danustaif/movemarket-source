@@ -197,8 +197,11 @@ Forwarder:
 
 | Mode | Forwarder | Alamat Monad Testnet |
 |---|---|---|
-| Simulasi `--broadcast` | `MockKeystoneForwarder` | `0xB9F79d863261869B234c481D1f9A7af84AeAd192` |
-| Deploy DON | `KeystoneForwarder` | `0xF8344CFd5c43616a4366C34E3EEE75af79a74482` |
+| Simulasi `--broadcast` (`CRE_MODE=simulate`) | `MockKeystoneForwarder` Chainlink | `0xB9F79d863261869B234c481D1f9A7af84AeAd192` |
+| Resolver `CRE_MODE=mock` (SOT D24) | `GatedForwarder` MoveMarket, hanya wallet resolver yang boleh `report()` | `addresses.creGatedForwarder` di SOT (diisi setelah deploy) |
+| Deploy DON (`CRE_MODE=don`) | `KeystoneForwarder` | `0xF8344CFd5c43616a4366C34E3EEE75af79a74482` |
+
+`LiveMarket` hanya punya satu forwarder. Pindah mode berarti `setForwarder` oleh owner (`smart-contract/DEPLOY.md`), dan forwarder lama berhenti diterima.
 
 Sumber: halaman Forwarder Directory dokumentasi CRE, dicek 5 Oktober 2026, dan dikonfirmasi 10 Oktober 2026 dengan `cre workflow supported-chains --output json` untuk organisasi kita (lihat bagian 2). Tabel di `chainlink-cre-skill` v0.0.24 belum memuat Monad Testnet, dan alamat `0xB9F79d...` di sana tercatat sebagai KeystoneForwarder produksi untuk Mantle Sepolia; alamat yang sama dipakai di chain berbeda. Buka ulang halaman Forwarder Directory tepat sebelum `setForwarder` ke forwarder produksi.
 
@@ -239,9 +242,10 @@ Mode `CRE_MODE=simulate`: resolver menjalankan perintah nomor 2 untuk setiap eve
 
 Mode `CRE_MODE=don`: resolver tidak menjalankan apa pun. Workflow di DON dipicu otomatis.
 
-Mode `CRE_MODE=mock` (SOT D23, hanya testnet sambil menunggu Early Access): resolver tidak memanggil CLI `cre`. Untuk event `ResolutionRequested` yang sudah finalized, `backend/resolver/src/cre/mockRunner.ts` menjalankan langkah 1 sampai 8 bagian 4 dengan fungsi yang sama dari `source/shared` (`batchProblem`, `openViews`, `consensusPayload`, `parseConsensusPayload`, `encodeReport`), lalu memanggil `report(LiveMarket, rawReport, 0x, [])` di MockKeystoneForwarder dengan gas `cre.gasLimit` lewat antrian wallet resolver. `rawReport` = metadata 109 byte (layout sama dengan report CLI) + report.
+Mode `CRE_MODE=mock` (SOT D23, hanya testnet sambil menunggu Early Access): resolver tidak memanggil CLI `cre`. Untuk event `ResolutionRequested` yang sudah finalized, `backend/resolver/src/cre/mockRunner.ts` menjalankan langkah 1 sampai 8 bagian 4 dengan fungsi yang sama dari `source/shared` (`batchProblem`, `openViews`, `consensusPayload`, `parseConsensusPayload`, `encodeReport`), lalu memanggil `report(LiveMarket, rawReport, 0x, [])` di GatedForwarder (SOT D24; selama `addresses.creGatedForwarder` `null`, di MockKeystoneForwarder) dengan gas `cre.gasLimit` lewat antrian wallet resolver. `rawReport` = metadata 109 byte (layout sama dengan report CLI) + report.
 - Bukan konsensus: satu proses, satu fetch export. Hasilnya dipercaya seperti resolver. Bukti bounty CRE tetap dari `simulate --broadcast`.
-- MockKeystoneForwarder tidak revert kalau `onReport` revert; runner membaca `ReportProcessed.result` dan melempar error kalau `false`.
+- Kedua forwarder tidak revert kalau `onReport` revert; runner membaca `ReportProcessed.result` dan melempar error kalau `false`.
+- Sebelum mengirim (dan sekali saat start), runner membaca `LiveMarket.forwarder()`. Kalau bukan forwarder yang ia pakai, log `cre_forwarder_mismatch` dan report tidak dikirim. Untuk demo `simulate --broadcast`, owner `setForwarder(MockKeystoneForwarder)` dulu; resolver mode mock lalu berhenti mengirim sampai forwarder dikembalikan ke GatedForwarder.
 - Setelah `setForwarder(KeystoneForwarder)` mode ini berhenti bekerja (`onReport` menolak pengirim), jadi pindah ke `CRE_MODE=don` bersamaan.
 
 ## 10. Deploy (setelah Early Access disetujui)

@@ -87,7 +87,7 @@ Keduanya memanggil `resolve()` dari `source/shared`. Resolver memakai stream liv
 |---|---|---|---|
 | `simulate` | Sebelum Early Access disetujui | Resolver menjalankan `cre workflow simulate ... --broadcast` per event | `MockKeystoneForwarder` |
 | `don` | Setelah Early Access dan deploy | Workflow terdaftar di DON, dipicu log trigger otomatis | `KeystoneForwarder` |
-| `mock` | VPS sebelum Early Access, tanpa CLI `cre` (SOT D23) | Resolver menjalankan langkah handler yang sama dan memanggil `report()` MockKeystoneForwarder langsung dengan wallet resolver. Tanpa konsensus multi-node, dipercaya seperti resolver | `MockKeystoneForwarder` |
+| `mock` | VPS sebelum Early Access, tanpa CLI `cre` (SOT D23) | Resolver menjalankan langkah handler yang sama dan memanggil `report()` forwarder langsung dengan wallet resolver. Tanpa konsensus multi-node, dipercaya seperti resolver | `GatedForwarder` MoveMarket, hanya wallet resolver (D24); `MockKeystoneForwarder` selama belum di-deploy |
 
 Perpindahan mode: deploy workflow, panggil `setForwarder(keystoneForwarder)`, set `CRE_MODE=don` di resolver.
 
@@ -158,7 +158,7 @@ Keputusan yang paling berpengaruh ke arsitektur:
 | `FAUCET_PRIVATE_KEY` | (secret) | Wallet terpisah untuk kirim MON ke pengguna (D19). Minimal 10,5 MON agar transfer tidak revert |
 | `FAUCET_USDC_AMOUNT` | `50000000` | 50 tUSDC |
 | `FAUCET_MON_AMOUNT` | `500000000000000000` | 0,5 MON, sekitar 25 transaksi |
-| `CRE_MODE` | `simulate` / `don` / `mock` / `off` | `mock` (SOT D23): tanpa CLI `cre` dan kredensialnya, report lewat MockKeystoneForwarder oleh wallet resolver. Hanya testnet |
+| `CRE_MODE` | `simulate` / `don` / `mock` / `off` | `mock` (SOT D23): tanpa CLI `cre` dan kredensialnya, report lewat GatedForwarder (D24) oleh wallet resolver. Hanya testnet |
 | `CRE_PROJECT_DIR` | `../cre` | |
 | `CRE_TARGET` | `staging-settings` | |
 | `ADMIN_TOKEN` | (secret) | Untuk endpoint `/admin/*` |

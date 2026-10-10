@@ -4,9 +4,10 @@
 
 Lokasi: `smart-contract/` (Foundry). Solidity `^0.8.24`. Dependensi: OpenZeppelin (`SafeERC20`, `ReentrancyGuard`, `Pausable`, `Ownable`, `ERC20`).
 
-Dua kontrak:
+Tiga kontrak:
 1. `LiveMarket.sol`: pasar parimutuel + consumer report CRE.
 2. `MockUSDC.sol`: token testnet tUSDC.
+3. `GatedForwarder.sol`: forwarder untuk `CRE_MODE=mock` yang hanya menerima wallet resolver (SOT D24, bagian 10).
 
 Untuk test lokal ditambah `test/mocks/MockForwarder.sol` yang meneruskan `onReport` ke `LiveMarket`.
 
@@ -367,3 +368,29 @@ Kunci deployer hanya lewat CLI (`--account <keystore>` atau `--private-key`). Sc
 Verifikasi kontrak agar juri bisa membaca source, dan karena indexer Envio membutuhkan kontrak terverifikasi:
 1. Utama: `POST https://agents.devnads.com/v1/verify` dengan `foundryMetadata` dari `out/<Contract>.sol/<Contract>.json` dan `constructorArgs` (ABI-encoded, tanpa `0x`). Sekali panggil untuk MonadVision, Socialscan, dan Monadscan.
 2. Cadangan: `forge verify-contract <ADDR> <CONTRACT> --chain 10143 --verifier sourcify --verifier-url "https://sourcify-api-monad.blockvision.org/"`.
+
+## 10. GatedForwarder (SOT D24)
+
+Pengganti MockKeystoneForwarder Chainlink selama `CRE_MODE=mock`. ABI yang dipakai runner mock identik dengan MockKeystoneForwarder (`smartcontractkit/chainlink-evm` `contracts/cre/src/dev/MockKeystoneForwarder.sol`), jadi `backend/resolver/src/cre/mockRunner.ts` tidak berubah. Tidak masuk `sot/abi.json`: tidak ada komponen lain yang membaca ABI-nya, dan kecocokan dengan Chainlink dikunci oleh test (selector dan topic0 di bawah).
+
+```solidity
+contract GatedForwarder {
+    address public immutable operator;   // wallet resolver, dari constructor
+    event ReportProcessed(address indexed receiver, bytes32 indexed workflowExecutionId, bytes2 indexed reportId, bool result);
+    error NotOperator(address caller);
+    error InvalidReport();
+    constructor(address operator_);
+    function report(address receiver, bytes calldata rawReport, bytes calldata reportContext, bytes[] calldata signatures) external;
+}
+```
+
+`report()`:
+- `msg.sender != operator`: revert `NotOperator(msg.sender)`.
+- `rawReport.length < 109`: revert `InvalidReport()` (sama dengan mock).
+- Memanggil `receiver.onReport(rawReport[45:109], rawReport[109:])`, slicing sama dengan mock. `reportContext` dan `signatures` diabaikan.
+- Kalau `onReport` revert (atau `receiver` bukan kontrak), transaksi tetap sukses dan memancarkan `ReportProcessed(receiver, rawReport[1:33], rawReport[107:109], false)`; sukses `true`. Sama dengan mock, tanpa cek ERC165 (mock on-chain juga tidak, SOT bagian 16) dan tanpa cek execution id ganda (`LiveMarket` sendiri menolak pasar yang sudah final).
+- Tanpa owner, upgrade, atau fungsi lain. Ganti operator = deploy ulang.
+
+Selector `report` `0x11289565`, topic0 `ReportProcessed` `0x3617b009e9785c42daebadb6d3fb553243a4bf586d07ea72d65d80013ce116b5`.
+
+Deploy (`script/DeployGatedForwarder.s.sol`, env `OPERATOR_ADDRESS` wajib, chain 10143 atau anvil 31337) menulis `deployments/gated-forwarder.monad-testnet.json` (`chainId`, `gatedForwarder`, `operator`) hanya saat `--broadcast` di 10143. `node script/sync-sot.mjs --gated` memvalidasi kode dan `operator()` on-chain lalu mengisi `addresses.creGatedForwarder`; `node script/verify.mjs --gated` memverifikasi dengan constructor arg `operator`. Setelah itu owner memanggil `LiveMarket.setForwarder(gatedForwarder)`. Untuk `simulate --broadcast` atau DON, owner `setForwarder` kembali ke `addresses.creMockKeystoneForwarder` atau `addresses.creKeystoneForwarder`. Langkah lengkap di `smart-contract/DEPLOY.md`.

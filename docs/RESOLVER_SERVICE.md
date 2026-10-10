@@ -189,8 +189,12 @@ Antarmuka sama (`CreRunner.run(requestTxHash)`), dipanggil di titik yang sama (e
 2. `batchProblem` (gameKey, kosong, `cre.maxMarketsPerReport`): ada masalah -> `{ resolved: 0, note }` tanpa transaksi.
 3. `getMarkets` di blok `finalized`, `openViews` membuang pasar bukan OPEN atau gameKey beda.
 4. `fetchSnapshot` (export resmi, sama dengan CRE), `consensusPayload` -> `parseConsensusPayload`. Kosong -> `note: "nothing to resolve"` tanpa transaksi.
-5. `rawReport` = metadata 109 byte (execution id = keccak256(tx request, percobaan ke-n)) + `encodeReport`. Dikirim lewat `txQueue` sebagai `{ kind: "creReport" }`: `report(LiveMarket, rawReport, 0x, [])` di `addresses.creMockKeystoneForwarder`, gas `cre.gasLimit`.
+5. `rawReport` = metadata 109 byte (execution id = keccak256(tx request, percobaan ke-n)) + `encodeReport`. Dikirim lewat `txQueue` sebagai `{ kind: "creReport" }`: `report(LiveMarket, rawReport, 0x, [])` di forwarder mock (di bawah), gas `cre.gasLimit`.
 6. Receipt harus sukses dan `ReportProcessed.result` harus `true` (mock forwarder tidak revert saat `onReport` revert). `resolved` = jumlah `MarketResolved` + `MarketVoided`, `skipped` = sisanya, `note: "mock-cre"`.
+
+Forwarder mock (SOT D24): `addresses.creGatedForwarder` kalau terisi, kalau `null` `addresses.creMockKeystoneForwarder`. Satu alamat yang sama dipakai `contractWriter` (target `forwarder`) dan runner (`mockForwarderAddress()` di `src/cre/mockRunner.ts`). GatedForwarder hanya menerima `report()` dari wallet resolver (`operator`), jadi `RESOLVER_PRIVATE_KEY` harus wallet yang dipakai saat deploy GatedForwarder.
+
+Cek forwarder: saat start (mode mock) dan sebelum langkah 5 setiap run, runner membaca `LiveMarket.forwarder()`. Kalau beda dengan forwarder mock, start mencatat `cre_forwarder_mismatch` dan `run()` melempar error berisi `cre_forwarder_mismatch` tanpa mengirim transaksi (report akan gagal `onReport` dan tetap membakar gas).
 
 ### 2.8 Transaksi
 
