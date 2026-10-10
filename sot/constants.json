@@ -29,7 +29,7 @@
   "addresses": {
     "creMockKeystoneForwarder": "0xB9F79d863261869B234c481D1f9A7af84AeAd192",
     "creKeystoneForwarder": "0xF8344CFd5c43616a4366C34E3EEE75af79a74482",
-    "creGatedForwarder": null,
+    "creGatedForwarder": "0xc3b33f36C4fAc7bC37aC77a42E7EF1c08a81877C",
     "liveMarket": "0xA40F0D8f2e70bfd8F52B4d08089bD083cBdDB9a9",
     "mockUsdc": "0x3670C61f0179dAEF70574C5f6cdC20b7d9986561",
     "resolver": "0x4ac3008a689D382DCF39F9ecce3de368cf948e33",
