@@ -1,6 +1,6 @@
 # Source of Truth: MoveMarket
 
-Versi 2.13.0 · 10 Oktober 2026 · Pemilik: Danu
+Versi 2.14.0 · 10 Oktober 2026 · Pemilik: Danu
 
 Dokumen ini adalah acuan tunggal untuk semua nilai yang dipakai lebih dari satu komponen. Kontrak, workflow CRE, resolver, indexer, dan frontend harus cocok dengan dokumen ini dan folder `sot/`.
 
@@ -100,6 +100,7 @@ Scope MVP yang dibekukan per 5 Oktober:
 | CRE chain selector name | `monad-testnet` |
 | CRE MockKeystoneForwarder (simulasi) | `0xB9F79d863261869B234c481D1f9A7af84AeAd192` |
 | CRE KeystoneForwarder (DON) | `0xF8344CFd5c43616a4366C34E3EEE75af79a74482` |
+| GatedForwarder MoveMarket (`CRE_MODE=mock`, D24) | `addresses.creGatedForwarder`, diisi `sync-sot.mjs --gated` setelah deploy; `null` = belum di-deploy |
 | `LiveMarket`, `MockUSDC`, wallet resolver, blok deploy | Diisi script deploy ke `sot/constants.json` |
 
 Sumber alamat forwarder: halaman Forwarder Directory dokumentasi CRE, dicek 5 Oktober 2026, lalu dikonfirmasi 10 Oktober 2026 dengan `cre workflow supported-chains --output json` (CLI v1.33.0, org `My Org`): `monad-testnet` selector `2183018362218727504`, mock `0xB9F79d...`, produksi `0xF8344CFd...`. `chainlink-cre-skill` v0.0.24 belum memuat Monad Testnet, dan di tabel skill alamat `0xB9F79d...` tercatat sebagai forwarder produksi Mantle Sepolia; alamat yang sama dipakai di chain berbeda. Tetap buka ulang halaman dokumentasi sebelum `setForwarder` ke forwarder produksi.
@@ -300,7 +301,7 @@ Isi batch: `CHECK ANY`, `CAPTURE ANY`, `CASTLE WHITE` dan `CASTLE BLACK` (rentan
 | Target | `staging-settings` dan `production-settings` dari `cre init` (CLI 1.33.0), plus `local-simulation` tanpa receiver. Config `config.staging.json`, `config.production.json`, `config.local-simulation.json` |
 | Key untuk `--broadcast` | `CRE_ETH_PRIVATE_KEY` di `.env` proyek CRE |
 | Lifecycle | init, simulate, deploy (paused), activate |
-| Mode resolver tanpa CLI (`CRE_MODE=mock`, D23) | Langkah handler yang sama dijalankan di resolver, lalu `report(LiveMarket, rawReport, 0x, [])` ke MockKeystoneForwarder dengan gas `gasLimit` di atas. `rawReport` = metadata 109 byte (versi `01`, execution id, timestamp, DON id, versi config DON, workflow CID, nama workflow 10 byte, owner 20 byte, report id `0001`) + encoding report. Mock forwarder tidak memeriksa tanda tangan, `reportContext`, pengirim, maupun execution id ganda, dan tidak revert kalau `onReport` revert (`ReportProcessed.result = false`) |
+| Mode resolver tanpa CLI (`CRE_MODE=mock`, D23) | Langkah handler yang sama dijalankan di resolver, lalu `report(LiveMarket, rawReport, 0x, [])` ke GatedForwarder (D24; selama `addresses.creGatedForwarder` masih `null`, ke MockKeystoneForwarder) dengan gas `gasLimit` di atas. `rawReport` = metadata 109 byte (versi `01`, execution id, timestamp, DON id, versi config DON, workflow CID, nama workflow 10 byte, owner 20 byte, report id `0001`) + encoding report. Mock forwarder tidak memeriksa tanda tangan, `reportContext`, pengirim, maupun execution id ganda, dan tidak revert kalau `onReport` revert (`ReportProcessed.result = false`). GatedForwarder sama persis kecuali `report()` hanya menerima wallet resolver. Resolver menolak mengirim report kalau `LiveMarket.forwarder()` bukan forwarder yang ia pakai (`cre_forwarder_mismatch`) |
 
 ## 11. API resolver dan SSE
 
@@ -418,6 +419,7 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | D21 | Approve saat onboarding, Stake aktif 3 blok setelah faucet, jeda 1,2 detik antar transaksi pengguna | Async execution dan batas transaksi akun di bawah 10 MON | Approve tepat sebelum bet pertama |
 | D22 | Gas limit diukur dengan `eth_estimateGas` di testnet + maksimal 10% | Biaya akses dingin Monad berbeda dari Ethereum, dan gas ditagih dari limit | `forge test --gas-report` + 20% |
 | D23 | `CRE_MODE=mock`: sambil menunggu Early Access, resolver menjalankan langkah handler workflow (logika bersama di `source/shared`) dan memanggil `report()` MockKeystoneForwarder langsung dengan wallet resolver. Hanya testnet | CLI `cre` di container butuh login atau `CRE_API_KEY` yang belum tersedia, padahal pasar ber-stake harus selesai selama penjurian. Batasan: tanpa konsensus multi-node, hasil dipercaya seperti resolver (dan MockKeystoneForwarder memang permissionless). Bukti bounty CRE tetap dari `simulate --broadcast` | Menunggu Early Access tanpa resolusi, `adminResolve` (melanggar D10) |
+| D24 | Selama `CRE_MODE=mock`, `LiveMarket.forwarder` = GatedForwarder milik MoveMarket (`smart-contract/src/GatedForwarder.sol`): ABI `report()` dan event `ReportProcessed` identik dengan MockKeystoneForwarder, tetapi hanya `operator` immutable (wallet resolver) yang boleh memanggil `report()`. Untuk `simulate --broadcast` atau DON, owner `setForwarder` kembali ke forwarder Chainlink | MockKeystoneForwarder permissionless: siapa pun yang tahu alamatnya bisa memanggil `report()` dan menetapkan YES/NO pasar ber-stake, jadi D10 (admin tidak bisa memilih pemenang) tidak berarti apa-apa selama forwarder itu terpasang. Gated forwarder membatasi kepercayaan ke wallet resolver, sama dengan batasan D23 | Tetap memakai MockKeystoneForwarder permissionless; forwarder dengan owner dan daftar operator yang bisa diubah (fitur yang tidak dipakai) |
 
 ## 16. Status verifikasi
 
@@ -445,10 +447,14 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | Status Early Access CRE | Belum aktif (Deploy Access "Not enabled"); pengajuan menunggu user | 10 Okt | `cre whoami` |
 | `simulate --broadcast` diterima untuk bounty | Belum | | Tanya mentor Chainlink |
 | Perilaku MockKeystoneForwarder `0xB9F79d...` (D23) | Terverifikasi: `report()` permissionless, `reportContext` dan `signatures` diabaikan, execution id ganda diterima, `rawReport` < 109 byte revert `InvalidReport()` (`0xb55ac754`), revert di `onReport` tidak membatalkan transaksi (hanya `ReportProcessed.result = false`). `typeAndVersion` on-chain `MockKeystoneForwarder 1.0.0`, tanpa cek ERC165 di trace | 10 Okt | Source `chainlink-evm` `contracts/cre/src/dev/MockKeystoneForwarder.sol`, `eth_call` dan `debug_traceCall` di Monad Testnet |
+| Kompatibilitas GatedForwarder dengan MockKeystoneForwarder (D24) | Terverifikasi: selector `report` `0x11289565` dan topic0 `ReportProcessed` `0x3617b009e9785c42daebadb6d3fb553243a4bf586d07ea72d65d80013ce116b5` sama dengan event MockKeystoneForwarder di tx `0x72025fc0...0c53`; slicing `rawReport[45:109]` dan `rawReport[109:]` sama dengan source Chainlink | 10 Okt | `smart-contract/test/GatedForwarder.t.sol`, receipt tx di Monad Testnet |
 | Interface `IReceiver` dan ID interface yang dicek forwarder | Terverifikasi: `IReceiver is IERC165`, interfaceId = selector `onReport` (`0x805f2132`) | 9 Okt | Halaman "Building Consumer Contracts" dokumentasi CRE, disalin ke `smart-contract/src/interfaces/` |
 | Sumber MON testnet dalam jumlah besar | Sebagian | 5 Okt | Faucet agen Monad `agents.devnads.com/v1/faucet` (dari monskills), batasnya belum diketahui |
 
 ## 17. Riwayat perubahan
+
+### v2.14.0 (10 Oktober 2026)
+- Keputusan D24: GatedForwarder untuk `CRE_MODE=mock` menggantikan MockKeystoneForwarder permissionless (bagian 3, 10). `constants.json` 2.14.0: `addresses.creGatedForwarder` (`null` sampai di-deploy; resolver mode mock jatuh ke `addresses.creMockKeystoneForwarder`), `cre.mockMode` diperbarui.
 
 ### v2.13.0 (10 Oktober 2026)
 - Keputusan D23 dan `CreMode` `"mock"`: resolver bisa menyelesaikan pasar tanpa CLI `cre` dengan memanggil MockKeystoneForwarder langsung (bagian 10). `constants.json` 2.13.0: `cre.mockMode`. Perilaku MockKeystoneForwarder dicek dari source `smartcontractkit/chainlink-evm` (`contracts/cre/src/dev/MockKeystoneForwarder.sol`) dan `eth_call`/`debug_traceCall` ke `0xB9F79d...` di Monad Testnet.
