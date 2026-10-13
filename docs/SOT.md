@@ -1,6 +1,6 @@
 # Source of Truth: MoveMarket
 
-Versi 2.17.2 · 14 Oktober 2026 · Pemilik: Danu
+Versi 2.18.0 · 14 Oktober 2026 · Pemilik: Danu
 
 Dokumen ini adalah acuan tunggal untuk semua nilai yang dipakai lebih dari satu komponen. Kontrak, workflow CRE, resolver, indexer, dan frontend harus cocok dengan dokumen ini dan folder `sot/`.
 
@@ -321,7 +321,7 @@ Base URL dari `VITE_RESOLVER_URL`, port default `8787`. Id dan nominal uang diki
 
 Field `at` di `ply` dalam milidetik. Kalau satu update feed membawa beberapa ply, hanya ply terakhir yang dikirim. `lockTime` di `market_locked` adalah perkiraan waktu chain resolver; nilai pasti ada di event `MarketLocked`.
 
-Endpoint lengkap ada di `docs/RESOLVER_SERVICE.md` bagian 3, termasuk `GET /positions/:address` (cadangan indexer) dan `POST /faucet/gas` (isi ulang gas, kuota terpisah dari onboarding).
+Endpoint lengkap ada di `docs/RESOLVER_SERVICE.md` bagian 3, termasuk `GET /positions/:address` (cadangan indexer) `POST /faucet/gas` (isi ulang gas, kuota terpisah dari onboarding), dan `/vault` (passkey backup, bagian 12a).
 
 ## 12. Akun
 
@@ -355,6 +355,46 @@ localStorage movemarket.session.v1 = { address, iv, ciphertext, expiresAt } // h
 - Batasan: XSS di origin yang sama tetap bisa memakai kunci AES untuk mendekripsi selama sesi berlaku. Diterima karena testnet dan tUSDC tanpa nilai; dump storage saja (tanpa menjalankan JS di origin) tidak membocorkan kunci privat.
 
 Kode error Mera yang ditangani UI: `PRF_UNAVAILABLE`, `PASSKEY_OPERATION_FAILED` (termasuk pembatalan), `CRYPTO_UNAVAILABLE`, `SESSION_ENDED`. Ditambah `ACCOUNT_MISMATCH` kalau alamat hasil unlock beda dengan penanda. Semua punya teks di `sot/copy.en.json`.
+
+## 12a. Passkey backup (Mera secret vault, D27)
+
+Passkey kedua di perangkat lain (HP, security key) membuka akun yang sama tanpa seed phrase. Memakai secret vault Mera 0.2.0, bukan akun Mera: `createSecretVaultWithNewPasskey`, `decryptSecretVaultWithPasskey`, `parseSecretVault`.
+
+```
+secret     = entropi BIP-39 akun, 32 byte                                    // = prfOutput passkey utama (bagian 12)
+             perangkat biasa: getPasskeyPrfOutput({ rpId, credential: penanda })   // konfirmasi ulang, 1 prompt
+             perangkat hasil pemulihan: decryptSecretVaultWithPasskey({ rpId, vault: penanda.vault })
+             cek: derivasi bagian 12 atas secret == alamat penanda, kalau tidak ACCOUNT_MISMATCH
+vault      = createSecretVaultWithNewPasskey({ rp: { id: VITE_RP_ID, name }, user, secret })   // 1-2 prompt
+             Mera: salt PRF acak 32 byte per vault, kunci AES-256-GCM = HKDF-SHA256(prfOutput backup, info "mera.v1.encrypt.secret")
+vaultJson  = JSON.stringify(vault); vaultId = keccak256(utf8(vaultJson))
+signature  = account.signMessage(backupMessage({ action: "add", address, vaultId, timestamp }))  // EIP-191, tanpa gas
+POST /vault { address, vault: vaultJson, timestamp, signature }
+```
+
+Pemulihan di perangkat lain: alamat akun (diketik atau dari link `/restore/<address>` yang disalin di `/me`) -> `GET /vault/:address` -> pilih vault -> `decryptSecretVaultWithPasskey` -> derivasi bagian 12 -> alamat harus sama -> penanda `{ rpId, address, credentialId: vault.credential.credentialId, vault }` -> sesi tersimpan D26 seperti biasa. Unlock berikutnya di perangkat itu memakai `penanda.vault` (cache lokal, tetap ciphertext) + passkey backup. `secret`, `prfOutput`, dan kunci privat di-zero-kan setelah dipakai.
+
+Mengapa entropi, bukan kunci privat dari sesi D26: vault berisi akar yang sama dengan passkey utama, jadi pemulihan memakai jalur derivasi yang sama persis (D13) dan tetap benar kalau suatu saat akun memakai indeks derivasi lain. Konfirmasi ulang passkey sebelum menambah backup juga mencegah orang yang hanya memegang sesi tersimpan (tab terbuka di perangkat pinjaman) menambahkan passkey miliknya secara diam-diam.
+
+Resolver (`account.backup` di `sot/constants.json`):
+
+| Aturan | Nilai |
+|---|---|
+| Route | `GET /vault/:address` (publik), `POST /vault`, `DELETE /vault/:address/:id` |
+| Format vault | Mera v1 persis: `version` 1, `credential.credentialId` base64url, `transports` opsional, `prfSalt` 32 byte, `nonce` 12 byte, `ciphertext` = `secretBytes` (32) + tag 16 byte; key lain ditolak |
+| Ukuran | JSON vault maks `maxVaultBytes` (2048) |
+| Jumlah | maks `maxPerAddress` (5) vault per alamat (`409 BACKUP_LIMIT`) |
+| Rate limit | `writesPerIpPer24h` (20) POST/DELETE per IP per 24 jam (`429 BACKUP_RATE_LIMIT`) |
+| Tanda tangan | `verifyMessage` viem terhadap alamat; `timestamp` dalam `signatureMaxAgeSec` (300 detik) dari jam server; tanda tangan yang sama tidak diterima dua kali |
+| Penyimpanan | `${VAULT_DIR}/vaults.json` (default `data/`), tulis atomik (tmp + rename), dimuat ulang saat start |
+
+Batasan keamanan:
+- Rahasia dienkripsi AES-256-GCM dengan kunci HKDF dari PRF passkey backup. Server dan siapa pun yang membaca `GET /vault` hanya melihat ciphertext.
+- Siapa pun yang memegang passkey backup bisa membuka akun. Menghapus vault dari server tidak mencabut akses: vault sudah publik, dan entropi akun tidak bisa diganti tanpa pindah ke akun baru.
+- `GET /vault/:address` publik membocorkan bahwa alamat itu punya backup, berapa banyak, kapan dibuat, dan jenis transport passkey-nya.
+- Penanda di perangkat hasil pemulihan menyimpan vault (ciphertext) di `localStorage`; tanpa passkey backup isinya tidak berguna.
+
+Error UI: pembatalan saat menambah `BACKUP_CANCELLED`, saat memulihkan `RESTORE_CANCELLED`; Mera `DECRYPT_FAILED` atau `VAULT_FORMAT_INVALID` `BACKUP_DECRYPT_FAILED`; alamat hasil derivasi beda `ACCOUNT_MISMATCH`; tidak ada vault `BACKUP_NOT_FOUND`; alamat ketikan tidak valid `ADDRESS_INVALID`; respons resolver `BACKUP_LIMIT`, `BACKUP_RATE_LIMIT`, kegagalan lain saat menyimpan `BACKUP_SAVE_FAILED`. `PRF_UNAVAILABLE` dan `CRYPTO_UNAVAILABLE` diteruskan seperti bagian 12.
 
 ## 13. Gas dan faucet
 
@@ -438,6 +478,7 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | D24 | Selama `CRE_MODE=mock`, `LiveMarket.forwarder` = GatedForwarder milik MoveMarket (`smart-contract/src/GatedForwarder.sol`): ABI `report()` dan event `ReportProcessed` identik dengan MockKeystoneForwarder, tetapi hanya `operator` immutable (wallet resolver) yang boleh memanggil `report()`. Untuk `simulate --broadcast` atau DON, owner `setForwarder` kembali ke forwarder Chainlink | MockKeystoneForwarder permissionless: siapa pun yang tahu alamatnya bisa memanggil `report()` dan menetapkan YES/NO pasar ber-stake, jadi D10 (admin tidak bisa memilih pemenang) tidak berarti apa-apa selama forwarder itu terpasang. Gated forwarder membatasi kepercayaan ke wallet resolver, sama dengan batasan D23 | Tetap memakai MockKeystoneForwarder permissionless; forwarder dengan owner dan daftar operator yang bisa diubah (fitur yang tidak dipakai) |
 | D25 | Produksi: frontend Vercel `movemarket-chess.vercel.app` (juga rpId passkey, permanen), resolver dan indexer self-host di satu VPS (Docker, Caddy TLS dengan domain sslip.io) | Domain `movemarket.vercel.app` sudah dipakai pihak lain; HTTPS tanpa membeli domain; indexer self-host tanpa akun Envio Cloud (sumber RPC, tanpa token HyperSync) | Envio Cloud (butuh login akun), resolver di PaaS (state di memori butuh satu instance panjang) |
 | D26 | Sesi akun bertahan saat refresh dan tab baru selama `account.sessionTtlHours` (24 jam, sliding saat app dimuat): `privateKey` dienkripsi AES-GCM dengan CryptoKey non-extractable di IndexedDB, ciphertext + iv + address + expiresAt di `localStorage` (bagian 12) | Setiap refresh meminta passkey lagi (sesi hanya di memori) merusak pengalaman menonton live. Kunci AES tidak bisa diekspor JS, jadi dump storage tidak membocorkan kunci privat. Batasan: XSS di origin yang sama bisa mendekripsi selama sesi berlaku (testnet, tUSDC tanpa nilai) | Kunci privat plaintext di `localStorage`; kunci tanpa enkripsi di `sessionStorage`; tetap hanya di memori |
+| D27 | Passkey backup dengan Mera secret vault (bagian 12a): entropi BIP-39 akun dienkripsi ke passkey kedua, ciphertext disimpan di resolver lewat `POST /vault` bertanda tangan EIP-191 akun, dipulihkan di perangkat lain dengan `GET /vault/:address` + passkey backup | Passkey terikat ke satu penyedia/perangkat; kehilangan perangkat berarti kehilangan akun. Mera secret vault memberi "satu passkey, banyak kunci" tanpa seed phrase dan tanpa server yang memegang kunci. Tanda tangan akun membuktikan pemilik alamat tanpa gas | Seed phrase untuk ditulis pengguna; kunci privat (bukan entropi) di vault; vault hanya di perangkat (tidak bisa dipakai di perangkat baru); akun Mera multi-passkey (tidak ada di Mera 0.2.0) |
 
 ## 16. Status verifikasi
 
@@ -470,6 +511,9 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | Sumber MON testnet dalam jumlah besar | Sebagian | 5 Okt | Faucet agen Monad `agents.devnads.com/v1/faucet` (dari monskills), batasnya belum diketahui |
 
 ## 17. Riwayat perubahan
+
+### v2.18.0 (14 Oktober 2026)
+- D27: passkey backup dengan Mera secret vault (bagian 12a). `constants.json` 2.16.0: `account.backup` (route, ukuran, jumlah, rate limit, jendela tanda tangan, template pesan EIP-191, file penyimpanan); penanda akun boleh membawa `vault`. `copy.en.json` 2.12.0: `actions.addBackup/restoreBackup/removeBackup/copyRestoreLink`, `errors.BACKUP_*`, `RESTORE_CANCELLED`, `ADDRESS_INVALID`, bagian `ui.backup` dan `ui.restore`. `source/shared`: `backupMessage`, `vaultId`, route `GET/POST/DELETE /vault` di `ResolverRoutes`.
 
 ### v2.17.2 (14 Oktober 2026)
 - `copy.en.json` 2.11.0: `ui.landing.steps[].when` (catatan waktu per tahap untuk bagian "From ply to payout" versi baris). `ui.onboarding.note` disesuaikan dengan D26 (sesi tersimpan terenkripsi, `{hours}` dari `account.sessionTtlHours`); teks lama "unlock once per visit" sudah tidak benar.

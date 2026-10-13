@@ -1,7 +1,7 @@
 {
   "_meta": {
     "name": "MoveMarket source of truth: constants",
-    "version": "2.15.0",
+    "version": "2.16.0",
     "updated": "2026-10-14",
     "rule": "Nilai di file ini menang atas dokumen mana pun. Ubah di sini dulu, jalankan `node sot/check.mjs`, lalu sesuaikan kode dan dokumen yang gagal dicek."
   },
@@ -401,7 +401,7 @@
     },
     "sessionTtlHours": 24,
     "stored": [
-      "localStorage movemarket.account.v1: { rpId, address, credentialId } (penanda akun)",
+      "localStorage movemarket.account.v1: { rpId, address, credentialId, vault? } (penanda akun; vault = PasskeySecretVault Mera yang masih terenkripsi, hanya di perangkat yang dipulihkan dengan passkey backup, D27)",
       "localStorage movemarket.session.v1: { address, iv, ciphertext, expiresAt } (privateKey terenkripsi AES-GCM 256, D26)",
       "IndexedDB movemarket/keys/session.v1: CryptoKey AES-GCM 256 extractable=false (hanya structured clone, tidak bisa diekspor)"
     ],
@@ -415,7 +415,21 @@
       "iCloud Keychain",
       "1Password",
       "Google Password Manager"
-    ]
+    ],
+    "backup": {
+      "_doc": "Passkey backup lewat Mera secret vault (SOT D27, bagian 12a). Server hanya menyimpan ciphertext.",
+      "secret": "Entropi BIP-39 32 byte akun (= output PRF passkey utama dengan salt default Mera). Derivasi pemulihan sama persis dengan bagian 12",
+      "secretBytes": 32,
+      "route": "/vault",
+      "maxVaultBytes": 2048,
+      "maxPerAddress": 5,
+      "writesPerIpPer24h": 20,
+      "signatureMaxAgeSec": 300,
+      "message": "MoveMarket backup passkey\nAction: {action}\nAccount: {address}\nVault: {vaultId}\nIssued: {timestamp}\nChain: {chainId}",
+      "messageRule": "EIP-191 personal_sign oleh akun itu sendiri. action add|remove, address huruf kecil, vaultId = keccak256(utf8(JSON vault persis seperti dikirim)), timestamp detik Unix, chainId network.chainId",
+      "storageFile": "vaults.json",
+      "defaultDir": "data"
+    }
   },
   "frontend": {
     "language": "en",

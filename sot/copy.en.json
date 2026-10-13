@@ -1,7 +1,7 @@
 {
   "_meta": {
     "name": "MoveMarket source of truth: UI copy (English)",
-    "version": "2.11.0",
+    "version": "2.12.0",
     "updated": "2026-10-14",
     "rule": "UI memakai bahasa Inggris karena juri global. Semua teks yang tampil ke pengguna diambil dari file ini lewat key. Hindari kata gamble dan bet di UI; pakai predict, stake, pool."
   },
@@ -54,7 +54,11 @@
     "claimAll": "Claim all",
     "refund": "Refund",
     "retry": "Try again",
-    "getTestTokens": "Get test tokens"
+    "getTestTokens": "Get test tokens",
+    "addBackup": "Add a backup passkey",
+    "restoreBackup": "Restore with a backup passkey",
+    "removeBackup": "Remove",
+    "copyRestoreLink": "Copy restore link"
   },
   "errors": {
     "PRF_UNAVAILABLE": "This passkey provider is not supported yet. Try saving the passkey in iCloud Keychain, Google Password Manager, or 1Password.",
@@ -80,7 +84,15 @@
     "ACCOUNT_MISMATCH": "This passkey belongs to a different account.",
     "UNLOCK_CANCELLED": "Unlock was cancelled.",
     "GAS_TOPUP_LIMIT": "Gas refill limit reached. Please try again tomorrow.",
-    "GAS_NOT_MEASURED": "Claim all is not available yet. Claim each market on its own."
+    "GAS_NOT_MEASURED": "Claim all is not available yet. Claim each market on its own.",
+    "BACKUP_CANCELLED": "Adding a backup passkey was cancelled.",
+    "RESTORE_CANCELLED": "Restore was cancelled.",
+    "BACKUP_NOT_FOUND": "No backup passkey is saved for this account.",
+    "BACKUP_DECRYPT_FAILED": "This passkey could not open the backup.",
+    "BACKUP_LIMIT": "This account already has the maximum number of backup passkeys.",
+    "BACKUP_RATE_LIMIT": "Too many backup changes from this network. Please try again tomorrow.",
+    "BACKUP_SAVE_FAILED": "The backup was not saved. Please try again.",
+    "ADDRESS_INVALID": "Enter a valid account address (0x followed by 40 characters)."
   },
   "home": {
     "replayStarting": "Starting a replay...",
@@ -276,6 +288,37 @@
         "q": "Black queen",
         "k": "Black king"
       }
+    },
+    "backup": {
+      "title": "Backup passkeys",
+      "lede": "Add a second passkey on another device, like a phone or a security key. It opens this same account without a seed phrase.",
+      "how": "First confirm with the passkey you use now, then create the backup passkey.",
+      "saved": "Backup passkey saved.",
+      "none": "No backup passkey yet.",
+      "added": "Added {date}",
+      "kinds": {
+        "hybrid": "Phone or tablet",
+        "usb": "Security key",
+        "nfc": "Security key",
+        "ble": "Bluetooth device",
+        "internal": "Passkey manager",
+        "unknown": "Passkey"
+      },
+      "limit": "Up to {n} backup passkeys.",
+      "copied": "Restore link copied.",
+      "passkeyUser": "{brand} backup {address}",
+      "note": "Anyone who holds a backup passkey can open this account. Removing one here only hides it from this list; a device that already saved it can still open the account."
+    },
+    "restore": {
+      "title": "Restore your account",
+      "lede": "Use a backup passkey you added on another device. Enter the account address, or open the restore link you copied.",
+      "addressLabel": "Account address",
+      "find": "Find backups",
+      "choose": "Choose the backup passkey that is on this device.",
+      "use": "Use this backup",
+      "restoring": "Restoring",
+      "done": "Your account is restored on this device.",
+      "go": "Go to positions"
     }
   }
 }
