@@ -1,3 +1,5 @@
+<img src="design/brand/logo.svg" alt="MoveMarket logo" width="96" />
+
 # MoveMarket
 
 **Every move is a market.**
