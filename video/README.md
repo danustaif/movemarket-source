@@ -3,7 +3,11 @@
 Remotion project for the submission videos (1920x1080, 30 fps, H.264 + AAC):
 
 - `MoveMarketPitch` (`src/Pitch.tsx`, `src/pitch/`): pitch video under 2:00 with a 3D ad-style hook, sound design and an expressive voiceover. Output `out/movemarket-pitch.mp4`. Research, voice choice (shared with the technical demo), audio sources and licenses are in `NOTES.md`.
-- `MoveMarketDemo` (`src/Video.tsx`): the first 2:50 cut with macOS `say` narration. Output `out/movemarket-demo.mp4`.
+- `TechDemo` (`src/tech/`): technical demo, the production app recorded end to end. Output `out/movemarket-technical.mp4`.
+- `CreDemo` (`src/cre/`): real `cre workflow simulate` runs for the Chainlink bounty form. Output `out/movemarket-cre.mp4`.
+- `MoveMarketDemo` (`src/Video.tsx`): the first 2:50 cut with macOS `say` narration. Retired, no longer linked anywhere.
+
+Published: [pitch](https://youtu.be/GeoTVedz8mc) · [technical demo](https://youtu.be/SSjO6TMC5ZA).
 
 ## Pitch video
 

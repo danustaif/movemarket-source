@@ -11,7 +11,8 @@ Built for **Monad Metropolis**, Track 03 (Social, Attention & Culture). Bounties
 | | |
 |---|---|
 | Live demo | [movemarket-chess.vercel.app](https://movemarket-chess.vercel.app) (replays run while someone is watching) |
-| Demo video (2:50) | [youtu.be/nckzruqz8Iw](https://youtu.be/nckzruqz8Iw) |
+| Pitch video (1:41) | [youtu.be/GeoTVedz8mc](https://youtu.be/GeoTVedz8mc) |
+| Technical demo (2:34) | [youtu.be/SSjO6TMC5ZA](https://youtu.be/SSjO6TMC5ZA): the live app recorded end to end on Monad Testnet |
 | Envio GraphQL endpoint | `https://indexer.43-133-151-182.sslip.io/v1/graphql` (self-hosted HyperIndex, read-only) |
 | Network | Monad Testnet, chain ID `10143` |
 
@@ -265,7 +266,7 @@ Full table with rejected alternatives: [`docs/SOT.md`](docs/SOT.md) section 15.
 | Resolver (replay + broadcast sources) | Live at `https://api.43-133-151-182.sslip.io`, `CRE_MODE=mock` through the GatedForwarder (D23, D24) until CRE deploy access |
 | Frontend | Live at https://movemarket-chess.vercel.app |
 | Envio indexer | Live, self-hosted (endpoint above) |
-| Demo video | [youtu.be/nckzruqz8Iw](https://youtu.be/nckzruqz8Iw), rendered with Remotion (`video/`) |
+| Videos | [Pitch](https://youtu.be/GeoTVedz8mc) and [technical demo](https://youtu.be/SSjO6TMC5ZA), rendered with Remotion (`video/`) |
 
 ## Untuk tim (Bahasa Indonesia)
 

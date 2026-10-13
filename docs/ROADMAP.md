@@ -101,7 +101,7 @@ Prinsip:
 ## Hari 8 (Sen 12 Okt): Submission
 
 - [ ] README: deskripsi, arsitektur, cara menjalankan, alamat kontrak, hash transaksi CRE, jalur CRE yang dipakai, link demo, batasan yang disadari (resolver dipercaya untuk kunci ply, replay memakai partai publik)
-- [x] Video demo 3 menit (`docs/DEMO_SCRIPT.md`): https://youtu.be/nckzruqz8Iw (2:50, Remotion `source/video/`, 14 Okt)
+- [x] Video (Remotion `source/video/`, 14 Okt): pitch https://youtu.be/GeoTVedz8mc (1:41), technical demo https://youtu.be/SSjO6TMC5ZA (2:34), demo simulasi CRE `video/out/movemarket-cre.mp4` (1:47) untuk form bounty Chainlink. Potongan pertama 2:50 (youtu.be/nckzruqz8Iw) tidak dipakai lagi.
 - [ ] Write-up di platform hackathon, pilih Track 03
 - [ ] Isi form bounty (Chainlink, Mera, Envio)
 - [ ] **Submit hari ini**
