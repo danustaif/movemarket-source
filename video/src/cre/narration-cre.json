@@ -1,0 +1,184 @@
+{
+ "voice": "af_heart",
+ "note": "Narasi video bounty Chainlink (CreDemo). Format sama dengan narration-pitch.json. Buat ulang: KOKORO_DIR=... uv run -p 3.12 --with kokoro-onnx --with soundfile gen-voice.py src/cre/narration-cre.json",
+ "scenes": [
+  {
+   "id": "hook",
+   "phrases": [
+    {
+     "text": "MoveMarket. Live prediction markets on every move of a chess game.",
+     "tts": "Move Market. Live prediction markets, on every move of a chess game.",
+     "speed": 1.0,
+     "pause": 0.35,
+     "gain": 0.5
+    },
+    {
+     "text": "Final results come from Chainlink CRE.",
+     "tts": "And the final results... come from Chainlink C.R.E.",
+     "speed": 0.9,
+     "pause": 0,
+     "gain": 1.5
+    }
+   ]
+  },
+  {
+   "id": "context",
+   "phrases": [
+    {
+     "text": "Here's a real market on Monad testnet: any check in plies 85 to 88?",
+     "tts": "Here's a real market on Moh-nad test net. Any check, in plies eighty-five to eighty-eight?",
+     "speed": 1.04,
+     "pause": 0.25
+    },
+    {
+     "text": "Our resolver can't choose the answer. It can only ask.",
+     "speed": 0.98,
+     "pause": 0.3,
+     "gain": 1
+    },
+    {
+     "text": "It calls requestResolution, and LiveMarket emits ResolutionRequested.",
+     "tts": "It calls request resolution, and Live Market emits, resolution requested.",
+     "speed": 1.04,
+     "pause": 0
+    }
+   ]
+  },
+  {
+   "id": "build",
+   "phrases": [
+    {
+     "text": "The workflow is TypeScript, compiled to WebAssembly by the CRE CLI.",
+     "tts": "The workflow is TypeScript, compiled to Web Assembly by the C.R.E. C.L.I.",
+     "speed": 1.05,
+     "pause": 0
+    }
+   ]
+  },
+  {
+   "id": "local",
+   "phrases": [
+    {
+     "text": "We run the simulator in listen mode, against the live chain.",
+     "speed": 1.04,
+     "pause": 0.25
+    },
+    {
+     "text": "The request lands on-chain, and the EVM log trigger fires.",
+     "speed": 1.04,
+     "pause": 0.25,
+     "tts": "The request lands on chain, and the E.V.M. log trigger fires."
+    },
+    {
+     "text": "Local simulation: market 441 resolves to NO.",
+     "tts": "Local simulation: market four forty-one... resolves to NO.",
+     "speed": 0.98,
+     "pause": 0,
+     "gain": 1
+    }
+   ]
+  },
+  {
+   "id": "staging",
+   "phrases": [
+    {
+     "text": "Now the staging target, with engine logs.",
+     "speed": 1.02,
+     "pause": 0.3
+    },
+    {
+     "text": "callContract reads getMarkets at the last finalized block.",
+     "tts": "Call contract reads, get markets, at the last finalized block.",
+     "speed": 1.04,
+     "pause": 0.3
+    },
+    {
+     "text": "The HTTP capability fetches the game export from Lichess.",
+     "tts": "The H.T.T.P. capability fetches the game export from lee chess.",
+     "speed": 1.04,
+     "pause": 0.3
+    },
+    {
+     "text": "resolve() is the same shared file our resolver uses, running inside QuickJS WASM.",
+     "tts": "Resolve is the same shared file our resolver uses, running inside a Quick J.S. wasm runtime.",
+     "speed": 1.04,
+     "pause": 0.3
+    },
+    {
+     "text": "Identical-aggregation consensus agrees: 441, NO.",
+     "tts": "Identical aggregation consensus agrees. Four forty-one, NO.",
+     "speed": 1.0,
+     "pause": 0.3,
+     "gain": 0.5
+    },
+    {
+     "text": "The report is ABI-encoded: game key, IDs, outcomes.",
+     "tts": "The report is A.B.I. encoded. Game key, I.D.s, outcomes.",
+     "speed": 1.02,
+     "pause": 0.3
+    },
+    {
+     "text": "writeReport targets LiveMarket onReport. Dry run, nothing broadcast, and it succeeds.",
+     "tts": "Write report targets Live Market, on report. Dry run, nothing broadcast... and it succeeds.",
+     "speed": 1.0,
+     "pause": 0,
+     "gain": 1
+    }
+   ]
+  },
+  {
+   "id": "proof",
+   "phrases": [
+    {
+     "text": "The write path is proven on-chain too.",
+     "speed": 1.0,
+     "pause": 0.2,
+     "gain": 0.5
+    },
+    {
+     "text": "Simulate with broadcast sent a real report through Chainlink's MockKeystoneForwarder.",
+     "tts": "Simulate with broadcast, sent a real report through Chainlink's mock Keystone forwarder.",
+     "speed": 1.04,
+     "pause": 0.25
+    },
+    {
+     "text": "onReport ran, and MarketResolved fired.",
+     "tts": "The on-report function ran, and market resolved fired.",
+     "speed": 1.0,
+     "pause": 0.35
+    },
+    {
+     "text": "onReport only accepts the forwarder. An admin can void a market, but never pick a winner.",
+     "tts": "And on-report only accepts the forwarder. An admin can void a market... but never pick a winner.",
+     "speed": 1.0,
+     "pause": 0,
+     "gain": 1
+    }
+   ]
+  },
+  {
+   "id": "close",
+   "phrases": [
+    {
+     "text": "DON deployment is waiting on CRE Early Access.",
+     "tts": "D.O.N. deployment is waiting on C.R.E. early access.",
+     "speed": 1.0,
+     "pause": 0.25
+    },
+    {
+     "text": "The workflow is ready for cre workflow deploy.",
+     "tts": "The workflow is ready for, C.R.E. workflow deploy.",
+     "speed": 1.0,
+     "pause": 0.3
+    },
+    {
+     "text": "Code: github.com/move-market/backend.",
+     "tts": "The code is in the move market backend repo, on GitHub.",
+     "speed": 0.98,
+     "pause": 0,
+     "gain": 1
+    }
+   ]
+  }
+ ]
+}
