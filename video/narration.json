@@ -1,0 +1,42 @@
+{
+  "voice": "Samantha",
+  "rate": 178,
+  "scenes": [
+    {
+      "id": "01-hook",
+      "text": "Millions of people watch live chess, and all they can do is watch. Prediction markets exist, but they settle in days. A market that lives for fifteen seconds needs a very fast chain. And if anyone watching the stream can bet after the move is played, it isn't fair."
+    },
+    {
+      "id": "02-market",
+      "text": "MoveMarket turns every moment of a live Lee-chess game into a market. Markets spawn automatically as the game goes on. Any check in plies twenty five to twenty eight? The question is always a few plies in the future. Stakes close on chain after fifteen seconds, or earlier, the moment the game reaches the ply before the range. Nobody can predict something they have already seen."
+    },
+    {
+      "id": "03-onboarding",
+      "text": "No wallet, and no seed phrase. One passkey gives you a Monad account. With Mera, the app turns the passkey's P R F output into a standard BIP 39 key, right in the browser. A faucet funds it with test U S D C and mon, automatically."
+    },
+    {
+      "id": "04-stake",
+      "text": "Pick yes or no, choose an amount, and stake. Pools are parimutuel, so there is no market maker to wait for. Stakes confirm on Monad Testnet in under a second, and in our live test, a new market reached the browser in under a second too. That is what makes a fifteen second market possible."
+    },
+    {
+      "id": "05-resolution",
+      "text": "When the deciding move is played, the resolver shows a provisional result within seconds. The final result comes from a Chainlink C R E workflow. A Resolution Requested log on Monad triggers it. It reads the markets from the contract, fetches the game from Lee-chess, reaches consensus on the outcome, and writes a report to the Live Market contract through the forwarder. The resolution logic is one dependency free function, shared by the resolver and the workflow, so provisional and final results always match."
+    },
+    {
+      "id": "06-proof",
+      "text": "We ran the workflow with C R E simulate, broadcast, on Monad Testnet. One report handled a batch of eight markets, and its payload matched an independent recomputation. Deploying to the C R E network is waiting on early access, so production runs the same steps in a gated mock mode. In our live test, request to final took twenty one seconds."
+    },
+    {
+      "id": "07-claim",
+      "text": "Winners claim in one tap. In the live test, a pool of two test U S D C paid one point nine six to the winner, after the two percent fee. Positions, history, and the leaderboard come from an En-vee-oh Hyper Index indexer over the contract's events."
+    },
+    {
+      "id": "08-trust",
+      "text": "The owner cannot pick a winner. The only admin power is void, which refunds everyone. Outcomes arrive only through the forwarder, and in mock mode that forwarder accepts only the resolver wallet. Both contracts are verified on Monad scan."
+    },
+    {
+      "id": "09-close",
+      "text": "Chess is our first market. The same engine works for esports, livestreams, anything with a public data feed. It runs on Monad Testnet today. MoveMarket. Every move is a market."
+    }
+  ]
+}
