@@ -278,7 +278,7 @@ Tipe request, respons, error (`ApiError`), dan payload SSE untuk semua route di 
 ```
 
 #### `GET /games/:gameRef`
-`gameRef` di-encode dengan `encodeURIComponent`. `404` kalau partai tidak dilacak.
+`gameRef` di-encode dengan `encodeURIComponent`. `404` kalau partai tidak dilacak. `markets` (dan `openMarkets` di `GET /games`) hanya berisi pasar run sekarang (`engine.marketsOf`): replay ulang partai yang sama memakai `gameRef` dan `gameKey` yang sama, jadi pasar run sebelumnya disembunyikan, kecuali yang masih menunggu hasil dan punya stake. Posisi lama tetap ada di `GET /positions/:address`.
 ```json
 {
   "game": { "...": "seperti di atas", "sans": ["e4", "e5"] },
