@@ -218,12 +218,12 @@ Counts from a run on 10 October 2026.
 
 | Suite | Command | Result |
 |---|---|---|
-| Contracts | `forge test` (smart-contract) | 108 passed, including invariant suites |
-| Resolver unit | `bun test` (backend/resolver) | 93 passed (3 integration tests skipped in this mode) |
-| Resolver end to end | `bun run test:integration` | Passed: anvil, deployed `MockUSDC` + `LiveMarket` + mock forwarder, resolver as a child process replaying a real Lichess game, report through the forwarder |
-| CRE workflow | `bun test` (backend/cre/resolver-workflow) | 15 passed |
-| Frontend | `bun test` (fe) | 116 passed, 46 of them DOM tests |
-| Indexer | `pnpm test` (backend/indexer) | 9 passed |
+| Contracts | `forge test` (smart-contract) | 123 passed, including invariant suites and GatedForwarder |
+| Resolver unit | `bun test` (backend/resolver) | 109 passed (integration tests skipped in this mode) |
+| Resolver end to end | `bun run test:integration` | 4 passed: anvil, deployed `MockUSDC` + `LiveMarket` + GatedForwarder, resolver as a child process replaying a real Lichess game, report through the forwarder, plus mock-CRE scenarios |
+| CRE workflow | `bun test` (backend/cre/resolver-workflow) | 14 passed |
+| Frontend | `bun test` (fe) | 126 passed, including DOM tests |
+| Indexer | `pnpm test` (backend/indexer) | 10 passed |
 | Shared package | `bun test` (source/shared) | 9 passed |
 | Resolution vectors and doc consistency | `node sot/check.mjs` and `bun sot/check.mjs --impl shared/src/resolve.ts` | 198 checks passed for the reference and for the TypeScript port |
 
@@ -246,7 +246,7 @@ Full table with rejected alternatives: [`docs/SOT.md`](docs/SOT.md) section 15.
 
 - **The resolver is trusted for market creation and the ply lock.** It chooses `lockTime` and `plyGap` and calls `lockMarkets`. A malicious or slow resolver could leave a market open while its range draws close. The contract time lock still applies, and the resolver cannot set outcomes. A future fix: have CRE verify that ply `fromPly - 1` had not been played at `lockTime`, which needs per-ply timestamps from the data source.
 - **Final results run through `cre workflow simulate --broadcast` and `MockKeystoneForwarder`** until CRE Early Access arrives. Simulation uses a local simulator, not multi-node consensus. Moving to the DON means deploying the workflow, calling `setForwarder(KeystoneForwarder)` and setting `CRE_MODE=don` in the resolver.
-- **Mock-mode reports are trusted like the resolver, and Chainlink's `MockKeystoneForwarder` is permissionless.** Until Early Access, the hosted resolver runs the workflow steps itself (`CRE_MODE=mock`, SOT D23) with no consensus. Anyone can call `report()` on Chainlink's mock forwarder and set outcomes while `LiveMarket` points at it, so for mock mode we wrote `GatedForwarder` (same `report()` ABI and `ReportProcessed` event, but only the resolver wallet may call it; SOT D24). It is tested but not deployed yet; until the owner deploys it and calls `setForwarder`, `LiveMarket` still uses Chainlink's mock. `simulate --broadcast` demos need `setForwarder` back to Chainlink's mock for their duration.
+- **Mock-mode reports are trusted like the resolver, and Chainlink's `MockKeystoneForwarder` is permissionless.** Until Early Access, the hosted resolver runs the workflow steps itself (`CRE_MODE=mock`, SOT D23) with no consensus. Anyone can call `report()` on Chainlink's mock forwarder and set outcomes while `LiveMarket` points at it, so for mock mode we wrote `GatedForwarder` (same `report()` ABI and `ReportProcessed` event, but only the resolver wallet may call it; SOT D24). It is deployed and verified at `0xc3b33f36C4fAc7bC37aC77a42E7EF1c08a81877C`, and `LiveMarket` points at it, so third parties can no longer set outcomes. `simulate --broadcast` demos need `setForwarder` back to Chainlink's mock for their duration.
 - **Replay uses finished public Lichess games.** When no tournament broadcast is live, the resolver replays a finished game starting at ply 20, labeled as a replay in the UI. Anyone who knows the game could look up its moves. Replay exists so you can try the full loop at any hour, and tUSDC has no value.
 - **Testnet only.** tUSDC is a mock token with no value, minted by our faucet.
 - **Resolver state lives in memory on a single instance.** On restart it re-reads open markets from the contract, but it has no database and no failover.
@@ -263,7 +263,7 @@ Full table with rejected alternatives: [`docs/SOT.md`](docs/SOT.md) section 15.
 | Resolver (replay + broadcast sources) | Live at `https://api.43-133-151-182.sslip.io`, `CRE_MODE=mock` through the GatedForwarder (D23, D24) until CRE deploy access |
 | Frontend | Live at https://movemarket-chess.vercel.app |
 | Envio indexer | Live, self-hosted (endpoint above) |
-| Demo video | TBD |
+| Demo video | Rendered with Remotion (`video/`, 2:50); upload link TBD |
 
 ## Untuk tim (Bahasa Indonesia)
 
