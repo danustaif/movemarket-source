@@ -1,7 +1,7 @@
 {
   "_meta": {
     "name": "MoveMarket source of truth: UI copy (English)",
-    "version": "2.10.1",
+    "version": "2.11.0",
     "updated": "2026-10-14",
     "rule": "UI memakai bahasa Inggris karena juri global. Semua teks yang tampil ke pengguna diambil dari file ini lewat key. Hindari kata gamble dan bet di UI; pakai predict, stake, pool."
   },
@@ -163,7 +163,7 @@
       ],
       "settingUp": "Setting up",
       "watchFirst": "Watch the game first",
-      "note": "The private key is never stored; you unlock once per visit.",
+      "note": "Your key is stored only encrypted, and this device keeps you signed in for {hours} hours.",
       "ready": "Your account is ready."
     },
     "me": {
@@ -222,23 +222,28 @@
       "steps": [
         {
           "title": "Open",
-          "text": "{plies} plies, Yes or No, {sec} seconds to stake."
+          "text": "{plies} plies, Yes or No, {sec} seconds to stake.",
+          "when": "{sec} seconds"
         },
         {
           "title": "Locked",
-          "text": "Closes when the ply before the window is played, or when time runs out."
+          "text": "Closes when the ply before the window is played, or when time runs out.",
+          "when": "before the window"
         },
         {
           "title": "Provisional",
-          "text": "The resolver shows the outcome the moment it is known."
+          "text": "The resolver shows the outcome the moment it is known.",
+          "when": "during the window"
         },
         {
           "title": "Final",
-          "text": "Chainlink CRE reads Lichess and posts the result on Monad."
+          "text": "Chainlink CRE reads Lichess and posts the result on Monad.",
+          "when": "after the window"
         },
         {
           "title": "Claim",
-          "text": "Winners split the pool minus {fee}%. Voided markets are refunded."
+          "text": "Winners split the pool minus {fee}%. Voided markets are refunded.",
+          "when": "after the result"
         }
       ],
       "ctaLead": "Face ID in.",
