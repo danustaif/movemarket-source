@@ -1,6 +1,6 @@
 # Source of Truth: MoveMarket
 
-Versi 2.16.0 · 14 Oktober 2026 · Pemilik: Danu
+Versi 2.17.0 · 14 Oktober 2026 · Pemilik: Danu
 
 Dokumen ini adalah acuan tunggal untuk semua nilai yang dipakai lebih dari satu komponen. Kontrak, workflow CRE, resolver, indexer, dan frontend harus cocok dengan dokumen ini dan folder `sot/`.
 
@@ -336,7 +336,23 @@ session    = createSecp256k1SigningSession({ privateKey })
 account    = toViemAccount(session, { nonceManager })
 ```
 
-Setelah sesi dibuat, `prfOutput`, `seed`, dan `privateKey` (semuanya `Uint8Array`) di-zero-kan dengan `fill(0)`. `mnemonic` adalah string JavaScript yang tidak bisa di-zero-kan, jadi referensinya cukup dilepas dan tidak pernah disimpan atau dicatat. `localStorage` key `movemarket.account.v1` hanya menyimpan `{ rpId, address, credentialId }`.
+Setelah sesi dibuat, `prfOutput`, `seed`, dan `privateKey` (semuanya `Uint8Array`) di-zero-kan dengan `fill(0)`. `mnemonic` adalah string JavaScript yang tidak bisa di-zero-kan, jadi referensinya cukup dilepas dan tidak pernah disimpan atau dicatat. `localStorage` key `movemarket.account.v1` menyimpan penanda `{ rpId, address, credentialId }`.
+
+Sesi tersimpan (D26), supaya refresh dan tab baru tidak meminta passkey lagi selama `account.sessionTtlHours` (24 jam):
+
+```
+aesKey     = crypto.subtle.generateKey({ name: "AES-GCM", length: 256 }, extractable=false, ["encrypt","decrypt"])
+IndexedDB  movemarket / keys / "session.v1"  = aesKey                      // structured clone CryptoKey, tidak bisa diekspor JS
+iv         = 12 byte acak
+ciphertext = AES-GCM(aesKey, iv, privateKey)                                // salinan privateKey di-zero-kan setelah encrypt
+localStorage movemarket.session.v1 = { address, iv, ciphertext, expiresAt } // hex, expiresAt ms epoch
+```
+
+- Disegel setelah `create` atau `unlock` yang berhasil (alamat cocok dengan penanda). Kunci AES baru setiap segel.
+- Saat app dimuat: penanda ada dan sesi tersimpan belum kedaluwarsa dengan `address` sama dengan penanda -> status `restoring`, dekripsi di chunk kripto lazy -> `createSecp256k1SigningSession` -> `toViemAccount` -> `unlocked` tanpa prompt passkey. `privateKey` hasil dekripsi di-zero-kan setelah sesi dibuat. Pemulihan yang berhasil memperpanjang `expiresAt` ke sekarang + TTL (sliding).
+- Kedaluwarsa, kunci AES hilang, ciphertext rusak, gagal dekripsi, atau alamat hasil dekripsi beda dengan penanda: sesi tersimpan dihapus dan status jatuh ke `locked` (unlock passkey biasa).
+- Lock, `startOver`, `ACCOUNT_MISMATCH`, dan `SESSION_ENDED` dari Mera menghapus ciphertext (sinkron) dan kunci AES (IndexedDB).
+- Batasan: XSS di origin yang sama tetap bisa memakai kunci AES untuk mendekripsi selama sesi berlaku. Diterima karena testnet dan tUSDC tanpa nilai; dump storage saja (tanpa menjalankan JS di origin) tidak membocorkan kunci privat.
 
 Kode error Mera yang ditangani UI: `PRF_UNAVAILABLE`, `PASSKEY_OPERATION_FAILED` (termasuk pembatalan), `CRYPTO_UNAVAILABLE`, `SESSION_ENDED`. Ditambah `ACCOUNT_MISMATCH` kalau alamat hasil unlock beda dengan penanda. Semua punya teks di `sot/copy.en.json`.
 
@@ -421,6 +437,7 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | D23 | `CRE_MODE=mock`: sambil menunggu Early Access, resolver menjalankan langkah handler workflow (logika bersama di `source/shared`) dan memanggil `report()` MockKeystoneForwarder langsung dengan wallet resolver. Hanya testnet | CLI `cre` di container butuh login atau `CRE_API_KEY` yang belum tersedia, padahal pasar ber-stake harus selesai selama penjurian. Batasan: tanpa konsensus multi-node, hasil dipercaya seperti resolver (dan MockKeystoneForwarder memang permissionless). Bukti bounty CRE tetap dari `simulate --broadcast` | Menunggu Early Access tanpa resolusi, `adminResolve` (melanggar D10) |
 | D24 | Selama `CRE_MODE=mock`, `LiveMarket.forwarder` = GatedForwarder milik MoveMarket (`smart-contract/src/GatedForwarder.sol`): ABI `report()` dan event `ReportProcessed` identik dengan MockKeystoneForwarder, tetapi hanya `operator` immutable (wallet resolver) yang boleh memanggil `report()`. Untuk `simulate --broadcast` atau DON, owner `setForwarder` kembali ke forwarder Chainlink | MockKeystoneForwarder permissionless: siapa pun yang tahu alamatnya bisa memanggil `report()` dan menetapkan YES/NO pasar ber-stake, jadi D10 (admin tidak bisa memilih pemenang) tidak berarti apa-apa selama forwarder itu terpasang. Gated forwarder membatasi kepercayaan ke wallet resolver, sama dengan batasan D23 | Tetap memakai MockKeystoneForwarder permissionless; forwarder dengan owner dan daftar operator yang bisa diubah (fitur yang tidak dipakai) |
 | D25 | Produksi: frontend Vercel `movemarket-chess.vercel.app` (juga rpId passkey, permanen), resolver dan indexer self-host di satu VPS (Docker, Caddy TLS dengan domain sslip.io) | Domain `movemarket.vercel.app` sudah dipakai pihak lain; HTTPS tanpa membeli domain; indexer self-host tanpa akun Envio Cloud (sumber RPC, tanpa token HyperSync) | Envio Cloud (butuh login akun), resolver di PaaS (state di memori butuh satu instance panjang) |
+| D26 | Sesi akun bertahan saat refresh dan tab baru selama `account.sessionTtlHours` (24 jam, sliding saat app dimuat): `privateKey` dienkripsi AES-GCM dengan CryptoKey non-extractable di IndexedDB, ciphertext + iv + address + expiresAt di `localStorage` (bagian 12) | Setiap refresh meminta passkey lagi (sesi hanya di memori) merusak pengalaman menonton live. Kunci AES tidak bisa diekspor JS, jadi dump storage tidak membocorkan kunci privat. Batasan: XSS di origin yang sama bisa mendekripsi selama sesi berlaku (testnet, tUSDC tanpa nilai) | Kunci privat plaintext di `localStorage`; kunci tanpa enkripsi di `sessionStorage`; tetap hanya di memori |
 
 ## 16. Status verifikasi
 
@@ -453,6 +470,9 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | Sumber MON testnet dalam jumlah besar | Sebagian | 5 Okt | Faucet agen Monad `agents.devnads.com/v1/faucet` (dari monskills), batasnya belum diketahui |
 
 ## 17. Riwayat perubahan
+
+### v2.17.0 (14 Oktober 2026)
+- D26: sesi akun tersimpan terenkripsi (bagian 12). `constants.json` 2.15.0: `account.sessionStorageKey`, `account.sessionKeyDb`, `account.sessionTtlHours` (24), `account.stored`/`neverStored` menjelaskan semua lokasi penyimpanan. Status akun baru `restoring` selama pemulihan.
 
 ### v2.16.0 (14 Oktober 2026)
 - `copy.en.json` 2.10.0: `ui.nav.live` (merek "MoveMarket Live"), bagian baru `ui.landing` (landing `/`: hero, daftar ply terakhir, strip Results, lower third Predict now, Next to lock lintas meja, How results work, CTA) dan `ui.board` (toggle papan 2D/3D, label aksesibel papan 3D, tooltip petak). Angka di teks (`{plies}`, `{sec}`, `{fee}`) diisi dari `planner.WINDOW_PLIES`, `planner.BET_WINDOW_SEC`, `contract.defaults.feeBps`.

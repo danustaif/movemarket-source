@@ -1,8 +1,8 @@
 {
   "_meta": {
     "name": "MoveMarket source of truth: constants",
-    "version": "2.14.0",
-    "updated": "2026-10-10",
+    "version": "2.15.0",
+    "updated": "2026-10-14",
     "rule": "Nilai di file ini menang atas dokumen mana pun. Ubah di sini dulu, jalankan `node sot/check.mjs`, lalu sesuaikan kode dan dokumen yang gagal dicek."
   },
   "network": {
@@ -393,16 +393,23 @@
     ],
     "derivationPath": "m/44'/60'/0'/0/0",
     "storageKey": "movemarket.account.v1",
+    "sessionStorageKey": "movemarket.session.v1",
+    "sessionKeyDb": {
+      "database": "movemarket",
+      "objectStore": "keys",
+      "key": "session.v1"
+    },
+    "sessionTtlHours": 24,
     "stored": [
-      "rpId",
-      "address",
-      "credentialId"
+      "localStorage movemarket.account.v1: { rpId, address, credentialId } (penanda akun)",
+      "localStorage movemarket.session.v1: { address, iv, ciphertext, expiresAt } (privateKey terenkripsi AES-GCM 256, D26)",
+      "IndexedDB movemarket/keys/session.v1: CryptoKey AES-GCM 256 extractable=false (hanya structured clone, tidak bisa diekspor)"
     ],
     "neverStored": [
       "prfOutput",
       "mnemonic",
       "seed",
-      "privateKey"
+      "privateKey dalam bentuk terbaca (plaintext) di storage mana pun"
     ],
     "recommendedAuthenticators": [
       "iCloud Keychain",
