@@ -1,8 +1,8 @@
 {
   "_meta": {
     "name": "MoveMarket source of truth: UI copy (English)",
-    "version": "2.9.0",
-    "updated": "2026-10-10",
+    "version": "2.10.0",
+    "updated": "2026-10-14",
     "rule": "UI memakai bahasa Inggris karena juri global. Semua teks yang tampil ke pengguna diambil dari file ini lewat key. Hindari kata gamble dan bet di UI; pakai predict, stake, pool."
   },
   "brand": {
@@ -91,7 +91,8 @@
       "label": "Main",
       "games": "Games",
       "positions": "Positions",
-      "leaderboard": "Leaderboard"
+      "leaderboard": "Leaderboard",
+      "live": "Live"
     },
     "footer": "Monad Testnet only. Test tokens have no value.",
     "home": {
@@ -189,6 +190,87 @@
       "error": "Something went wrong.",
       "notFound": "This page does not exist.",
       "noValue": "\u2013"
+    },
+    "landing": {
+      "heroLead": "Every move is a",
+      "heroAccent": "market.",
+      "lede": "Call the next {plies} plies of a live chess game. Yes or No, {sec} seconds to decide. Chainlink CRE confirms every result on Monad.",
+      "ledeShort": "Yes or No on the next {plies} plies. {sec} seconds to decide. Chainlink CRE confirms every result on Monad.",
+      "seeLocking": "See what is about to lock",
+      "table": "Table {n}",
+      "plyLine": "ply {ply} · {san}",
+      "dragHint": "Drag the board to turn it",
+      "lastPlies": "Last plies",
+      "plyTag": {
+        "check": "check",
+        "capture": "capture",
+        "castle": "castle"
+      },
+      "results": "Results",
+      "resultsEmpty": "Waiting",
+      "resultsEmptyNote": "as soon as a window settles",
+      "predictNow": "Predict now",
+      "locksIn": "locks in {countdown}",
+      "nextToLock": "Next to lock",
+      "nextToLockNote": "All tables, soonest first",
+      "nextToLockLabel": "Markets closing soon",
+      "colLocksIn": "Locks in",
+      "colTable": "Table",
+      "colMarket": "Market",
+      "howResults": "How results work",
+      "howTitle": "From ply to payout",
+      "steps": [
+        {
+          "title": "Open",
+          "text": "{plies} plies, Yes or No, {sec} seconds to stake."
+        },
+        {
+          "title": "Locked",
+          "text": "Closes when the ply before the window is played, or when time runs out."
+        },
+        {
+          "title": "Provisional",
+          "text": "The resolver shows the outcome the moment it is known."
+        },
+        {
+          "title": "Final",
+          "text": "Chainlink CRE reads Lichess and posts the result on Monad."
+        },
+        {
+          "title": "Claim",
+          "text": "Winners split the pool minus {fee}%. Voided markets are refunded."
+        }
+      ],
+      "ctaLead": "Face ID in.",
+      "ctaTail": "First call in a minute.",
+      "credits": [
+        "Game data from Lichess",
+        "Final results by Chainlink CRE"
+      ],
+      "allGames": "All games"
+    },
+    "board": {
+      "view": "Board view",
+      "flat": "2D",
+      "solid": "3D",
+      "label3d": "3D board at ply {ply}. {last} Drag or use the arrow keys to turn it.",
+      "turnHint": "Drag to turn, pinch or scroll to zoom, double-click to reset",
+      "reset": "Reset view",
+      "square": "{square} · {piece}",
+      "pieces": {
+        "P": "White pawn",
+        "N": "White knight",
+        "B": "White bishop",
+        "R": "White rook",
+        "Q": "White queen",
+        "K": "White king",
+        "p": "Black pawn",
+        "n": "Black knight",
+        "b": "Black bishop",
+        "r": "Black rook",
+        "q": "Black queen",
+        "k": "Black king"
+      }
     }
   }
 }

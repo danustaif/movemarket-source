@@ -1,6 +1,6 @@
 # Source of Truth: MoveMarket
 
-Versi 2.15.0 · 10 Oktober 2026 · Pemilik: Danu
+Versi 2.16.0 · 14 Oktober 2026 · Pemilik: Danu
 
 Dokumen ini adalah acuan tunggal untuk semua nilai yang dipakai lebih dari satu komponen. Kontrak, workflow CRE, resolver, indexer, dan frontend harus cocok dengan dokumen ini dan folder `sot/`.
 
@@ -453,6 +453,9 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | Sumber MON testnet dalam jumlah besar | Sebagian | 5 Okt | Faucet agen Monad `agents.devnads.com/v1/faucet` (dari monskills), batasnya belum diketahui |
 
 ## 17. Riwayat perubahan
+
+### v2.16.0 (14 Oktober 2026)
+- `copy.en.json` 2.10.0: `ui.nav.live` (merek "MoveMarket Live"), bagian baru `ui.landing` (landing `/`: hero, daftar ply terakhir, strip Results, lower third Predict now, Next to lock lintas meja, How results work, CTA) dan `ui.board` (toggle papan 2D/3D, label aksesibel papan 3D, tooltip petak). Angka di teks (`{plies}`, `{sec}`, `{fee}`) diisi dari `planner.WINDOW_PLIES`, `planner.BET_WINDOW_SEC`, `contract.defaults.feeBps`.
 
 ### v2.15.0 (13 Oktober 2026)
 - D25: deployment produksi (frontend Vercel `movemarket-chess.vercel.app`, rpId permanen; resolver + indexer self-host di VPS dengan Caddy TLS). URL di `README.md` dan `backend/README.md`.
