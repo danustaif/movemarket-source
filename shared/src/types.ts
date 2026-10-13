@@ -138,6 +138,28 @@ export interface ApiError {
   code?: keyof Copy["errors"];
 }
 
+/** Satu vault passkey backup (SOT D27). `vault` = JSON PasskeySecretVault Mera persis seperti dikirim (hanya ciphertext). */
+export interface BackupVaultDto {
+  /** vaultId(vault): keccak256 JSON vault. */
+  id: Hex;
+  vault: string;
+  createdAt: UnixSec;
+}
+
+/** Tanda tangan EIP-191 akun atas backupMessage({ action: "add", ... }). */
+export interface BackupAddBody {
+  address: Address;
+  vault: string;
+  timestamp: UnixSec;
+  signature: Hex;
+}
+
+/** Tanda tangan EIP-191 akun atas backupMessage({ action: "remove", vaultId: :id, ... }). */
+export interface BackupRemoveBody {
+  timestamp: UnixSec;
+  signature: Hex;
+}
+
 export type TrackBody = { source: "broadcast"; roundId: string } | { source: "tv"; channel: string };
 
 /**
@@ -145,6 +167,9 @@ export type TrackBody = { source: "broadcast"; roundId: string } | { source: "tv
  * Error: 400 alamat atau body tidak valid, 401 token admin salah, 404 partai tidak dilacak
  * (GET /games/:gameRef) atau route tidak ada, 409 saldo gas masih di atas ambang, 429 melewati kuota faucet,
  * 500 faucet gagal (FAUCET_FAILED), 502 aksi admin gagal, 503 faucet tidak aktif (mode terbatas, FAUCET_FAILED).
+ * Route /vault (SOT D27): 400 body, alamat, atau format vault tidak valid (termasuk melebihi account.backup.maxVaultBytes),
+ * 401 tanda tangan salah, timestamp di luar signatureMaxAgeSec, atau tanda tangan sudah dipakai, 404 vault tidak ada,
+ * 409 BACKUP_LIMIT (maxPerAddress), 429 BACKUP_RATE_LIMIT (writesPerIpPer24h).
  * Route /admin/* wajib header `Authorization: Bearer <ADMIN_TOKEN>`.
  */
 export interface ResolverRoutes {
@@ -156,6 +181,11 @@ export interface ResolverRoutes {
   "GET /positions/:address": { body: never; res: { positions: PositionDto[] } };
   "POST /faucet": { body: AddressBody; res: FaucetResponse };
   "POST /faucet/gas": { body: AddressBody; res: { monTx: Hex } };
+  /** Publik: vault hanya ciphertext. Urut createdAt naik. */
+  "GET /vault/:address": { body: never; res: { vaults: BackupVaultDto[] } };
+  /** Idempoten untuk vault yang sama (id sama): 200 dengan record lama. */
+  "POST /vault": { body: BackupAddBody; res: BackupVaultDto };
+  "DELETE /vault/:address/:id": { body: BackupRemoveBody; res: { ok: true } };
   "POST /admin/track": { body: TrackBody; res: { gameRefs: string[] } };
   "POST /admin/untrack": { body: { gameRef: string }; res: { ok: true } };
   "POST /admin/replay": { body: { gameId: string; plyIntervalSec?: number }; res: { gameRef: string } };

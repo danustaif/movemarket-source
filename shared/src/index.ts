@@ -3,3 +3,4 @@ export * from "./abi.ts";
 export type * from "./types.ts";
 export * from "./resolve.ts";
 export * from "./gameRef.ts";
+export * from "./backup.ts";
