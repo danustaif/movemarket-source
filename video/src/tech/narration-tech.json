@@ -1,0 +1,234 @@
+{
+ "voice": "af_heart",
+ "note": "Narasi video teknis (TechDemo). Format sama dengan narration-pitch.json: text = teks, tts = ejaan fonetik, speed, pause (detik), gain (dB). Buat ulang: uv run ... gen-voice.py src/tech/narration-tech.json",
+ "scenes": [
+  {
+   "id": "intro",
+   "phrases": [
+    {
+     "text": "This is MoveMarket, live on Monad testnet.",
+     "tts": "This is Move Market, live on Monad test net.",
+     "speed": 0.95,
+     "pause": 0.3,
+     "gain": 1
+    },
+    {
+     "text": "Everything you see is a real recording of the production app.",
+     "speed": 1.02,
+     "pause": 0
+    }
+   ]
+  },
+  {
+   "id": "landing",
+   "phrases": [
+    {
+     "text": "A resolver follows a Lichess game, and turns the next few plies into fifteen-second, yes-or-no markets.",
+     "tts": "A resolver follows a lee chess game, and turns the next few plies into fifteen-second, yes-or-no markets.",
+     "speed": 1.02,
+     "pause": 0
+    }
+   ]
+  },
+  {
+   "id": "onboard",
+   "phrases": [
+    {
+     "text": "Create account.",
+     "speed": 0.95,
+     "pause": 0.2
+    },
+    {
+     "text": "The browser makes a passkey, Mera reads its PRF output, and the app derives a standard Ethereum key from it.",
+     "tts": "The browser makes a passkey, Mehra reads its P.R.F. output, and the app derives a standard Ethereum key from it.",
+     "speed": 1.05,
+     "pause": 0.25
+    },
+    {
+     "text": "No seed phrase, no wallet popup. The faucet funds the account, and we approve test USDC once.",
+     "tts": "No seed phrase, no wallet pop-up. The faucet funds the account, and we approve test U-S-D-C once.",
+     "speed": 1.05,
+     "pause": 0.2
+    },
+    {
+     "text": "Under five seconds.",
+     "speed": 0.95,
+     "pause": 0,
+     "gain": 1
+    }
+   ]
+  },
+  {
+   "id": "stake",
+   "phrases": [
+    {
+     "text": "Every four plies, a new batch of markets opens, always about plies that haven't been played yet.",
+     "speed": 1.05,
+     "pause": 0.25
+    },
+    {
+     "text": "Five on Yes for any capture. Five on No for any check.",
+     "speed": 1.0,
+     "pause": 0.2
+    },
+    {
+     "text": "Each stake is one synchronous transaction, confirmed in about a second.",
+     "speed": 1.05,
+     "pause": 0
+    }
+   ]
+  },
+  {
+   "id": "stake2",
+   "phrases": [
+    {
+     "text": "Next window: Yes on check, and Yes on capture.",
+     "speed": 1.02,
+     "pause": 0
+    }
+   ]
+  },
+  {
+   "id": "lock",
+   "phrases": [
+    {
+     "text": "After fifteen seconds, or as soon as the ply before the window is played, the contract locks the pool.",
+     "speed": 1.05,
+     "pause": 0.15
+    },
+    {
+     "text": "No more stakes.",
+     "speed": 0.95,
+     "pause": 0
+    }
+   ]
+  },
+  {
+   "id": "provisional",
+   "phrases": [
+    {
+     "text": "At ply 112, bishop check.",
+     "speed": 0.98,
+     "pause": 0.2,
+     "tts": "At ply one hundred twelve, bishop check."
+    },
+    {
+     "text": "The resolver runs the shared resolve function and pushes a provisional result to the browser.",
+     "speed": 1.05,
+     "pause": 0.25
+    },
+    {
+     "text": "Nobody backed the winning side in these two, so they are voided and refunded.",
+     "speed": 1.05,
+     "pause": 0
+    }
+   ]
+  },
+  {
+   "id": "final",
+   "phrases": [
+    {
+     "text": "At ply 115, rook takes, with check.",
+     "speed": 0.98,
+     "pause": 0.2,
+     "tts": "At ply one hundred fifteen, rook takes, with check."
+    },
+    {
+     "text": "Provisional Yes, and seconds later, the final result is on-chain.",
+     "speed": 1.02,
+     "pause": 0
+    }
+   ]
+  },
+  {
+   "id": "details",
+   "phrases": [
+    {
+     "text": "The final is a Chainlink CRE report: read the markets, fetch the game from Lichess, run the same resolve, and write a signed report to the contract.",
+     "tts": "The final is a Chainlink C.R.E. report: read the markets, fetch the game from lee chess, run the same resolve, and write a signed report to the contract.",
+     "speed": 1.05,
+     "pause": 0
+    }
+   ]
+  },
+  {
+   "id": "explorer",
+   "phrases": [
+    {
+     "text": "Here it is on Monadscan: two MarketResolved events, and ReportProcessed from the forwarder.",
+     "tts": "Here it is on Monad scan: two Market Resolved events, and Report Processed from the forwarder.",
+     "speed": 1.03,
+     "pause": 0.3
+    },
+    {
+     "text": "On this hosted deploy, the resolver runs the workflow steps in mock mode, through a forwarder only it can call, until we get DON access.",
+     "tts": "On this hosted deploy, the resolver runs the workflow steps in mock mode, through a forwarder only it can call, until we get Don access.",
+     "speed": 1.06,
+     "pause": 0
+    }
+   ]
+  },
+  {
+   "id": "cli",
+   "phrases": [
+    {
+     "text": "The same workflow, run with the CRE CLI and broadcast, delivered this report through Chainlink's mock Keystone forwarder.",
+     "tts": "The same workflow, run with the C.R.E. command line and broadcast, delivered this report through Chainlink's mock Keystone forwarder.",
+     "speed": 1.05,
+     "pause": 0.2
+    },
+    {
+     "text": "And the LiveMarket contract is verified.",
+     "tts": "And the Live Market contract is verified.",
+     "speed": 1.0,
+     "pause": 0
+    }
+   ]
+  },
+  {
+   "id": "me",
+   "phrases": [
+    {
+     "text": "Positions are read from the Envio indexer.",
+     "tts": "Positions are read from the En-vee-oh indexer.",
+     "speed": 1.02,
+     "pause": 0.2
+    },
+    {
+     "text": "Claim all settles both winning markets in one transaction. The voided ones refund.",
+     "speed": 1.03,
+     "pause": 0
+    }
+   ]
+  },
+  {
+   "id": "board",
+   "phrases": [
+    {
+     "text": "The leaderboard is an Envio query too, and here's the same account, straight from the GraphQL endpoint.",
+     "tts": "The leaderboard is an En-vee-oh query too, and here's the same account, straight from the Graph Q.L. endpoint.",
+     "speed": 1.04,
+     "pause": 0
+    }
+   ]
+  },
+  {
+   "id": "outro",
+   "phrases": [
+    {
+     "text": "MoveMarket.",
+     "tts": "Move Market.",
+     "speed": 0.9,
+     "pause": 0.25,
+     "gain": 1
+    },
+    {
+     "text": "Every move is a market.",
+     "speed": 0.9,
+     "pause": 0,
+     "gain": 1
+    }
+   ]
+  }
+ ]
+}

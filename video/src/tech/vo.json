@@ -1,0 +1,212 @@
+{
+ "intro": {
+  "duration": 6.416,
+  "phrases": [
+   {
+    "text": "This is MoveMarket, live on Monad testnet.",
+    "start": 0.0,
+    "end": 2.816
+   },
+   {
+    "text": "Everything you see is a real recording of the production app.",
+    "start": 3.116,
+    "end": 6.416
+   }
+  ]
+ },
+ "landing": {
+  "duration": 6.425,
+  "phrases": [
+   {
+    "text": "A resolver follows a Lichess game, and turns the next few plies into fifteen-second, yes-or-no markets.",
+    "start": 0.0,
+    "end": 6.425
+   }
+  ]
+ },
+ "onboard": {
+  "duration": 16.504,
+  "phrases": [
+   {
+    "text": "Create account.",
+    "start": 0.0,
+    "end": 0.914
+   },
+   {
+    "text": "The browser makes a passkey, Mera reads its PRF output, and the app derives a standard Ethereum key from it.",
+    "start": 1.114,
+    "end": 8.487
+   },
+   {
+    "text": "No seed phrase, no wallet popup. The faucet funds the account, and we approve test USDC once.",
+    "start": 8.737,
+    "end": 15.157
+   },
+   {
+    "text": "Under five seconds.",
+    "start": 15.357,
+    "end": 16.504
+   }
+  ]
+ },
+ "stake": {
+  "duration": 13.538,
+  "phrases": [
+   {
+    "text": "Every four plies, a new batch of markets opens, always about plies that haven't been played yet.",
+    "start": 0.0,
+    "end": 5.425
+   },
+   {
+    "text": "Five on Yes for any capture. Five on No for any check.",
+    "start": 5.675,
+    "end": 9.258
+   },
+   {
+    "text": "Each stake is one synchronous transaction, confirmed in about a second.",
+    "start": 9.458,
+    "end": 13.538
+   }
+  ]
+ },
+ "stake2": {
+  "duration": 2.679,
+  "phrases": [
+   {
+    "text": "Next window: Yes on check, and Yes on capture.",
+    "start": 0.0,
+    "end": 2.679
+   }
+  ]
+ },
+ "lock": {
+  "duration": 6.849,
+  "phrases": [
+   {
+    "text": "After fifteen seconds, or as soon as the ply before the window is played, the contract locks the pool.",
+    "start": 0.0,
+    "end": 5.697
+   },
+   {
+    "text": "No more stakes.",
+    "start": 5.847,
+    "end": 6.849
+   }
+  ]
+ },
+ "provisional": {
+  "duration": 11.731,
+  "phrases": [
+   {
+    "text": "At ply 112, bishop check.",
+    "start": 0.0,
+    "end": 2.102
+   },
+   {
+    "text": "The resolver runs the shared resolve function and pushes a provisional result to the browser.",
+    "start": 2.302,
+    "end": 7.542
+   },
+   {
+    "text": "Nobody backed the winning side in these two, so they are voided and refunded.",
+    "start": 7.792,
+    "end": 11.731
+   }
+  ]
+ },
+ "final": {
+  "duration": 6.705,
+  "phrases": [
+   {
+    "text": "At ply 115, rook takes, with check.",
+    "start": 0.0,
+    "end": 2.75
+   },
+   {
+    "text": "Provisional Yes, and seconds later, the final result is on-chain.",
+    "start": 2.95,
+    "end": 6.705
+   }
+  ]
+ },
+ "details": {
+  "duration": 9.497,
+  "phrases": [
+   {
+    "text": "The final is a Chainlink CRE report: read the markets, fetch the game from Lichess, run the same resolve, and write a signed report to the contract.",
+    "start": 0.0,
+    "end": 9.497
+   }
+  ]
+ },
+ "explorer": {
+  "duration": 13.986,
+  "phrases": [
+   {
+    "text": "Here it is on Monadscan: two MarketResolved events, and ReportProcessed from the forwarder.",
+    "start": 0.0,
+    "end": 5.576
+   },
+   {
+    "text": "On this hosted deploy, the resolver runs the workflow steps in mock mode, through a forwarder only it can call, until we get DON access.",
+    "start": 5.876,
+    "end": 13.986
+   }
+  ]
+ },
+ "cli": {
+  "duration": 10.457,
+  "phrases": [
+   {
+    "text": "The same workflow, run with the CRE CLI and broadcast, delivered this report through Chainlink's mock Keystone forwarder.",
+    "start": 0.0,
+    "end": 8.058
+   },
+   {
+    "text": "And the LiveMarket contract is verified.",
+    "start": 8.258,
+    "end": 10.457
+   }
+  ]
+ },
+ "me": {
+  "duration": 7.498,
+  "phrases": [
+   {
+    "text": "Positions are read from the Envio indexer.",
+    "start": 0.0,
+    "end": 2.395
+   },
+   {
+    "text": "Claim all settles both winning markets in one transaction. The voided ones refund.",
+    "start": 2.595,
+    "end": 7.498
+   }
+  ]
+ },
+ "board": {
+  "duration": 6.26,
+  "phrases": [
+   {
+    "text": "The leaderboard is an Envio query too, and here's the same account, straight from the GraphQL endpoint.",
+    "start": 0.0,
+    "end": 6.26
+   }
+  ]
+ },
+ "outro": {
+  "duration": 2.622,
+  "phrases": [
+   {
+    "text": "MoveMarket.",
+    "start": 0.0,
+    "end": 1.002
+   },
+   {
+    "text": "Every move is a market.",
+    "start": 1.252,
+    "end": 2.622
+   }
+  ]
+ }
+}
