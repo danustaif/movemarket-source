@@ -6,7 +6,7 @@ Ringkasan riset, pilihan suara, dan sumber audio untuk **pitch video** (`MoveMar
 
 - **Tool:** Kokoro-82M lewat `kokoro-onnx` (lokal, CPU, Apache-2.0, tanpa akun/kunci). Model `kokoro-v1.0.onnx` + `voices-v1.0.bin` dari [rilis kokoro-onnx model-files-v1.0](https://github.com/thewh1teagle/kokoro-onnx/releases/tag/model-files-v1.0), simpan di `$KOKORO_DIR`. Butuh `brew install espeak-ng` (espeak bawaan wheel rusak di macOS; `gen-voice.py` memakai `/opt/homebrew/lib/libespeak-ng.dylib`).
 - **Voice:** `af_heart`, `lang="en-us"`.
-- **Prosodi:** naskah dipecah per frasa di `narration-<nama>.json`. Tiap frasa: `text` (teks tampil), `tts` (ejaan fonetik bila perlu), `speed` (0,86-1,08: lambat untuk punchline, cepat untuk penjelasan), `pause` (jeda sesudah frasa, detik), `gain` (dB, +1 sampai +1,5 untuk kalimat kunci). Tanda baca ikut membentuk intonasi (`?`, `...`). Ejaan yang sudah dicek Whisper: Lichess = `lee chess`, CRE = `C.R.E.`, DON = `D.O.N.`, Envio = `En-vee-oh Hyper Index`, tUSDC = `test U-S-D-C`, MoveMarket = `Move Market`, Monadscan = `Monad scan`.
+- **Prosodi:** naskah dipecah per frasa di `narration-<nama>.json`. Tiap frasa: `text` (teks tampil), `tts` (ejaan fonetik bila perlu), `speed` (0,86-1,08: lambat untuk punchline, cepat untuk penjelasan), `pause` (jeda sesudah frasa, detik), `gain` (dB, +1 sampai +1,5 untuk kalimat kunci). Tanda baca ikut membentuk intonasi (`?`, `...`). Ejaan yang sudah dicek Whisper: Lichess = `lee chess`, CRE = `C.R.E.`, DON = `D.O.N.`, Envio = `En-vee-oh Hyper Index`, tUSDC = `test U-S-D-C`, Mera = `Meh-ra`, passkey = `pass key`, MoveMarket = `Move Market`, Monadscan = `Monad scan`.
 - **Perintah:** `KOKORO_DIR=<folder model> uv run -p 3.12 --with kokoro-onnx --with soundfile gen-voice.py narration-<nama>.json` menghasilkan `public/vo/<nama>/<adegan>.wav` (24 kHz mono, puncak -1 dBFS, hening ujung dipotong) dan `src/<nama>/vo.json` berisi `duration` per adegan serta `start`/`end` tiap frasa (detik). Pakai angka itu untuk durasi adegan dan waktu teks.
 - **Cek pengucapan:** transkripsi dengan faster-whisper `small.en` (lihat bagian 2).
 
@@ -38,7 +38,7 @@ Sampel (teks sama, hook 5 frasa) di `out/voice-samples/` (tidak di-commit):
 
 \* Diukur dengan Praat (parselmouth) pada sampel yang sama. Angka ini hanya proksi "tidak datar", bukan ukuran kualitas.
 
-**Pilihan: Kokoro-82M `af_heart`.** Alasannya: model neural yang sempat #1 di TTS Arena (voting buta), bobot Apache-2.0 sehingga aman dipakai dan didistribusikan, berjalan lokal tanpa akun atau kunci, `af_heart` adalah voice dengan nilai tertinggi (A) di [daftar voice Kokoro](https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md), dan variasi nadanya paling lebar dari semua sampel. Pengucapan dicek dengan Whisper `small.en` (faster-whisper): "Lichess" diberi ejaan `lee chess`, "CRE" `C.R.E.`, "Monad" di awal kalimat atau sesudah "Why"/"On" `Moh-nad` (tanpa itu terdengar "Monet"), "Esports" `E-sports`, "Envio" `En-vee-oh`, "tUSDC" `test U-S-D-C`; transkrip akhir cocok dengan naskah kecuali "Mera" (terdengar "Mira") dan "passkey" (sedikit kabur).
+**Pilihan: Kokoro-82M `af_heart`.** Alasannya: model neural yang sempat #1 di TTS Arena (voting buta), bobot Apache-2.0 sehingga aman dipakai dan didistribusikan, berjalan lokal tanpa akun atau kunci, `af_heart` adalah voice dengan nilai tertinggi (A) di [daftar voice Kokoro](https://huggingface.co/hexgrad/Kokoro-82M/blob/main/VOICES.md), dan variasi nadanya paling lebar dari semua sampel. Pengucapan dicek dengan Whisper `small.en` (faster-whisper): "Lichess" diberi ejaan `lee chess`, "CRE" `C.R.E.`, "Monad" di awal kalimat atau sesudah "Why"/"On" `Moh-nad` (tanpa itu terdengar "Monet"), "Esports" `E-sports`, "Envio" `En-vee-oh`, "tUSDC" `test U-S-D-C`; `passkey` ditulis `pass key` dan `Mera` ditulis `Meh-ra` (tanpa itu terdengar "Mira", vokal /iː/; dengan ejaan ini vokalnya /ɛ/, Whisper menuliskannya "Maraw" karena nama ini tidak ada di kosakatanya).
 
 Saran berbayar (tidak dipakai): ElevenLabs (model `eleven_multilingual_v2` atau v3 dengan tag emosi) memberi kontrol gaya per kalimat dan suara iklan yang lebih meyakinkan; cukup ganti langkah 1 di README dengan API itu, format `vo.json` tetap sama.
 
@@ -65,7 +65,7 @@ Klip layar (`public/clips/`) adalah rekaman situs produksi milik tim (13-14 Okto
 | | Mix mentah Remotion | `out/movemarket-pitch.mp4` |
 |---|---|---|
 | Loudness terintegrasi (ebur128) | -17,5 LUFS | **-14,2 LUFS** |
-| True peak | +1,5 dBFS (puncak antar-sampel setelah AAC) | **-1,2 dBFS** |
+| True peak | +1,5 dBFS (puncak antar-sampel setelah AAC) | **-1,0 dBFS** |
 | Loudness range | | 2,6 LU |
 | Flat factor (sampel terpotong berurutan) | 0 | 0 |
 
@@ -77,7 +77,7 @@ Musik turun dari 0,42 ke 0,12 (sekitar -11 dB) selama narasi, dengan ramp 8 fram
 
 | Waktu | Adegan | Isi |
 |---|---|---|
-| 0:00 | hook | Kuda 3D terangkat (riser), dihantam ke d5 di 0:02 (impact, debu, gelombang kejut, jejak gerak), "EVERY MOVE IS A MARKET."; 0:04 sudut lebar + kartu pasar berdetak, hitung mundur, ...Nxd5 di 0:07,5; logo di 0:08,8 |
+| 0:00 | hook | Kamera membingkai kuda dari alas papan sampai puncaknya (tidak pernah keluar frame), kuda di sepertiga kanan, teks di kiri di atas gradasi gelap. Kuda terangkat (riser), dihantam ke d5 di 0:02 (impact, debu, gelombang kejut, jejak gerak), "EVERY MOVE IS A MARKET."; 0:04 sudut lebar + kartu pasar berdetak, hitung mundur, ...Nxd5 di 0:07,5; logo di 0:08,8 |
 | 0:10,8 | problem | Penonton hanya menonton; pasar prediksi hari ini: lambat, butuh pelapor tepercaya, onboarding (wallet, seed phrase, gas) |
 | 0:24,8 | solution | Rekaman landing produksi; satu pertanyaan, 15 detik, kunci on-chain sebelum ply 25; hasil final Lichess -> Chainlink CRE -> Monad; passkey Mera tanpa seed phrase |
 | 0:46,8 | proof | Rekaman layar partai saat pasar baru terbuka, tx report CRE di Monadscan (8 pasar dalam 1 report), 21 dtk request ke final |

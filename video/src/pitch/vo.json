@@ -65,7 +65,7 @@
   ]
  },
  "solution": {
-  "duration": 21.052,
+  "duration": 21.126,
   "phrases": [
    {
     "text": "MoveMarket turns every moment of a live chess game on Lichess into a market.",
@@ -95,7 +95,7 @@
    {
     "text": "And a passkey, through Mera, replaces the seed phrase.",
     "start": 18.074,
-    "end": 21.052
+    "end": 21.126
    }
   ]
  },

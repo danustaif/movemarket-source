@@ -27,25 +27,41 @@ const lerp = (a: number, b: number, k: number) => a + (b - a) * k;
 const ease = Easing.bezier(0.45, 0, 0.55, 1);
 const k01 = (f: number, a: number, b: number) => interpolate(f, [a, b], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp", easing: ease });
 
+// Shot 1: kamera membingkai kuda dari alas papan sampai puncak bidak, supaya bidak tidak pernah keluar frame
+// (ruang tampak = 72% tinggi frame, sisanya bilah sinema dan margin). Bidak di sepertiga kanan, teks di kiri.
+const FOV1 = 36;
+const PIECE_H = 1.0; // tinggi kuda (skala 0.86) + margin
+const frameAt = (f: number) => {
+  const knight = movePos(MOVES[0], Math.min(f, DROP - 1)) ?? sqPos("d5");
+  const top = knight.y + PIECE_H;
+  const r = Math.max(3.1, (top + 0.35) / (2 * Math.tan(((FOV1 / 2) * Math.PI) / 180) * 0.6));
+  return { knight, top, r };
+};
 const camera = (f: number): Cam => {
   if (f < CUT) {
-    // ikuti kuda yang terangkat, lalu diam menunggu hantaman; setelahnya dorong pelan (slow-mo)
-    const knight = movePos(MOVES[0], Math.min(f, DROP - 1)) ?? sqPos("d5");
+    // nilai terbesar di jendela [f-6, f+3]: kamera sudah mundur sebelum kuda naik, lalu "crash zoom" saat jatuh
+    let r = 0, top = 0;
+    for (let i = -3; i <= 6; i++) {
+      const x = frameAt(f - i);
+      r = Math.max(r, x.r);
+      top = Math.max(top, x.top);
+    }
+    const { knight } = frameAt(f);
     const d5 = sqPos("d5");
     const settle = k01(f, DROP - 16, DROP - 8);
     const after = k01(f, DROP, CUT);
     const look: [number, number, number] = [
       lerp(knight.x, d5.x, settle),
-      lerp(knight.y + 0.1, 0.95, settle) - after * 0.08,
+      top / 2 - after * 0.08,
       lerp(knight.z, d5.z, settle),
     ];
     const a = lerp(0.95, 0.5, k01(f, -10, DROP)) - after * 0.2;
-    const r = lerp(4.2, 3.0, k01(f, -10, DROP)) + settle * 0.6 - after * 0.5;
+    r -= after * 0.45;
     return {
-      pos: [look[0] + Math.sin(a) * r, lerp(knight.y + 0.75, 1.15, settle) + after * 0.08, look[2] + Math.cos(a) * r],
+      pos: [look[0] + Math.sin(a) * r, look[1] + r * 0.16, look[2] + Math.cos(a) * r],
       look,
-      fov: 34,
-      offset: [0.16, 0],
+      fov: FOV1,
+      offset: [0.25, 0],
     };
   }
   // sudut lebar ala landing produk, mengorbit pelan
@@ -159,10 +175,13 @@ export const Hook: React.FC = () => {
       {/* vinyet */}
       <AbsoluteFill style={{ background: "radial-gradient(1300px 800px at 55% 50%, transparent 40%, rgba(2,16,14,0.75) 100%)" }} />
 
-      {/* shot 1: EVERY MOVE / IS A MARKET. */}
+      {/* shot 1: EVERY MOVE / IS A MARKET. Gradasi gelap di kiri memberi ruang bersih untuk teks. */}
+      {f < CUT && (
+        <AbsoluteFill style={{ background: "linear-gradient(90deg, rgba(4,26,23,0.92) 0%, rgba(4,26,23,0.75) 34%, rgba(4,26,23,0.2) 50%, transparent 58%)" }} />
+      )}
       {f < CUT && (
         <AbsoluteFill style={{ padding: "0 120px", justifyContent: "center" }}>
-          <div style={{ ...display, fontSize: 210, opacity: interpolate(f, [CUT - 8, CUT], [1, 0], { extrapolateLeft: "clamp" }) }}>
+          <div style={{ ...display, fontSize: 180, opacity: interpolate(f, [CUT - 8, CUT], [1, 0], { extrapolateLeft: "clamp" }) }}>
             <div>
               <Slam at={ph("hook", 0)}>Every</Slam> <Slam at={ph("hook", 0) + 9}>move</Slam>
             </div>

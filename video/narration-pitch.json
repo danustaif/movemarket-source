@@ -104,7 +104,8 @@
         {
           "text": "And a passkey, through Mera, replaces the seed phrase.",
           "speed": 1.0,
-          "pause": 0
+          "pause": 0,
+          "tts": "And a pass key, through Meh-ra, replaces the seed phrase."
         }
       ]
     },
