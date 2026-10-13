@@ -43,8 +43,11 @@ backend/resolver/
 │   │   └── faucet.ts
 │   ├── sse/
 │   │   └── hub.ts
+│   ├── vault/
+│   │   └── store.ts          # vaults.json passkey backup (SOT D27), tulis atomik
 │   └── routes/
 │       ├── public.ts
+│       ├── vault.ts          # GET/POST/DELETE /vault (SOT bagian 12a)
 │       └── admin.ts
 ├── test/
 ├── .env.example
@@ -344,6 +347,15 @@ Request: `{ "address": "0x..." }`
 Response: `{ "monTx": "0x..." }`
 Error: `409` kalau saldo MON alamat masih di atas ambang, `429` kalau melewati kuota alamat atau IP, `400` kalau alamat tidak valid, `503` kalau faucet tidak aktif, `500` kalau transaksi gagal.
 
+#### `GET /vault/:address`, `POST /vault`, `DELETE /vault/:address/:id` (passkey backup, SOT 12a, D27)
+Vault Mera hanya ciphertext; isi vault tidak pernah dicatat (log hanya `vault_added` / `vault_removed` dengan alamat dan id).
+
+- `GET /vault/:address` (publik): `{ "vaults": [{ "id": "0x<keccak256 JSON vault>", "vault": "<JSON PasskeySecretVault>", "createdAt": 1790000000 }] }`, urut waktu dibuat. `400` alamat tidak valid.
+- `POST /vault` `{ address, vault, timestamp, signature }`: `signature` = EIP-191 akun atas `backupMessage({ action: "add", address, vaultId: keccak256(vault), timestamp })` (template `account.backup.message`). Vault yang sama (id sama) mengembalikan record lama.
+- `DELETE /vault/:address/:id` `{ timestamp, signature }`: tanda tangan atas `action: "remove"` dengan `vaultId = :id`. `{ "ok": true }`, `404` kalau tidak ada.
+
+Validasi berurutan: kuota IP (`account.backup.writesPerIpPer24h`, semua POST/DELETE dihitung termasuk yang gagal; `429 BACKUP_RATE_LIMIT`), skema body ketat dan vault Mera v1 ketat (key lain ditolak, base64url kanonik, `prfSalt` 32 byte, `nonce` 12 byte, `ciphertext` = `secretBytes` + 16 byte tag, JSON vault maks `maxVaultBytes`; `400`), `timestamp` dalam `signatureMaxAgeSec` dari jam server (`401`), tanda tangan belum pernah dipakai dalam jendela itu (`401`), `verifyMessage` viem terhadap `address` (`401`), lalu batas `maxPerAddress` (`409 BACKUP_LIMIT`). Penyimpanan: `${VAULT_DIR}/vaults.json`, seluruh file ditulis ulang ke `.tmp` lalu `rename`; gagal tulis mengembalikan state memori dan menjawab `500`. Dimuat ulang saat start.
+
 ### 3.2 Admin
 
 Header wajib: `Authorization: Bearer <ADMIN_TOKEN>`.
@@ -371,7 +383,8 @@ Daftar env lengkap ada di `docs/ARCHITECTURE.md` bagian 8. Tambahan khusus resol
 | `AUTO_REPLAY_REQUIRES_VIEWER` | `true` | SOT D16 |
 | `VIEWER_GRACE_SEC` | `120` | |
 | `REQUEST_MAX_BATCH` | `8` | SOT D14 |
-| `TRUST_PROXY` | `false` | `false`: IP klien untuk kuota faucet dari alamat socket. `true`: dari entri pertama `X-Forwarded-For`, hanya di belakang proxy tepercaya |
+| `TRUST_PROXY` | `false` | `false`: IP klien untuk kuota faucet dan `/vault` dari alamat socket. `true`: dari entri pertama `X-Forwarded-For`, hanya di belakang proxy tepercaya |
+| `VAULT_DIR` | `data` | Direktori `vaults.json` passkey backup (SOT D27), relatif ke cwd. Container: `/data/vault` dengan volume `backend/.vault-data` (milik uid 1000) |
 
 Nilai default di tabel ini dan di `docs/ARCHITECTURE.md` bagian 8 berasal dari `sot/constants.json`. `config.ts` membaca default dari file itu, env hanya untuk override.
 

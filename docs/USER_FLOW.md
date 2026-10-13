@@ -13,7 +13,8 @@ UI berbahasa Inggris (SOT D15). Teks persis untuk label, tombol, dan pesan ada d
 | `/` | Beranda | Daftar partai live dan replay, tombol "Start" untuk pengguna baru |
 | `/onboarding` | Buat akun | Penjelasan singkat, tombol buat passkey, status faucet |
 | `/game/$gameRef` | Layar partai | Papan live, info pemain, pasar terbuka, pasar terkunci, riwayat |
-| `/me` | Profil | Saldo, posisi aktif, posisi menang yang bisa diklaim, refund, riwayat |
+| `/me` | Profil | Saldo, posisi aktif, posisi menang yang bisa diklaim, refund, riwayat, passkey backup |
+| `/restore`, `/restore/$address` | Pulihkan akun | Alamat akun, daftar passkey backup, tombol pakai backup (SOT 12a, D27) |
 | `/leaderboard` | Leaderboard | Peringkat profit bersih (C, hanya kalau Must selesai) |
 
 Komponen global: header dengan saldo tUSDC, badge "Monad Testnet", toast untuk status transaksi.
@@ -79,6 +80,36 @@ Catatan:
 - Kunci privat tidak pernah disimpan. Setiap kali halaman dimuat ulang, pengguna membuka sesi dengan passkey satu kali. Selama sesi aktif, taruhan tidak meminta passkey lagi.
 - Passkey terikat ke domain (rpId). Domain demo harus tetap sama sejak hari pertama.
 - Pengguna yang belum punya akun tetap bisa menonton papan dan pasar. Tombol taruhan mengarahkan ke onboarding.
+
+### 3a. Passkey backup dan pemulihan (SOT 12a, D27)
+
+```mermaid
+flowchart TD
+    A["/me (unlocked): Add a backup passkey"] --> B{"Sudah maxPerAddress backup?"}
+    B -- Ya --> B1["Tombol nonaktif, BACKUP_LIMIT"]
+    B -- Tidak --> C["Dialog passkey: konfirmasi passkey sekarang"]
+    C -- Dibatalkan --> C1["BACKUP_CANCELLED"]
+    C -- Alamat beda --> C2["ACCOUNT_MISMATCH, tidak ada passkey baru"]
+    C -- Berhasil --> D["Dialog passkey: buat passkey baru<br/>(HP lain lewat QR, security key)"]
+    D -- Dibatalkan --> C1
+    D -- Berhasil --> E["Tanda tangan lokal, POST /vault"]
+    E -- Gagal --> E1["BACKUP_SAVE_FAILED / BACKUP_RATE_LIMIT<br/>Try again mengirim vault yang sama"]
+    E -- Berhasil --> F["Backup passkey saved., daftar diperbarui<br/>Copy restore link"]
+    R0["Perangkat lain tanpa akun: /onboarding"] --> R1["Restore with a backup passkey"]
+    L["Buka link /restore/0x..."] --> R3
+    R1 --> R2["Ketik alamat akun, Find backups"]
+    R2 -- Alamat tidak valid --> R2a["ADDRESS_INVALID"]
+    R2 --> R3{"GET /vault/:address"}
+    R3 -- Kosong --> R3a["BACKUP_NOT_FOUND"]
+    R3 -- Ada --> R4["Pilih backup: Use this backup"]
+    R4 --> R5{"Dialog passkey backup"}
+    R5 -- Dibatalkan --> R5a["RESTORE_CANCELLED"]
+    R5 -- Gagal dekripsi --> R5b["BACKUP_DECRYPT_FAILED"]
+    R5 -- Alamat beda --> R5c["ACCOUNT_MISMATCH"]
+    R5 -- Berhasil --> R6["Akun terbuka, sesi tersimpan 24 jam,<br/>unlock berikutnya dengan passkey backup"]
+```
+
+Catatan: siapa pun yang memegang passkey backup bisa membuka akun. Menghapus backup di `/me` hanya menyembunyikannya dari daftar (teks `ui.backup.note`).
 
 ## 4. Alur menonton dan bertaruh
 
@@ -190,6 +221,11 @@ Teks pesan ada di `sot/copy.en.json` bagian `errors`.
 | Browser tanpa Web Crypto (`CRYPTO_UNAVAILABLE`) | `CRYPTO_UNAVAILABLE` | Sarankan Chrome atau Safari terbaru |
 | Sesi berakhir (`SESSION_ENDED`) | `SESSION_ENDED` | Kembali ke status terkunci |
 | Alamat hasil unlock beda dengan penanda | `ACCOUNT_MISMATCH` | Jangan pakai akun itu, tawarkan buat akun baru |
+| Batal saat menambah / memulihkan backup | `BACKUP_CANCELLED` / `RESTORE_CANCELLED` | Tetap di layar, tombol bisa dicoba lagi |
+| Vault tidak bisa dibuka passkey ini | `BACKUP_DECRYPT_FAILED` | Pilih backup lain |
+| Tidak ada backup untuk alamat / alamat tidak valid | `BACKUP_NOT_FOUND` / `ADDRESS_INVALID` | Periksa alamat |
+| Batas backup per akun / kuota IP | `BACKUP_LIMIT` / `BACKUP_RATE_LIMIT` | Hapus backup lama / coba besok |
+| Backup gagal disimpan | `BACKUP_SAVE_FAILED` | Try again mengirim ulang vault yang sama |
 | Batas isi ulang gas tercapai | `GAS_TOPUP_LIMIT` | Tidak ada aksi sampai besok |
 | Faucet gagal / limit | `FAUCET_FAILED` | Tombol coba lagi |
 | Saldo tUSDC kurang | `INSUFFICIENT_USDC` | Tombol faucet |

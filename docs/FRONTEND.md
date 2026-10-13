@@ -58,8 +58,9 @@ Catatan implementasi `fe/`: alamat kontrak ada di `src/lib/chain.ts` (tidak ada 
 | `/games` | `games` | Daftar partai live di atas, replay di bawah dengan label REPLAY (dulu di `/`; nav Games) |
 | `/onboarding` | | Penjelasan, tombol buat akun, status faucet |
 | `/game/$gameRef` | `game(gameRef)` | `GameHeader`, `LiveBoard`, daftar `MarketCard` terbuka, terkunci, selesai |
-| `/me` | `positions(address)`, `balance(address)` | Saldo dengan tombol "Get test tokens" (faucet ulang, idempoten), total siap klaim dan tombol "Claim all", daftar posisi |
+| `/me` | `positions(address)`, `balance(address)` | Saldo dengan tombol "Get test tokens" (faucet ulang, idempoten), total siap klaim dan tombol "Claim all", daftar posisi, bagian Backup passkeys (tambah, daftar, hapus, salin link pemulihan; SOT 12a) |
 | `/leaderboard` | `leaderboard` | Tabel peringkat |
+| `/restore`, `/restore/$address` | | Pulihkan akun dengan passkey backup (SOT 12a, D27): alamat diketik atau dari link yang disalin di `/me`, `GET /vault/:address`, pilih vault, passkey backup. Link dari `/onboarding` saat belum ada akun |
 
 `gameRef` di URL di-encode dengan `encodeURIComponent`.
 
@@ -75,9 +76,11 @@ clearMarker(): void
 hasSession(): boolean                    // sesi tersimpan (D26) belum kedaluwarsa untuk alamat di penanda; sinkron
 restoreAccount(): Promise<LocalAccount | null>  // dekripsi sesi tersimpan -> session -> toViemAccount, tanpa passkey
 end(): void                              // lock: akhiri sesi Mera dan hapus sesi tersimpan
+createBackupVault(): Promise<string>     // konfirmasi ulang passkey perangkat ini -> createSecretVaultWithNewPasskey -> JSON vault (D27)
+restoreFromVault(address, vaultJson): Promise<LocalAccount>  // decryptSecretVaultWithPasskey -> derivasi -> alamat sama -> penanda + vault
 ```
 
-Nama di kode: `accountService.create/unlock/marker/clearMarker/hasSession/restore/end` (`fe/src/contracts/account.ts`).
+Nama di kode: `accountService.create/unlock/marker/clearMarker/hasSession/restore/end/createBackupVault/restoreFromVault` (`fe/src/contracts/account.ts`).
 
 Mera 0.2.0 hanya memberi 32 byte output PRF dan sesi tanda tangan. Derivasi kunci adalah tanggung jawab aplikasi dan ditetapkan di `docs/SOT.md` bagian 12:
 
@@ -113,6 +116,11 @@ Aturan:
 - Komponen yang menerima status akun memperlakukan `restoring` seperti menunggu: jangan tampilkan tombol Unlock (mencegah kedip locked -> unlocked); aksi transaksi sebaiknya nonaktif sampai `unlocked`.
 - Setelah unlock, cocokkan alamat hasil derivasi dengan penanda. Kalau beda, tampilkan error (`ACCOUNT_MISMATCH`) dan jangan memakai akun itu. Toast error memberi aksi "Create account", dan `/onboarding` saat terkunci menampilkan pesan yang sama dengan tombol "Create account": keduanya menghapus penanda (`clearMarker`) lalu memulai jalur buat akun.
 - Tangani `MeraError` berdasarkan `code`: `PRF_UNAVAILABLE`, `PASSKEY_OPERATION_FAILED` (termasuk pembatalan), `CRYPTO_UNAVAILABLE`, `SESSION_ENDED`. Pesan dari `sot/copy.en.json`.
+- Passkey backup (SOT 12a, D27). Fungsi secret vault Mera (`createSecretVaultWithNewPasskey`, `decryptSecretVaultWithPasskey`, `parseSecretVault`) dimuat lazy lewat `lib/account/prf.ts`, sama dengan kriptografi akun lain.
+  - Rahasia vault = entropi BIP-39 akun (32 byte, sama dengan PRF passkey utama). `createBackupVault` mengambilnya lewat konfirmasi ulang passkey yang membuka akun di perangkat ini (penanda biasa: `getPasskeyPrfOutput` dengan `credentialId`; penanda dengan `vault`: `decryptSecretVaultWithPasskey`), mengecek alamat hasil derivasi sama dengan penanda (beda: `ACCOUNT_MISMATCH`, tidak ada passkey baru), lalu `createSecretVaultWithNewPasskey({ rp: { id: VITE_RP_ID }, user: ui.backup.passkeyUser, secret })`. Buffer rahasia di-zero-kan di `finally`.
+  - `useAddBackup`: cek jumlah lewat `backups(address)` dulu (penuh: `BACKUP_LIMIT` tanpa prompt), lalu vault, `account.signMessage(backupMessage({ action: "add", ... }))` (EIP-191 lokal, tanpa gas dan tanpa prompt), `POST /vault`. Kalau simpan gagal, vault yang sudah dibuat disimpan di memori modul sehingga "Try again" mengirim ulang tanpa membuat passkey kedua. `useRemoveBackup` menandatangani `action: "remove"` lalu `DELETE /vault/:address/:id`.
+  - `restoreFromVault`: penanda baru `{ rpId, address, credentialId: vault.credential.credentialId, vault }`, sesi D26 disegel seperti unlock. `unlock()` dengan penanda yang membawa `vault` memakai `decryptSecretVaultWithPasskey` (passkey backup) alih-alih PRF passkey utama.
+  - Error: pembatalan `BACKUP_CANCELLED` / `RESTORE_CANCELLED`, Mera `DECRYPT_FAILED`/`VAULT_FORMAT_INVALID` `BACKUP_DECRYPT_FAILED`, simpan gagal `BACKUP_SAVE_FAILED`, kode resolver `BACKUP_LIMIT`/`BACKUP_RATE_LIMIT` diteruskan.
 
 State akun di Zustand (`stores/account.ts`):
 
@@ -160,6 +168,9 @@ export const qk = {
 |---|---|---|---|
 | `useCreateAccount` | Mera create + `POST /faucet` | | `balance` |
 | `useUnlockAccount` | Mera unlock | | |
+| `useAddBackup` | Mera secret vault + `POST /vault` bertanda tangan (D27) | | `backups` |
+| `useRemoveBackup` | `DELETE /vault/:address/:id` bertanda tangan | | `backups` |
+| `useRestoreBackup` | `restoreFromVault`, lalu status `unlocked` | | |
 | `useApprove` | `MockUSDC.approve(LiveMarket, maxUint256)` | | `allowance` |
 | `useBet(marketId)` | approve kalau perlu, lalu `LiveMarket.bet` | Pool di `game(gameRef)` | `game`, `positions`, `balance` |
 
