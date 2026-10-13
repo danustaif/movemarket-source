@@ -18,7 +18,7 @@ Prinsip:
 - [x] Pulihkan paket dokumen v1
 - [x] Verifikasi data Lichess, alamat forwarder CRE, RPC dan gas Monad, API Mera
 - [x] Buat SOT (`docs/SOT.md`, `sot/`) dan sesuaikan semua dokumen
-- [x] `git init` dan push (10 Okt): empat repo di akun `danustaif`. keempat repo publik sejak 10 Okt (screenshot referensi pihak ketiga di `design/refs/landing` dan `raw` dihapus dari riwayat, hanya disimpan lokal)
+- [x] `git init` dan push (10 Okt): empat repo di akun `danustaif`; 14 Okt `backend`, `fe`, `smart-contract` dipindah ke organisasi `move-market` (profil org di `move-market/.github`), `source` tetap di `danustaif`. keempat repo publik sejak 10 Okt (screenshot referensi pihak ketiga di `design/refs/landing` dan `raw` dihapus dari riwayat, hanya disimpan lokal)
 - [x] Pasang skill: `chainlink-cre-skill` dan monskills (perintah di SOT bagian 0.5; monskills terpasang global 10 Okt)
 - [x] `cre login`, `cre registry list` (hanya `private` dan `onchain:ethereum-mainnet`), `cre workflow supported-chains` (forwarder cocok SOT), 10 Okt
 - [ ] **Ajukan Early Access** (`cre account access`, interaktif, dijalankan user). Status 10 Okt: Deploy Access belum aktif

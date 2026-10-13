@@ -86,9 +86,9 @@ Clone all four next to each other. The other three import `@movemarket/shared` a
 | Repo | Local folder | Contents |
 |---|---|---|
 | [danustaif/movemarket-source](https://github.com/danustaif/movemarket-source) (this repo) | `source/` | Product and technical docs, machine-readable source of truth (`sot/`), `@movemarket/shared` (`resolve.ts`, typed ABI, constants, CRE report codec, resolver API and SSE types), design tokens and hi-fi prototype |
-| [danustaif/movemarket-smart-contract](https://github.com/danustaif/movemarket-smart-contract) | `smart-contract/` | Foundry: `LiveMarket.sol`, `MockUSDC.sol`, tests including invariants, deploy, verify, SOT sync and gas measurement scripts |
-| [danustaif/movemarket-backend](https://github.com/danustaif/movemarket-backend) | `backend/` | `resolver/` (Bun + Hono service), `cre/` (Chainlink CRE project with `resolver-workflow`), `indexer/` (Envio HyperIndex) |
-| [danustaif/movemarket-fe](https://github.com/danustaif/movemarket-fe) | `fe/` | Vite + React + TypeScript + Tailwind, TanStack Router and Query, Zustand, viem, Mera, react-chessboard |
+| [move-market/movemarket-smart-contract](https://github.com/move-market/movemarket-smart-contract) | `smart-contract/` | Foundry: `LiveMarket.sol`, `MockUSDC.sol`, tests including invariants, deploy, verify, SOT sync and gas measurement scripts |
+| [move-market/movemarket-backend](https://github.com/move-market/movemarket-backend) | `backend/` | `resolver/` (Bun + Hono service), `cre/` (Chainlink CRE project with `resolver-workflow`), `indexer/` (Envio HyperIndex) |
+| [move-market/movemarket-fe](https://github.com/move-market/movemarket-fe) | `fe/` | Vite + React + TypeScript + Tailwind, TanStack Router and Query, Zustand, viem, Mera, react-chessboard |
 
 ## Deployed on Monad Testnet
 
@@ -127,7 +127,7 @@ What the workflow does, in order:
 
 Before requesting, the resolver checks the same Lichess export the workflow will read and requests only ids whose outcome is already settled there (decision D17). That keeps identical aggregation safe: no node can see a pending market while another sees YES. The resolver also never requests markets without stakes (D18), which saves gas on both the request and the report.
 
-Code: [`backend/cre/`](https://github.com/danustaif/movemarket-backend/tree/main/cre), spec [`docs/CRE_WORKFLOW.md`](docs/CRE_WORKFLOW.md).
+Code: [`backend/cre/`](https://github.com/move-market/movemarket-backend/tree/main/cre), spec [`docs/CRE_WORKFLOW.md`](docs/CRE_WORKFLOW.md).
 
 ### Monad Foundation: Best Mera-Powered UX
 
@@ -165,7 +165,7 @@ An Envio HyperIndex 3.0.0-alpha.21 indexer handles 8 `LiveMarket` events (market
 | `Position` | Per account per market: YES and NO stake, payout, settled flag |
 | `User` | Total staked, total payout, net profit, stake count, win count |
 
-The frontend runs two queries from [`backend/indexer/queries.graphql`](https://github.com/danustaif/movemarket-backend/blob/main/indexer/queries.graphql): `MyPositions` for the profile page (`/me`: open positions, history, claim and refund state) and `Leaderboard` (net profit ranking). A third, `MarketsByGame`, is defined for game history. If the indexer is unreachable, `/me` falls back to the resolver's `GET /positions/:address`.
+The frontend runs two queries from [`backend/indexer/queries.graphql`](https://github.com/move-market/movemarket-backend/blob/main/indexer/queries.graphql): `MyPositions` for the profile page (`/me`: open positions, history, claim and refund state) and `Leaderboard` (net profit ranking). A third, `MarketsByGame`, is defined for game history. If the indexer is unreachable, `/me` falls back to the resolver's `GET /positions/:address`.
 
 We ran the indexer locally against Monad Testnet (synced over the public RPC) from the deploy block to head: 31 events, and every market, pool, lock time and position matched `getMarket` and `getPosition` onchain. In production the same indexer runs self-hosted next to the resolver (Postgres + Hasura + HyperIndex syncing over RPC, endpoint above).
 
@@ -176,9 +176,9 @@ Prerequisites: [Bun](https://bun.sh) 1.3+, Node 22+, [Foundry](https://getfoundr
 ```bash
 mkdir movemarket && cd movemarket
 git clone https://github.com/danustaif/movemarket-source source
-git clone https://github.com/danustaif/movemarket-smart-contract smart-contract
-git clone https://github.com/danustaif/movemarket-backend backend
-git clone https://github.com/danustaif/movemarket-fe fe
+git clone https://github.com/move-market/movemarket-smart-contract smart-contract
+git clone https://github.com/move-market/movemarket-backend backend
+git clone https://github.com/move-market/movemarket-fe fe
 
 # shared package and source of truth
 cd source && node sot/check.mjs
@@ -210,7 +210,7 @@ cre workflow simulate resolver-workflow --target staging-settings \
 # add --broadcast to write the report to Monad Testnet through MockKeystoneForwarder
 ```
 
-Each repo's README has the details: [smart-contract](https://github.com/danustaif/movemarket-smart-contract#readme) (plus the deploy runbook [DEPLOY.md](https://github.com/danustaif/movemarket-smart-contract/blob/main/DEPLOY.md)), [backend](https://github.com/danustaif/movemarket-backend#readme), [CRE](https://github.com/danustaif/movemarket-backend/tree/main/cre#readme), [indexer](https://github.com/danustaif/movemarket-backend/tree/main/indexer#readme), [frontend](https://github.com/danustaif/movemarket-fe#readme).
+Each repo's README has the details: [smart-contract](https://github.com/move-market/movemarket-smart-contract#readme) (plus the deploy runbook [DEPLOY.md](https://github.com/move-market/movemarket-smart-contract/blob/main/DEPLOY.md)), [backend](https://github.com/move-market/movemarket-backend#readme), [CRE](https://github.com/move-market/movemarket-backend/tree/main/cre#readme), [indexer](https://github.com/move-market/movemarket-backend/tree/main/indexer#readme), [frontend](https://github.com/move-market/movemarket-fe#readme).
 
 ## Tests
 
