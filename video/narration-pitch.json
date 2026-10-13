@@ -1,0 +1,238 @@
+{
+  "voice": "af_heart",
+  "note": "Per frasa: text = teks tampil, tts = ejaan fonetik bila beda, speed (Kokoro, 1 = normal), pause = jeda sesudah frasa (detik), gain = dB.",
+  "scenes": [
+    {
+      "id": "hook",
+      "phrases": [
+        {
+          "text": "Every move.",
+          "speed": 0.9,
+          "pause": 0.35
+        },
+        {
+          "text": "is a market.",
+          "speed": 0.86,
+          "pause": 1.0,
+          "gain": 1.5
+        },
+        {
+          "text": "Check in the next four plies?",
+          "speed": 1.08,
+          "pause": 0.15
+        },
+        {
+          "text": "Yes, or no?",
+          "speed": 1.0,
+          "pause": 0.25
+        },
+        {
+          "text": "You've got fifteen seconds.",
+          "speed": 1.05,
+          "pause": 0.9
+        },
+        {
+          "text": "This is MoveMarket.",
+          "tts": "This is Move Market.",
+          "speed": 0.92,
+          "pause": 0,
+          "gain": 1
+        }
+      ]
+    },
+    {
+      "id": "problem",
+      "phrases": [
+        {
+          "text": "Millions of people watch live chess.",
+          "speed": 1.0,
+          "pause": 0.2
+        },
+        {
+          "text": "And all they can do... is watch.",
+          "speed": 0.92,
+          "pause": 0.5
+        },
+        {
+          "text": "Prediction markets? They settle in days.",
+          "speed": 1.05,
+          "pause": 0.3
+        },
+        {
+          "text": "They need someone trusted to report the result.",
+          "speed": 1.03,
+          "pause": 0.3
+        },
+        {
+          "text": "And getting started means wallets, seed phrases, and gas.",
+          "speed": 1.05,
+          "pause": 0
+        }
+      ]
+    },
+    {
+      "id": "solution",
+      "phrases": [
+        {
+          "text": "MoveMarket turns every moment of a live chess game on Lichess into a market.",
+          "speed": 1.0,
+          "pause": 0.3,
+          "tts": "Move Market turns every moment of a live chess game on lee chess into a market."
+        },
+        {
+          "text": "One question about the next few plies.",
+          "speed": 1.0,
+          "pause": 0.15
+        },
+        {
+          "text": "Yes or no. Fifteen seconds to decide.",
+          "speed": 0.97,
+          "pause": 0.3
+        },
+        {
+          "text": "Stakes lock on-chain before the first ply in the range is played.",
+          "speed": 1.03,
+          "pause": 0.3
+        },
+        {
+          "text": "The final result comes from Chainlink CRE, on Monad.",
+          "speed": 0.97,
+          "pause": 0.3,
+          "tts": "The final result comes from Chainlink C.R.E., on Monad.",
+          "gain": 1
+        },
+        {
+          "text": "And a passkey, through Mera, replaces the seed phrase.",
+          "speed": 1.0,
+          "pause": 0
+        }
+      ]
+    },
+    {
+      "id": "proof",
+      "phrases": [
+        {
+          "text": "It's live today.",
+          "speed": 0.95,
+          "pause": 0.3,
+          "gain": 1
+        },
+        {
+          "text": "Real Lichess games, with new markets every few plies.",
+          "speed": 1.02,
+          "pause": 0.25,
+          "tts": "Real lee chess games, with new markets every few plies."
+        },
+        {
+          "text": "One CRE report on Monad Testnet settled eight markets at once.",
+          "speed": 1.02,
+          "pause": 0.25,
+          "tts": "One C.R.E. report on Monad Testnet settled eight markets at once."
+        },
+        {
+          "text": "Request to final: twenty-one seconds.",
+          "speed": 0.95,
+          "pause": 0
+        }
+      ]
+    },
+    {
+      "id": "monad",
+      "phrases": [
+        {
+          "text": "Why Monad?",
+          "speed": 0.9,
+          "pause": 0.35,
+          "gain": 1,
+          "tts": "Why Moh-nad?"
+        },
+        {
+          "text": "A fifteen-second market needs a chain that keeps up.",
+          "speed": 1.0,
+          "pause": 0.25
+        },
+        {
+          "text": "On Monad, a stake confirms in under a second...",
+          "speed": 1.0,
+          "pause": 0.15,
+          "tts": "On Moh-nad, a stake confirms in under a second..."
+        },
+        {
+          "text": "so there's still time to think before the market locks.",
+          "speed": 1.03,
+          "pause": 0.3
+        },
+        {
+          "text": "Fast blocks are what make a market on a single moment possible.",
+          "speed": 1.0,
+          "pause": 0
+        }
+      ]
+    },
+    {
+      "id": "gtm",
+      "phrases": [
+        {
+          "text": "Go to market: start where chess fans already are.",
+          "speed": 1.0,
+          "pause": 0.3
+        },
+        {
+          "text": "Viewers of Lichess tournament broadcasts.",
+          "speed": 1.0,
+          "pause": 0.2,
+          "tts": "Viewers of lee chess tournament broadcasts."
+        },
+        {
+          "text": "Chess streamers, and their chat.",
+          "speed": 1.0,
+          "pause": 0.2
+        },
+        {
+          "text": "The Monad testnet community.",
+          "speed": 1.0,
+          "pause": 0.2
+        },
+        {
+          "text": "And short clips of the moments people share.",
+          "speed": 1.0,
+          "pause": 0.3
+        },
+        {
+          "text": "When no tournament is live, replays keep markets running.",
+          "speed": 1.02,
+          "pause": 0
+        }
+      ]
+    },
+    {
+      "id": "cta",
+      "phrases": [
+        {
+          "text": "Chess is just the first market. Esports and livestreams are next.",
+          "speed": 1.0,
+          "pause": 0.5,
+          "tts": "Chess is just the first market. E-sports and livestreams are next."
+        },
+        {
+          "text": "MoveMarket.",
+          "speed": 0.9,
+          "pause": 0.3,
+          "tts": "Move Market.",
+          "gain": 1.5
+        },
+        {
+          "text": "Every move is a market.",
+          "speed": 0.88,
+          "pause": 0.4,
+          "gain": 1.5
+        },
+        {
+          "text": "Try it now, on Monad Testnet.",
+          "speed": 1.0,
+          "pause": 0
+        }
+      ]
+    }
+  ]
+}
