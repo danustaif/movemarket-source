@@ -178,5 +178,6 @@ Sintaks filter mengikuti GraphQL bawaan Envio (Hasura). Cek di playground lokal 
 ## 5. Deploy
 
 - Lokal: `pnpm dev` (butuh Docker). HyperSync menolak query tanpa `ENVIO_API_TOKEN` di luar Envio Cloud; tanpa token, pakai sumber RPC (`rpc: for: sync`) di config lokal yang tidak di-commit. Detail di `backend/indexer/README.md`.
+- Self-host (produksi sejak 14 Okt): `backend/indexer/docker-compose.yml` dengan `config.selfhost.yaml`, sumber HyperSync (`ENVIO_API_TOKEN` di `backend/indexer/.env`) dan RPC Monad sebagai `for: fallback`. Image wajib membawa `ca-certificates`; tanpanya TLS ke HyperSync gagal `UnknownIssuer` dan indexer diam-diam pindah ke RPC.
 - Cloud: Envio Cloud lewat CLI `envio-cloud`, deploy dari repo GitHub. Setelah build pertama, push commit kosong, cek `_meta` (`isReady`, `progressBlock`) sebelum memakai URL, lalu `deployment promote`. Simpan URL GraphQL di `VITE_ENVIO_URL`.
 - Envio adalah sponsor bounty "Best Use of Envio". Tampilkan di README bagaimana indexer dipakai (riwayat, posisi, leaderboard, statistik partai).
