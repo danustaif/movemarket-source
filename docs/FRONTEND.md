@@ -71,7 +71,12 @@ createAccount(): Promise<LocalAccount>   // createPasskeyWithPrfOutput -> derive
 unlockAccount(): Promise<LocalAccount>   // getPasskeyPrfOutput({ rpId, credential }) -> deriveKey -> session -> toViemAccount
 getStoredMarker(): { rpId: string; address: `0x${string}`; credentialId: string } | null
 clearMarker(): void
+hasSession(): boolean                    // sesi tersimpan (D26) belum kedaluwarsa untuk alamat di penanda; sinkron
+restoreAccount(): Promise<LocalAccount | null>  // dekripsi sesi tersimpan -> session -> toViemAccount, tanpa passkey
+end(): void                              // lock: akhiri sesi Mera dan hapus sesi tersimpan
 ```
+
+Nama di kode: `accountService.create/unlock/marker/clearMarker/hasSession/restore/end` (`fe/src/contracts/account.ts`).
 
 Mera 0.2.0 hanya memberi 32 byte output PRF dan sesi tanda tangan. Derivasi kunci adalah tanggung jawab aplikasi dan ditetapkan di `docs/SOT.md` bagian 12:
 
@@ -101,7 +106,10 @@ function deriveEvmPrivateKey(prfOutput: Uint8Array): Uint8Array {
 Aturan:
 - `rp.id` selalu `import.meta.env.VITE_RP_ID`. Jangan memakai `location.hostname` langsung, supaya preview deploy tidak membuat passkey di domain lain.
 - Path derivasi tetap `m/44'/60'/0'/0/0`. Mengubahnya berarti semua pengguna mendapat alamat baru.
-- Simpan hanya `{ rpId, address, credentialId }` di `localStorage` key `movemarket.account.v1`. `credentialId` dikirim ke `getPasskeyPrfOutput` supaya browser langsung memilih passkey yang benar.
+- Penanda `{ rpId, address, credentialId }` di `localStorage` key `movemarket.account.v1`. `credentialId` dikirim ke `getPasskeyPrfOutput` supaya browser langsung memilih passkey yang benar.
+- Sesi tersimpan (SOT bagian 12, D26) di `lib/account/vault.ts`: setelah create/unlock berhasil, `privateKey` dienkripsi AES-GCM 256 dengan CryptoKey `extractable: false` yang disimpan di IndexedDB (`account.sessionKeyDb`); `{ address, iv, ciphertext, expiresAt }` di `localStorage` key `account.sessionStorageKey`. Masa berlaku `account.sessionTtlHours` (24 jam), diperpanjang setiap pemulihan berhasil. Kunci privat terbaca tidak pernah disimpan; salinan plaintext di-zero-kan setelah encrypt/decrypt.
+- Saat app dimuat (`stores/account.ts`): kalau `hasSession()`, status `restoring` (alamat dari penanda sudah tampil) lalu `restore()` di chunk kripto lazy -> `unlocked` tanpa prompt passkey. Gagal apa pun (kedaluwarsa, kunci AES hilang, ciphertext rusak, alamat beda) menghapus sesi tersimpan dan jatuh ke `locked`. `lock`, `startOver`, `ACCOUNT_MISMATCH`, dan `SESSION_ENDED` menghapus sesi tersimpan. Hasil restore yang selesai setelah lock/unlock dibuang.
+- Komponen yang menerima status akun memperlakukan `restoring` seperti menunggu: jangan tampilkan tombol Unlock (mencegah kedip locked -> unlocked); aksi transaksi sebaiknya nonaktif sampai `unlocked`.
 - Setelah unlock, cocokkan alamat hasil derivasi dengan penanda. Kalau beda, tampilkan error (`ACCOUNT_MISMATCH`) dan jangan memakai akun itu. Toast error memberi aksi "Create account", dan `/onboarding` saat terkunci menampilkan pesan yang sama dengan tombol "Create account": keduanya menghapus penanda (`clearMarker`) lalu memulai jalur buat akun.
 - Tangani `MeraError` berdasarkan `code`: `PRF_UNAVAILABLE`, `PASSKEY_OPERATION_FAILED` (termasuk pembatalan), `CRYPTO_UNAVAILABLE`, `SESSION_ENDED`. Pesan dari `sot/copy.en.json`.
 
@@ -109,11 +117,12 @@ State akun di Zustand (`stores/account.ts`):
 
 ```ts
 interface AccountState {
-  status: "none" | "locked" | "unlocked";
+  status: "none" | "locked" | "restoring" | "unlocked";
   address?: `0x${string}`;
   account?: LocalAccount;      // hanya di memori
   setUnlocked(a: LocalAccount): void;
-  lock(): void;
+  lock(): void;                // juga menghapus sesi tersimpan
+  restore(): Promise<void>;    // sekali saat app dimuat (D26)
 }
 ```
 
