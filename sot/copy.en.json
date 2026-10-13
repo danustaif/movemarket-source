@@ -1,7 +1,7 @@
 {
   "_meta": {
     "name": "MoveMarket source of truth: UI copy (English)",
-    "version": "2.10.0",
+    "version": "2.10.1",
     "updated": "2026-10-14",
     "rule": "UI memakai bahasa Inggris karena juri global. Semua teks yang tampil ke pengguna diambil dari file ini lewat key. Hindari kata gamble dan bet di UI; pakai predict, stake, pool."
   },
@@ -254,7 +254,7 @@
       "flat": "2D",
       "solid": "3D",
       "label3d": "3D board at ply {ply}. {last} Drag or use the arrow keys to turn it.",
-      "turnHint": "Drag to turn, pinch or scroll to zoom, double-click to reset",
+      "turnHint": "Drag to turn, pinch or Ctrl + scroll to zoom, double-click to reset",
       "reset": "Reset view",
       "square": "{square} · {piece}",
       "pieces": {

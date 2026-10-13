@@ -1,6 +1,6 @@
 # Source of Truth: MoveMarket
 
-Versi 2.17.0 · 14 Oktober 2026 · Pemilik: Danu
+Versi 2.17.1 · 14 Oktober 2026 · Pemilik: Danu
 
 Dokumen ini adalah acuan tunggal untuk semua nilai yang dipakai lebih dari satu komponen. Kontrak, workflow CRE, resolver, indexer, dan frontend harus cocok dengan dokumen ini dan folder `sot/`.
 
@@ -470,6 +470,9 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | Sumber MON testnet dalam jumlah besar | Sebagian | 5 Okt | Faucet agen Monad `agents.devnads.com/v1/faucet` (dari monskills), batasnya belum diketahui |
 
 ## 17. Riwayat perubahan
+
+### v2.17.1 (14 Oktober 2026)
+- `copy.en.json` 2.10.1: `ui.board.turnHint` menyebut Ctrl + scroll (scroll biasa tetap menggulir halaman).
 
 ### v2.17.0 (14 Oktober 2026)
 - D26: sesi akun tersimpan terenkripsi (bagian 12). `constants.json` 2.15.0: `account.sessionStorageKey`, `account.sessionKeyDb`, `account.sessionTtlHours` (24), `account.stored`/`neverStored` menjelaskan semua lokasi penyimpanan. Status akun baru `restoring` selama pemulihan.
