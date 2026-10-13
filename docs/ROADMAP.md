@@ -23,7 +23,7 @@ Prinsip:
 - [x] `cre login`, `cre registry list` (hanya `private` dan `onchain:ethereum-mainnet`), `cre workflow supported-chains` (forwarder cocok SOT), 10 Okt
 - [ ] **Ajukan Early Access** (`cre account access`, interaktif, dijalankan user). Status 10 Okt: Deploy Access belum aktif
 - [ ] Kumpulkan MON testnet untuk wallet resolver dan wallet CLI CRE untuk tiga wallet: resolver, faucet, dan CLI CRE (target minimal 100 MON sebelum 14 Oktober, idealnya 160; perhitungan di `docs/SOT.md` bagian 13). Pakai faucet agen Monad `agents.devnads.com/v1/faucet` dan tanyakan ke tim Monad di Discord
-- [ ] Tentukan domain demo (rpId passkey) dan jangan diganti
+- [x] Tentukan domain demo (rpId passkey) dan jangan diganti: `movemarket-chess.vercel.app` (13 Okt)
 - [ ] Kirim pesan ke mentor Chainlink: apakah `simulate --broadcast` diterima untuk bounty, dan siapa membayar gas mode DON
 
 **DoD:** repo publik ter-push, Early Access diajukan, domain dipilih.
@@ -66,7 +66,7 @@ Prinsip:
 ## Hari 5 (Jum 9 Okt): Frontend inti
 
 - [x] Vite + React + Tailwind + TanStack Router + Query (10 Okt)
-- [ ] Deploy frontend ke domain final (menunggu domain/rpId)
+- [x] Deploy frontend ke domain final: Vercel `movemarket-chess` (prebuilt, 13 Okt)
 - [x] Akun Mera dengan derivasi SOT bagian 12, onboarding, faucet otomatis, unlock setelah reload (diuji dengan vektor; passkey nyata belum)
 - [x] Beranda daftar partai, layar partai dengan `LiveBoard` + SSE
 - [x] `MarketCard`, `Countdown`, `BetPanel`, `useBet` optimistic dan rollback
@@ -80,7 +80,7 @@ Prinsip:
 - [x] Halaman `/me`: posisi, claim, claim all, refund (Envio dengan cadangan `GET /positions/:address`; transaksi nyata belum diuji)
 - [x] Ingest broadcast round (sumber live utama)
 - [x] Replay otomatis hanya saat ada penonton
-- [ ] Deploy resolver ke server 24 jam (container berisi CLI `cre` dan proyek `backend/cre/`)
+- [x] Deploy resolver ke server 24 jam: VPS Tencent, Docker + Caddy TLS, `https://api.43-133-151-182.sslip.io`, `CRE_MODE=mock` (D23, D24) sampai Early Access (13 Okt)
   - 10 Okt: Dockerfile + docker-compose siap (`backend/README.md`); uji live lokal dengan wallet nyata di Monad Testnet lulus memakai `CRE_MODE=mock` (D23): create, stake, provisional, request, report, claimable. Ditemukan dan diperbaiki: `market_created` terlambat 40-50 detik tanpa WS.
 
 **DoD:** link demo publik bisa dibuka siapa saja, alur daftar sampai klaim jalan dari UI.
@@ -88,7 +88,7 @@ Prinsip:
 ## Hari 7 (Min 11 Okt): Indexer dan uji ujung ke ujung
 
 - [x] Envio: `envio init contract-import` (versi dipin), `field_selection` hash, schema dan handler sesuai `docs/INDEXER.md`, 9 test, indexing lokal ke Monad Testnet cocok on-chain (10 Okt)
-- [ ] Deploy indexer ke Envio Cloud (`npx envio-cloud login`, butuh akun user; perintah di `backend/indexer/README.md`), simpan URL di `VITE_ENVIO_URL`
+- [x] Deploy indexer: self-host di VPS yang sama (Postgres + Hasura + HyperIndex via RPC), `https://indexer.43-133-151-182.sslip.io/v1/graphql`, dipakai `VITE_ENVIO_URL` (13 Okt). Envio Cloud tetap opsi (`backend/indexer/README.md`)
 - [ ] `/me` membaca posisi dari Envio
 - [ ] Uji dengan broadcast live (pilih turnamen `standard` yang sedang berjalan di `/api/broadcast/top`)
 - [ ] Uji di Safari iOS dan Chrome Android

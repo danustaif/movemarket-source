@@ -1,6 +1,6 @@
 # Source of Truth: MoveMarket
 
-Versi 2.14.0 · 10 Oktober 2026 · Pemilik: Danu
+Versi 2.15.0 · 10 Oktober 2026 · Pemilik: Danu
 
 Dokumen ini adalah acuan tunggal untuk semua nilai yang dipakai lebih dari satu komponen. Kontrak, workflow CRE, resolver, indexer, dan frontend harus cocok dengan dokumen ini dan folder `sot/`.
 
@@ -420,6 +420,7 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | D22 | Gas limit diukur dengan `eth_estimateGas` di testnet + maksimal 10% | Biaya akses dingin Monad berbeda dari Ethereum, dan gas ditagih dari limit | `forge test --gas-report` + 20% |
 | D23 | `CRE_MODE=mock`: sambil menunggu Early Access, resolver menjalankan langkah handler workflow (logika bersama di `source/shared`) dan memanggil `report()` MockKeystoneForwarder langsung dengan wallet resolver. Hanya testnet | CLI `cre` di container butuh login atau `CRE_API_KEY` yang belum tersedia, padahal pasar ber-stake harus selesai selama penjurian. Batasan: tanpa konsensus multi-node, hasil dipercaya seperti resolver (dan MockKeystoneForwarder memang permissionless). Bukti bounty CRE tetap dari `simulate --broadcast` | Menunggu Early Access tanpa resolusi, `adminResolve` (melanggar D10) |
 | D24 | Selama `CRE_MODE=mock`, `LiveMarket.forwarder` = GatedForwarder milik MoveMarket (`smart-contract/src/GatedForwarder.sol`): ABI `report()` dan event `ReportProcessed` identik dengan MockKeystoneForwarder, tetapi hanya `operator` immutable (wallet resolver) yang boleh memanggil `report()`. Untuk `simulate --broadcast` atau DON, owner `setForwarder` kembali ke forwarder Chainlink | MockKeystoneForwarder permissionless: siapa pun yang tahu alamatnya bisa memanggil `report()` dan menetapkan YES/NO pasar ber-stake, jadi D10 (admin tidak bisa memilih pemenang) tidak berarti apa-apa selama forwarder itu terpasang. Gated forwarder membatasi kepercayaan ke wallet resolver, sama dengan batasan D23 | Tetap memakai MockKeystoneForwarder permissionless; forwarder dengan owner dan daftar operator yang bisa diubah (fitur yang tidak dipakai) |
+| D25 | Produksi: frontend Vercel `movemarket-chess.vercel.app` (juga rpId passkey, permanen), resolver dan indexer self-host di satu VPS (Docker, Caddy TLS dengan domain sslip.io) | Domain `movemarket.vercel.app` sudah dipakai pihak lain; HTTPS tanpa membeli domain; indexer self-host tanpa akun Envio Cloud (sumber RPC, tanpa token HyperSync) | Envio Cloud (butuh login akun), resolver di PaaS (state di memori butuh satu instance panjang) |
 
 ## 16. Status verifikasi
 
@@ -452,6 +453,9 @@ UI memakai bahasa Inggris karena juri global (D15). Semua teks ada di `sot/copy.
 | Sumber MON testnet dalam jumlah besar | Sebagian | 5 Okt | Faucet agen Monad `agents.devnads.com/v1/faucet` (dari monskills), batasnya belum diketahui |
 
 ## 17. Riwayat perubahan
+
+### v2.15.0 (13 Oktober 2026)
+- D25: deployment produksi (frontend Vercel `movemarket-chess.vercel.app`, rpId permanen; resolver + indexer self-host di VPS dengan Caddy TLS). URL di `README.md` dan `backend/README.md`.
 
 ### v2.14.0 (10 Oktober 2026)
 - Keputusan D24: GatedForwarder untuk `CRE_MODE=mock` menggantikan MockKeystoneForwarder permissionless (bagian 3, 10). `constants.json` 2.14.0: `addresses.creGatedForwarder` (`null` sampai di-deploy; resolver mode mock jatuh ke `addresses.creMockKeystoneForwarder`), `cre.mockMode` diperbarui.

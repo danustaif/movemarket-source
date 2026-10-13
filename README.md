@@ -8,9 +8,9 @@ Built for **Monad Metropolis**, Track 03 (Social, Attention & Culture). Bounties
 
 | | |
 |---|---|
-| Live demo | TBD |
+| Live demo | [movemarket-chess.vercel.app](https://movemarket-chess.vercel.app) (replays run while someone is watching) |
 | Demo video (3 min) | TBD |
-| Envio GraphQL endpoint | TBD |
+| Envio GraphQL endpoint | `https://indexer.43-133-151-182.sslip.io/v1/graphql` (self-hosted HyperIndex, read-only) |
 | Network | Monad Testnet, chain ID `10143` |
 
 ## How a market works
@@ -167,7 +167,7 @@ An Envio HyperIndex 3.0.0-alpha.21 indexer handles 8 `LiveMarket` events (market
 
 The frontend runs two queries from [`backend/indexer/queries.graphql`](https://github.com/danustaif/movemarket-backend/blob/main/indexer/queries.graphql): `MyPositions` for the profile page (`/me`: open positions, history, claim and refund state) and `Leaderboard` (net profit ranking). A third, `MarketsByGame`, is defined for game history. If the indexer is unreachable, `/me` falls back to the resolver's `GET /positions/:address`.
 
-We ran the indexer locally against Monad Testnet (synced over the public RPC) from the deploy block to head: 31 events, and every market, pool, lock time and position matched `getMarket` and `getPosition` onchain. Envio Cloud deployment is still pending (endpoint TBD above).
+We ran the indexer locally against Monad Testnet (synced over the public RPC) from the deploy block to head: 31 events, and every market, pool, lock time and position matched `getMarket` and `getPosition` onchain. In production the same indexer runs self-hosted next to the resolver (Postgres + Hasura + HyperIndex syncing over RPC, endpoint above).
 
 ## Run locally
 
@@ -260,11 +260,11 @@ Full table with rejected alternatives: [`docs/SOT.md`](docs/SOT.md) section 15.
 | Contracts on Monad Testnet, verified | Done |
 | CRE workflow, end to end with `--broadcast` | Done |
 | CRE on the DON | Waiting for Early Access |
-| Resolver (replay + broadcast sources) | Built and tested, public deploy TBD |
-| Frontend | Built and tested, public deploy TBD |
-| Envio indexer | Verified locally, Envio Cloud TBD |
+| Resolver (replay + broadcast sources) | Live at `https://api.43-133-151-182.sslip.io`, `CRE_MODE=mock` through the GatedForwarder (D23, D24) until CRE deploy access |
+| Frontend | Live at https://movemarket-chess.vercel.app |
+| Envio indexer | Live, self-hosted (endpoint above) |
 | Demo video | TBD |
 
 ## Untuk tim (Bahasa Indonesia)
 
-README ini untuk juri, jadi berbahasa Inggris. Dokumen internal tetap berbahasa Indonesia. Mulai dari [`CLAUDE.md`](CLAUDE.md), lalu [`docs/SOT.md`](docs/SOT.md). Semua nilai lintas komponen ada di [`sot/`](sot/); ubah di sana dulu, lalu jalankan `node sot/check.mjs`. Sebelum submit, isi semua `TBD` di atas (link demo, video, endpoint Envio) dan perbarui tabel Status serta angka test kalau berubah.
+README ini untuk juri, jadi berbahasa Inggris. Dokumen internal tetap berbahasa Indonesia. Mulai dari [`CLAUDE.md`](CLAUDE.md), lalu [`docs/SOT.md`](docs/SOT.md). Semua nilai lintas komponen ada di [`sot/`](sot/); ubah di sana dulu, lalu jalankan `node sot/check.mjs`. Sebelum submit, isi `TBD` yang tersisa (video demo) dan perbarui tabel Status serta angka test kalau berubah.
