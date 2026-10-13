@@ -38,7 +38,7 @@ const Intro: React.FC = () => {
   const b = interpolate(f, [22, 40], [0, 1], { ...clamp, easing: ease });
   return (
     <AbsoluteFill>
-      <AbsoluteFill style={{ filter: "blur(14px) brightness(0.45)", scale: "1.08" }}><Clip name="intro" /></AbsoluteFill>
+      <AbsoluteFill style={{ filter: "blur(14px) brightness(0.45)", scale: "1.08" }}><Clip name="landing" /></AbsoluteFill>
       <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", gap: 34, fontFamily: FONT, color: C.white }}>
         <div style={{ opacity: a, scale: `${0.85 + 0.15 * a}` }}><Logo size={200} /></div>
         <div style={{ opacity: a, fontSize: 104, fontWeight: 900, letterSpacing: -1 }}>MoveMarket</div>
@@ -73,18 +73,18 @@ const EnvioCard: React.FC = () => {
         POST <span style={{ color: C.gold }}>indexer.43-133-151-182.sslip.io/v1/graphql</span>
       </div>
       <div style={{ display: "flex", gap: 30, flex: 1 }}>
-        <div style={{ flex: 0.8, background: C.control, borderRadius: 14, padding: 30, fontSize: 25, lineHeight: 1.5, whiteSpace: "pre" }}>
+        <div style={{ flex: 1, minWidth: 0, background: C.control, borderRadius: 14, padding: 30, fontSize: 22, lineHeight: 1.5, whiteSpace: "pre" }}>
           {query.map((l, i) => <div key={i} style={{ opacity: interpolate(f, [8 + i * 4, 14 + i * 4], [0, 1], clamp) }}>{l}</div>)}
           <div style={{ marginTop: 22, color: C.muted, opacity: interpolate(f, [34, 42], [0, 1], clamp) }}>{`$user = "${ACCOUNT.toLowerCase().slice(0, 22)}…"`}</div>
         </div>
-        <div style={{ flex: 1.2, background: C.control, borderRadius: 14, padding: 30, fontSize: 25, lineHeight: 1.55 }}>
+        <div style={{ flex: 1, minWidth: 0, overflow: "hidden", background: C.control, borderRadius: 14, padding: 30, fontSize: 22, lineHeight: 1.6, whiteSpace: "nowrap" }}>
           <div style={{ color: C.muted, marginBottom: 10 }}>{`User: ${u.betCount} stakes · ${u.winCount} wins · staked ${Number(u.totalStaked) / 1e6} · paid ${Number(u.totalPayout) / 1e6} tUSDC`}</div>
           {rows.map((r, i) => (
-            <div key={r.market.id} style={{ opacity: interpolate(f, [44 + i * 7, 52 + i * 7], [0, 1], clamp), display: "flex", gap: 18 }}>
-              <span style={{ color: C.white, width: 90 }}>#{r.market.id}</span>
-              <span style={{ width: 250 }}>plies {r.market.fromPly}–{r.market.toPly}</span>
-              <span style={{ width: 170, color: r.market.status === "RESOLVED" ? C.gold : C.coral }}>{r.market.status}</span>
-              <span style={{ width: 170 }}>payout {Number(r.payout) / 1e6}</span>
+            <div key={r.market.id} style={{ opacity: interpolate(f, [44 + i * 7, 52 + i * 7], [0, 1], clamp), display: "grid", gridTemplateColumns: "80px 200px 150px 150px auto", gap: 14 }}>
+              <span style={{ color: C.white }}>#{r.market.id}</span>
+              <span>plies {r.market.fromPly}–{r.market.toPly}</span>
+              <span style={{ color: r.market.status === "RESOLVED" ? C.gold : C.coral }}>{r.market.status}</span>
+              <span>payout {Number(r.payout) / 1e6}</span>
               <span style={{ color: C.muted }}>{r.market.resolvedTx ? short(r.market.resolvedTx) : "refund"}</span>
             </div>
           ))}

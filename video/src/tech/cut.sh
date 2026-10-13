@@ -9,7 +9,7 @@ set -e
 T=out/tech/take1.mp4 U=out/tech/take2.mp4
 mkdir -p public/clips/tech
 cut() { ffmpeg -v error -y -ss "$2" -i "$1" -t "$3" -an -c:v libx264 -preset slow -crf 14 -pix_fmt yuv420p -r 30 "public/clips/tech/$4.mp4"; }
-cut $T 3 8 intro;      cut $T 10 8 landing
+cut $T 10 8 landing     # juga latar intro (diblur)
 cut $T 20 6 onbA;      cut $T 27 14 onbB        # klik Create account di 28,1 s, akun siap di 32,4 s
 cut $T 309 15 stake;   cut $T 393 9 stake2      # batch plies 109-112, lalu 113-116
 cut $T 404 8.5 lock;   cut $T 468 14 prov       # lock di 409 s, provisional ply 112 di 472 s
