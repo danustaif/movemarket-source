@@ -54,7 +54,8 @@ Catatan implementasi `fe/`: alamat kontrak ada di `src/lib/chain.ts` (tidak ada 
 
 | Route | Loader (`ensureQueryData`) | Komponen utama |
 |---|---|---|
-| `/` | `games` | Daftar partai live di atas, replay di bawah dengan label REPLAY |
+| `/` | `games` (+ `game(gameRef)` tiap partai yang belum selesai, lewat `useQueries`) | Landing (prototype `design/prototype/web-design-2026-10-14/`): partai unggulan (live dulu, lalu replay) di papan 3D, daftar ply terakhir, strip Results, lower third pasar terbuka yang paling cepat terkunci (tanpa akun ke `/onboarding`, terkunci Unlock, aktif lembar stake), Next to lock semua meja urut `lockTime`, How results work, CTA |
+| `/games` | `games` | Daftar partai live di atas, replay di bawah dengan label REPLAY (dulu di `/`; nav Games) |
 | `/onboarding` | | Penjelasan, tombol buat akun, status faucet |
 | `/game/$gameRef` | `game(gameRef)` | `GameHeader`, `LiveBoard`, daftar `MarketCard` terbuka, terkunci, selesai |
 | `/me` | `positions(address)`, `balance(address)` | Saldo dengan tombol "Get test tokens" (faucet ulang, idempoten), total siap klaim dan tombol "Claim all", daftar posisi |
@@ -258,9 +259,11 @@ Reconnect dengan backoff (1, 2, 4, maksimal 30 detik). Setelah reconnect, invali
 
 ### `LiveBoard`
 - `react-chessboard` mode tampilan saja (tidak bisa digeser)
-- Sorot langkah terakhir
+- Sorot langkah terakhir (token `board-last-light`/`board-last-dark`), bertahan sampai ply berikutnya; bidak meluncur lalu "mendarat" di petak tujuan (tanpa animasi untuk `prefers-reduced-motion`)
 - Nomor ply dan langkah di bawah papan
 - Label REPLAY kalau `isReplay`
+- `view: "3d"`: papan three.js (`Board3D`, chunk lazy terpisah bersama `three`). Drag memutar (elevasi dibatasi), pinch atau Ctrl + scroll memperbesar, double-click atau tombol Reset view mengembalikan sudut, hover/tap petak menampilkan "e4 · White knight", tombol panah memutar. Sentuh vertikal tetap menggulir halaman (`touch-action: pan-y`). Kanvas `aria-hidden`; nama aksesibel di pembungkus. Jatuh ke 2D kalau WebGL tidak ada atau gagal.
+- Layar partai punya toggle 2D/3D (`localStorage` `movemarket.boardView`, default 2D sesuai prototype). Landing selalu mencoba 3D.
 
 ## 9. Error kontrak ke pesan
 
