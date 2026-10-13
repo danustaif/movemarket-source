@@ -1,16 +1,23 @@
 // Perekam demo teknis: satu browser Chrome (headless) di produksi, virtual authenticator WebAuthn dengan PRF,
 // screencast CDP -> ffmpeg (30 fps CFR mengikuti jam dinding) -> <out>.mp4, plus <out>.marks.json (label + detik).
+// Butuh: npm i --no-save playwright@1.64.0 (Chrome sistem). HEADED=1 untuk jendela biasa (Monadscan menolak headless).
+// Kursor tampilan: kirim lewat /run -> context.addInitScript({ path: "src/tech/cursor.js" }).
 // Dikendalikan lewat HTTP lokal supaya tiap langkah bisa dicek dulu sebelum lanjut:
-//   node record.mjs out/raw/take1 &
-//   curl -s localhost:9333/run --data-binary 'await page.goto("https://movemarket-chess.vercel.app/"); return page.url()'
-//   curl -s "localhost:9333/mark?l=landing";  curl -s localhost:9333/shot   (screenshot ke <out>-shot.png)
-//   curl -s localhost:9333/stop
+//   node record.mjs out/raw/take1 &        (mencetak token acak sekali ke stdout: "token <hex>")
+//   H="Authorization: Bearer <token>"
+//   curl -s -H "$H" localhost:9333/run --data-binary 'await page.goto("https://movemarket-chess.vercel.app/"); return page.url()'
+//   curl -s -H "$H" "localhost:9333/mark?l=landing";  curl -s -H "$H" localhost:9333/shot   (screenshot ke <out>-shot.png)
+//   curl -s -H "$H" localhost:9333/stop    (matikan server begitu rekaman selesai)
+// Keamanan: /run mengeksekusi kode, jadi setiap request wajib membawa token (timingSafeEqual), request dengan header
+// Origin/Referer (dari halaman web mana pun) ditolak, dan Host harus persis 127.0.0.1:9333 atau localhost:9333
+// (mencegah DNS rebinding). Server hanya listen di 127.0.0.1.
 // Tidak ada kunci atau output PRF yang disimpan: authenticator hidup hanya di memori browser ini.
 import { chromium } from "playwright";
 import { spawn } from "node:child_process";
 import { createServer } from "node:http";
 import { writeFileSync, mkdirSync } from "node:fs";
 import { dirname } from "node:path";
+import { randomBytes, timingSafeEqual } from "node:crypto";
 
 const out = process.argv[2] ?? "out/raw/take";
 mkdirSync(dirname(out), { recursive: true });
@@ -56,7 +63,18 @@ const saveMarks = () => writeFileSync(`${out}.marks.json`, JSON.stringify(marks,
 const mark = (l) => { const m = { t: +now().toFixed(2), l }; marks.push(m); saveMarks(); console.log("mark", m); return m; };
 const AsyncFunction = (async () => {}).constructor;
 
+const TOKEN = randomBytes(32).toString("hex");
+const HOSTS = new Set(["127.0.0.1:9333", "localhost:9333"]);
+const authorized = (req) => {
+  if (req.headers.origin !== undefined || req.headers.referer !== undefined) return false;
+  if (!HOSTS.has(req.headers.host ?? "")) return false;
+  const got = Buffer.from(req.headers.authorization ?? "");
+  const want = Buffer.from(`Bearer ${TOKEN}`);
+  return got.length === want.length && timingSafeEqual(got, want);
+};
+
 createServer(async (req, res) => {
+  if (!authorized(req)) { req.resume(); res.statusCode = 403; res.end("forbidden"); return; }
   const url = new URL(req.url, "http://x");
   let body = ""; for await (const c of req) body += c;
   try {
@@ -70,4 +88,4 @@ createServer(async (req, res) => {
     }
     res.end(JSON.stringify(r ?? null));
   } catch (e) { res.statusCode = 500; res.end(String(e?.stack ?? e)); }
-}).listen(9333, "127.0.0.1", () => console.log("ready", out));
+}).listen(9333, "127.0.0.1", () => console.log("ready", out, "\ntoken", TOKEN));
