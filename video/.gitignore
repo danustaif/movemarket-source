@@ -8,3 +8,10 @@ out
 
 # Narasi TTS (~14 MB), dibuat ulang dengan `node gen-audio.mjs`
 public/audio/
+
+# Iklan: narasi Kokoro, efek suara/musik sintesis, dan klip rekaman layar dibuat ulang lewat
+# gen-voice.py, gen-sound.py, dan capture.mjs (lihat README); tidak di-commit karena besar.
+public/vo/
+public/sfx/
+public/music/
+public/clips/

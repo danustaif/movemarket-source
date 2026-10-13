@@ -17,3 +17,6 @@ Config.setDefaultPremountInSeconds(2);
 import { existsSync } from "node:fs";
 const chrome = process.env.REMOTION_CHROME ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
 if (existsSync(chrome)) Config.setBrowserExecutable(chrome);
+
+// Papan 3D (@remotion/three) butuh renderer GL ANGLE; default Chrome headless menghasilkan kanvas kosong.
+Config.setChromiumOpenGlRenderer("angle");
