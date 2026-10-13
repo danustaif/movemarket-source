@@ -73,18 +73,18 @@ const EnvioCard: React.FC = () => {
         POST <span style={{ color: C.gold }}>indexer.43-133-151-182.sslip.io/v1/graphql</span>
       </div>
       <div style={{ display: "flex", gap: 30, flex: 1 }}>
-        <div style={{ flex: 0.9, background: C.control, borderRadius: 14, padding: 30, fontSize: 25, lineHeight: 1.5, whiteSpace: "pre" }}>
+        <div style={{ flex: 0.8, background: C.control, borderRadius: 14, padding: 30, fontSize: 25, lineHeight: 1.5, whiteSpace: "pre" }}>
           {query.map((l, i) => <div key={i} style={{ opacity: interpolate(f, [8 + i * 4, 14 + i * 4], [0, 1], clamp) }}>{l}</div>)}
           <div style={{ marginTop: 22, color: C.muted, opacity: interpolate(f, [34, 42], [0, 1], clamp) }}>{`$user = "${ACCOUNT.toLowerCase().slice(0, 22)}…"`}</div>
         </div>
-        <div style={{ flex: 1.1, background: C.control, borderRadius: 14, padding: 30, fontSize: 25, lineHeight: 1.55 }}>
+        <div style={{ flex: 1.2, background: C.control, borderRadius: 14, padding: 30, fontSize: 25, lineHeight: 1.55 }}>
           <div style={{ color: C.muted, marginBottom: 10 }}>{`User: ${u.betCount} stakes · ${u.winCount} wins · staked ${Number(u.totalStaked) / 1e6} · paid ${Number(u.totalPayout) / 1e6} tUSDC`}</div>
           {rows.map((r, i) => (
             <div key={r.market.id} style={{ opacity: interpolate(f, [44 + i * 7, 52 + i * 7], [0, 1], clamp), display: "flex", gap: 18 }}>
               <span style={{ color: C.white, width: 90 }}>#{r.market.id}</span>
-              <span style={{ width: 170 }}>plies {r.market.fromPly}–{r.market.toPly}</span>
+              <span style={{ width: 250 }}>plies {r.market.fromPly}–{r.market.toPly}</span>
               <span style={{ width: 170, color: r.market.status === "RESOLVED" ? C.gold : C.coral }}>{r.market.status}</span>
-              <span style={{ width: 160 }}>payout {Number(r.payout) / 1e6}</span>
+              <span style={{ width: 170 }}>payout {Number(r.payout) / 1e6}</span>
               <span style={{ color: C.muted }}>{r.market.resolvedTx ? short(r.market.resolvedTx) : "refund"}</span>
             </div>
           ))}
@@ -138,8 +138,10 @@ const SCENES: Record<SceneId, React.FC> = {
   ),
   onboard: () => (
     <AbsoluteFill>
-      <Sequence durationInFrames={sec(5.9)}><Clip name="onbA" /><Ripple at={5.45} x={1752} y={39} /></Sequence>
-      <Sequence from={sec(5.9)}>
+      <Sequence durationInFrames={sec(3.5)}>
+        <Cam keys={[[0.3, 1, 1752, 60], [2.9, 1.18, 1752, 60]]}><Clip name="onbA" from={2.4} /><Ripple at={3.05} x={1752} y={39} /></Cam>
+      </Sequence>
+      <Sequence from={sec(3.5)}>
         <Clip name="onbB" />
         <Ripple at={1.05} x={960} y={594} />
         <Timer start={1.14} end={5.42} />
@@ -158,8 +160,8 @@ const SCENES: Record<SceneId, React.FC> = {
         <Box from={3.5} to={4.7} r={[660, 300, 1330, 345]} />
       </Cam>
       <Callout from={3.5} to={14.4} x={GX} y={190} anchor="right" text="Ply 104 played → window 109–112" sub="questions are always 5+ plies ahead" />
-      <Callout from={7.0} to={11.0} x={GX} y={330} anchor="right" text="Stake: bet() from the passkey account" sub="eth_sendRawTransactionSync · gas from SOT" tone="coral" />
-      <Callout from={8.3} to={11.0} x={GX} y={470} anchor="right" text="Receipt in ~1 s" tone="soft" />
+      <Callout from={7.0} to={11.0} x={GX} y={640} anchor="right" text="Stake: bet() from the passkey account" sub="eth_sendRawTransactionSync · gas from SOT" tone="coral" />
+      <Callout from={8.3} to={11.0} x={GX} y={790} anchor="right" text="Receipt in ~1 s" tone="soft" />
       <Chapter title="2 · Stake in a 15 s window" jump="+4 min, next batch" />
     </AbsoluteFill>
   ),
@@ -178,9 +180,9 @@ const SCENES: Record<SceneId, React.FC> = {
   ),
   provisional: () => (
     <AbsoluteFill>
-      <Clip name="prov" />
-      <Callout from={3.7} x={GX} y={190} anchor="right" text="Ply 112: Bf6+ → Provisional" sub="shared resolve() · pushed over SSE · not on-chain yet" />
-      <Callout from={8.6} x={GX} y={350} anchor="right" text="No stakes on the winning side → VOID, refund" tone="coral" />
+      <Clip name="prov" from={1.2} />
+      <Callout from={2.5} x={GX} y={190} anchor="right" text="Ply 112: Bf6+ → Provisional" sub="shared resolve() · pushed over SSE · not on-chain yet" />
+      <Callout from={7.4} x={GX} y={350} anchor="right" text="No stakes on the winning side → VOID, refund" tone="coral" />
       <Chapter title="4 · Provisional result" jump="+56 s" />
     </AbsoluteFill>
   ),
@@ -212,9 +214,9 @@ const SCENES: Record<SceneId, React.FC> = {
       </Sequence>
       <Sequence from={sec(7.2)}>
         <Box from={0} to={4.6} r={[280, 240, 1670, 560]} />
-        <Callout from={0.2} to={4.6} x={GX} y={110} anchor="right" text="MarketResolved #394, #395 → outcome 1 (YES)" />
+        <Callout from={0.2} to={4.6} x={GX} y={170} anchor="right" text="MarketResolved #394, #395 → outcome 1 (YES)" />
         <Box from={4.8} r={[280, 570, 1670, 960]} />
-        <Callout from={5.0} x={GX} y={110} anchor="right" text="ReportProcessed · result true" sub="workflowExecutionId + reportId" />
+        <Callout from={5.0} x={GX} y={170} anchor="right" text="ReportProcessed · result true" sub="workflowExecutionId + reportId" />
       </Sequence>
       <Chapter title="On-chain proof · Monadscan" />
     </AbsoluteFill>
@@ -280,13 +282,19 @@ const musicVolume = (abs: number) => {
   return (0.34 - 0.24 * duck) * edge;
 };
 
+/** Dorongan kamera pelan sepanjang adegan: layar UI yang sedang menunggu tidak tampak beku. */
+const Drift: React.FC<{ len: number; children: React.ReactNode }> = ({ len, children }) => {
+  const f = useCurrentFrame();
+  return <AbsoluteFill style={{ scale: `${interpolate(f, [0, len], [1, 1.035])}` }}>{children}</AbsoluteFill>;
+};
+
 export const TechDemo: React.FC = () => (
   <AbsoluteFill style={{ background: C.studio }}>
     {ORDER.map((id, i) => {
       const S = SCENES[id];
       return (
         <Sequence key={id} name={id} from={STARTS[i]} durationInFrames={DURS[i]}>
-          <S />
+          <Drift len={DURS[i]}><S /></Drift>
         </Sequence>
       );
     })}
