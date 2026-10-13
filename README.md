@@ -9,7 +9,7 @@ Built for **Monad Metropolis**, Track 03 (Social, Attention & Culture). Bounties
 | | |
 |---|---|
 | Live demo | [movemarket-chess.vercel.app](https://movemarket-chess.vercel.app) (replays run while someone is watching) |
-| Demo video (3 min) | TBD |
+| Demo video (2:50) | [youtu.be/nckzruqz8Iw](https://youtu.be/nckzruqz8Iw) |
 | Envio GraphQL endpoint | `https://indexer.43-133-151-182.sslip.io/v1/graphql` (self-hosted HyperIndex, read-only) |
 | Network | Monad Testnet, chain ID `10143` |
 
@@ -263,8 +263,8 @@ Full table with rejected alternatives: [`docs/SOT.md`](docs/SOT.md) section 15.
 | Resolver (replay + broadcast sources) | Live at `https://api.43-133-151-182.sslip.io`, `CRE_MODE=mock` through the GatedForwarder (D23, D24) until CRE deploy access |
 | Frontend | Live at https://movemarket-chess.vercel.app |
 | Envio indexer | Live, self-hosted (endpoint above) |
-| Demo video | Rendered with Remotion (`video/`, 2:50); upload link TBD |
+| Demo video | [youtu.be/nckzruqz8Iw](https://youtu.be/nckzruqz8Iw), rendered with Remotion (`video/`) |
 
 ## Untuk tim (Bahasa Indonesia)
 
-README ini untuk juri, jadi berbahasa Inggris. Dokumen internal tetap berbahasa Indonesia. Mulai dari [`CLAUDE.md`](CLAUDE.md), lalu [`docs/SOT.md`](docs/SOT.md). Semua nilai lintas komponen ada di [`sot/`](sot/); ubah di sana dulu, lalu jalankan `node sot/check.mjs`. Sebelum submit, isi `TBD` yang tersisa (video demo) dan perbarui tabel Status serta angka test kalau berubah.
+README ini untuk juri, jadi berbahasa Inggris. Dokumen internal tetap berbahasa Indonesia. Mulai dari [`CLAUDE.md`](CLAUDE.md), lalu [`docs/SOT.md`](docs/SOT.md). Semua nilai lintas komponen ada di [`sot/`](sot/); ubah di sana dulu, lalu jalankan `node sot/check.mjs`. Semua tautan submission sudah terisi dan perbarui tabel Status serta angka test kalau berubah.

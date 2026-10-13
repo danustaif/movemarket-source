@@ -101,7 +101,7 @@ Prinsip:
 ## Hari 8 (Sen 12 Okt): Submission
 
 - [ ] README: deskripsi, arsitektur, cara menjalankan, alamat kontrak, hash transaksi CRE, jalur CRE yang dipakai, link demo, batasan yang disadari (resolver dipercaya untuk kunci ply, replay memakai partai publik)
-- [ ] Video demo 3 menit (`docs/DEMO_SCRIPT.md`)
+- [x] Video demo 3 menit (`docs/DEMO_SCRIPT.md`): https://youtu.be/nckzruqz8Iw (2:50, Remotion `source/video/`, 14 Okt)
 - [ ] Write-up di platform hackathon, pilih Track 03
 - [ ] Isi form bounty (Chainlink, Mera, Envio)
 - [ ] **Submit hari ini**
